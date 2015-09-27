@@ -77,6 +77,7 @@ APP.Dataset.Diaper = function(pTime, value) {
 		throw "Bad diaper value; 1 = pee, 2 = poo, 3 = both";
 	}
 	this.getValue = function() { return diaperType; }
+	this.getTime = function() { return time; }
 	this.getTimeBlock = function() {
 		return APP.getTimeBlockFromDate(time);
 	}
@@ -86,9 +87,15 @@ APP.Dataset.Feed = function(pTime, value) {
 	var feedValue = value;
 	var time = pTime;
 	this.getValue = function() { return feedValue; }
+	this.getTime = function() { return time; }
 	this.getTimeBlock = function() {
 		return APP.getTimeBlockFromDate(time);
 	}
+}
+
+APP.calcHoursBetweenTimes = function(date1, date2) {
+	var msDiff = date2.getTime() - date1.getTime();	
+	return msDiff / (60000.0 * 60);
 }
 
 APP.CalendarHelper = function() {
@@ -101,14 +108,15 @@ APP.CalendarHelper = function() {
 APP.TableGenerator = function(container, calHelper) {
 
 	this.generate = function(datasets) {
+		var now = new Date();
 		for(var i = 0, len = datasets.length; i < len; i++) {
 			var el = document.createElement('pre');
 			container.appendChild(el);
 			var ds = datasets[i];
 			var header = this.generateHeader(ds.date);
-			var sleepRow = this.generateSleepRow(ds.getSleeps());
-			var diaperRow = this.generateValueItemRow("Diapers", ds.getDiapers());
-			var feedRow = this.generateValueItemRow("Feed", ds.getFeeds());
+			var sleepRow = this.generateSleepRow(now, ds.getSleeps());
+			var diaperRow = this.generateValueItemRow(now, "Diapers", ds.getDiapers());
+			var feedRow = this.generateValueItemRow(now, "Feeding", ds.getFeeds());
 			el.innerText = header 
 			+ '\n' + sleepRow
 			+ '\n' + feedRow
@@ -124,13 +132,19 @@ APP.TableGenerator = function(container, calHelper) {
 			dateString += " ";
 		}
 		var header = dateString + "|00  01  02  03  04  05  06  07  08  09  10  11  12  13  14  15  16  17  18  19  20  21  22  23  |"
-		header += "\n";
-		header += "--------------|------------------------------------------------------------------------------------------------|";
+		//header += "\n";
+		//header += "``````````````|````````````````````````````````````````````````````````````````````````````````````````````````|";
+		/*
+		for(var i = 0; i < 2048; i++) {
+			header += String.fromCharCode(i);
+		}
+		*/
 		return header;
 	}
 
 	// generate the sleep row
-	this.generateSleepRow = function(sleeps) {
+	this.generateSleepRow = function(now, sleeps) {
+		var timeblockNow = APP.getTimeBlockFromDate(now);
 		var str_arr = APP.generate24HrCharArray();	
 		for (var i = 0; i < sleeps.length; i++) {
 			var sleep = sleeps[i];
@@ -144,9 +158,30 @@ APP.TableGenerator = function(container, calHelper) {
 				continue;
 			}
 			for(var j = startSleepBlock; j < startSleepBlock+totalSleepBlocks; j++) {
-				str_arr[j] = "#";
+				//if (j == startSleepBlock || j == (startSleepBlock+totalSleepBlocks))
+					str_arr[j] = "#";
 			}
 		}
+		//
+		// current time
+		var mostRecentSleep = sleeps[sleeps.length-1];
+		if (mostRecentSleep && mostRecentSleep.getStart().getDate() == now.getDate()) {
+			str_arr[timeblockNow] = '>';
+			var msg = " hrs ago";
+			var hrs = 0;
+			if (mostRecentSleep.getDurationBlocks() == 0) {
+				hrs = APP.calcHoursBetweenTimes(mostRecentSleep.getStart(), now).toFixed(1);
+			}
+			else { 
+				hrs = APP.calcHoursBetweenTimes(mostRecentSleep.getEnd(), now).toFixed(1);
+			}
+			msg = hrs + msg;
+			var msg_arr = msg.split('');
+			for(var i = 0, len = msg_arr.length; i < len; i++) {
+				str_arr[timeblockNow+i+1] = msg_arr[i];
+			}
+		}
+
 		var sleep_string = str_arr.join('');
 		var colHeader = this.generateColumnHeaderRightAlign("Sleep");
 		sleep_string = colHeader + sleep_string;
@@ -154,7 +189,8 @@ APP.TableGenerator = function(container, calHelper) {
 	}
 
 	// generate the diaper or feed (or other simple) row
-	this.generateValueItemRow = function(colName, items) {
+	this.generateValueItemRow = function(now, colName, items) {
+		var timeblockNow = APP.getTimeBlockFromDate(now);
 		var str_arr = APP.generate24HrCharArray();	
 		for(var i = 0; i < items.length; i++) {
 			var item = items[i];
@@ -162,10 +198,24 @@ APP.TableGenerator = function(container, calHelper) {
 			var itemValueArr = item.getValue().split('');
 			var extraShift = 0;
 			for(var j = 0, len = itemValueArr.length; j < len; j++) {
-				while (str_arr[item.getTimeBlock()+j+extraShift] != ' ') extraShift++;
-				str_arr[item.getTimeBlock()+j+extraShift] = itemValueArr[j];
+				var extraShiftIndex = item.getTimeBlock()+j+extraShift;
+				while (str_arr[extraShiftIndex] != ' ' && extraShiftIndex < str_arr.length) extraShiftIndex++;
+				str_arr[extraShiftIndex] = itemValueArr[j];
 			}
 		}
+
+		// current time
+		var mostRecentItem = items[items.length-1];
+		if (mostRecentItem && mostRecentItem.getTime().getDate() == now.getDate()) {
+			str_arr[timeblockNow] = '>';
+			var hrs = APP.calcHoursBetweenTimes(mostRecentItem.getTime(), now).toFixed(1);
+			var msg = hrs + " hrs ago";
+			var msg_arr = msg.split('');
+			for(var i = 0, len = msg_arr.length; i < len; i++) {
+				str_arr[timeblockNow+i+1] = msg_arr[i];
+			}
+		}
+
 		var colHeader = this.generateColumnHeaderRightAlign(colName);
 		var string_row = colHeader + str_arr.join('');
 		return string_row;
@@ -265,7 +315,7 @@ APP.init = function() {
 		}
 	}
 
-	var doAsync = false;
+	var doAsync = true;
 	xmlhttp.open("GET", "services/BabyApi.php?action=loaddata", doAsync);
 	xmlhttp.send();
 }

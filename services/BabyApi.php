@@ -13,12 +13,12 @@
 			addValueItem($_GET['type'], $_GET['value']);
 			header('Location: ../submitted.html');
 			break;
-		case 'startsleep':
-			startSleep();
+		case 'sleep':
+			startSleep($_GET['sleepstart'], $_GET['sleepend']);
 			header('Location: ../submitted.html');
 			break;
 		case 'endsleep':
-			endSleep();
+			endSleep($_GET['sleepend']);
 			header('Location: ../submitted.html');
 			break;
 		case 'loaddata':
@@ -27,6 +27,8 @@
 		case 'diagnostics':
 			showDiagnostics();
 			break;
+		default:
+			echo "Unknown action:'$method'";
 	}
 
 	function showDiagnostics() {
@@ -35,7 +37,6 @@
 		$rows = convertSqlRowsToArray($res);
 		$arr = $rows[0];
 		$curTs = $arr['current_timestamp'];
-		//$row = $rows[0];
 
 		echo "mysql current_timestamp: $curTs<br>";
 
@@ -58,12 +59,11 @@
 	function addValueItem($type, $val) {
 		$sql = "insert into baby_value_entry(time, entry_type, entry_value) values(CURRENT_TIMESTAMP, '$type', '$val');";
 		$res = getSqlResult($sql);
-		endSleep();
 	}
 
-	function endSleep() {
+	function endSleep($sleepend) {
 		// if the most recent sleep has ended, we assume this was an mistaken end, so we don't do anything
-		$sql = "select * from baby_sleep order by id desc limit 1;";
+		$sql = "select * from baby_sleep order by start desc limit 1;";
 		$res = getSqlResult($sql);
 		$records = convertSqlRowsToArray($res);
 		$record = $records[0];
@@ -78,10 +78,20 @@
 		$startdate_day = date('d', $starttimestamp);
 		$startdate_mon = date('m', $starttimestamp);
 		$startdate_yr = date('Y', $starttimestamp);
+
 		$now_day = date('d');
 		$now_mon = date('m');
 		$now_yr = date('Y');
 		$now_time = date('G:i:s');
+
+		if ($sleepend != NULL) {
+			$phpTimeEnd = strtotime($sleepend);
+			$now_day = date('d', $phpTimeEnd);
+			$now_mon = date('m', $phpTimeEnd);
+			$now_yr = date('Y', $phpTimeEnd);
+			$now_time = date('G:i:s', $phpTimeEnd);
+		}
+
 		if ($startdate_day != $now_day) {
 			/* Most recent record started on the previous day, we must end it
 			 * on the previous day, then start a new record AND end that new one on this day, now
@@ -98,9 +108,28 @@
 		}
 	}
 
-	function startSleep() {
+	function startSleep($sleepstart, $sleepend) {
 		// if the last sleep wasn't ended, we just assume it was a false start, and we don't bother updating its end time
-		$sql = "insert into baby_sleep(start) values (CURRENT_TIMESTAMP);";
+
+		$sql = "";
+		if ($sleepstart == NULL & $sleepend == NULL) {
+			// just start sleep now
+			$sql = "insert into baby_sleep(start) values (CURRENT_TIMESTAMP);";
+		}
+		else if ($sleepend == NULL) {
+			// start sleep sometime in the past
+			$sql = "insert into baby_sleep(start) values (TIMESTAMP('$sleepstart'));";
+		}
+		else if ($sleepstart == NULL) {
+			// only the end is given, so end it there
+			endSleep($sleepend);
+		}
+		else { 
+			// both start and end given
+			$sql = "insert into baby_sleep(start, end) values (TIMESTAMP('$sleepstart'), TIMESTAMP('$sleepend'));";
+		}
+
+		//echo "$sql";
 		$res = getSqlResult($sql);
 	}
 	

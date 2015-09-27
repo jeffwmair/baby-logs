@@ -1,1 +1,3 @@
 services/credentials.php
+scripts/
+*.out

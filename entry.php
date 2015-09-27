@@ -10,11 +10,17 @@
 	</style>
 </head>
 <body>
-	<a href="index.html">Back to Log</a>
+	<a href=".">Back to Log</a>
 	<section>
 	<h3>Sleep</h3>
+<!--
 	<form action="services/BabyApi.php" method="get">
-		<input type="hidden" name="action" value="startsleep" />
+		<input type="hidden" name="action" value="sleep" />
+		<button type="submit">Sleep</button>
+	</form>
+-->
+	<form action="services/BabyApi.php" method="get">
+		<input type="hidden" name="action" value="sleep" />
 		<button type="submit">Start Sleep Now</button>
 	</form>
 	<form action="services/BabyApi.php" method="get">
