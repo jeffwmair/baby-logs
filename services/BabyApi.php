@@ -46,8 +46,8 @@
 
 	function loadData() {
 		$sleeps = convertSqlRowsToArray(getSqlResult("select * from baby_sleep order by start"));
-		$feeds = convertSqlRowsToArray(getSqlResult("select * from baby_value_entry where entry_type = 'feed' order by time"));
-		$diapers = convertSqlRowsToArray(getSqlResult("select * from baby_value_entry where entry_type = 'diaper' order by time"));
+		$feeds = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'feed' order by time"));
+		$diapers = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'diaper' order by time"));
 	
 		$jsonArr = array();
 		$jsonArr["sleeps"] = $sleeps;
@@ -57,7 +57,7 @@
 	}
 
 	function addValueItem($type, $val) {
-		$sql = "insert into baby_value_entry(time, entry_type, entry_value) values(CURRENT_TIMESTAMP, '$type', '$val');";
+		$sql = "insert into baby_keyval(time, entry_type, entry_value) values(CURRENT_TIMESTAMP, '$type', '$val');";
 		$res = getSqlResult($sql);
 	}
 

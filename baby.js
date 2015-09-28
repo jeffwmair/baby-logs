@@ -115,8 +115,8 @@ APP.TableGenerator = function(container, calHelper) {
 			var ds = datasets[i];
 			var header = this.generateHeader(ds.date);
 			var sleepRow = this.generateSleepRow(now, ds.getSleeps());
-			var diaperRow = this.generateValueItemRow(now, "Diapers", ds.getDiapers());
-			var feedRow = this.generateValueItemRow(now, "Feeding", ds.getFeeds());
+			var diaperRow = this.generateValueItemRow(now, "Diaper", ds.getDiapers());
+			var feedRow = this.generateValueItemRow(now, "Feed", ds.getFeeds());
 			el.innerText = header 
 			+ '\n' + sleepRow
 			+ '\n' + feedRow

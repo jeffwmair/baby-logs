@@ -1,3 +1,5 @@
 services/credentials.php
-scripts/
+scripts/*
+!scripts/*.c
+*.swp
 *.out
