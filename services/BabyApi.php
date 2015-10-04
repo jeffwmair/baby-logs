@@ -1,5 +1,6 @@
 <?php
 	require "utils.php";
+	require "Dataset.php";
 	$method = $_GET['action'];
 
 	/*
@@ -22,7 +23,11 @@
 			header('Location: ../submitted.html');
 			break;
 		case 'loaddata':
-			loadData();
+			$optionalDay = $_GET['day'];
+			loadData($optionalDay);
+			break;
+		case 'loaddata2':
+			loadData2();
 			break;
 		case 'diagnostics':
 			showDiagnostics();
@@ -44,11 +49,27 @@
 		echo "now: $now_time";
 	}
 
-	function loadData() {
+	function loadData2() {
 		$sleeps = convertSqlRowsToArray(getSqlResult("select * from baby_sleep order by start"));
 		$feeds = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'feed' order by time"));
 		$diapers = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'diaper' order by time"));
-	
+		$dsGenerator = new DatasetGenerator($sleeps, $feeds, $diapers);
+		echo "done";
+
+	}
+
+	function loadData($day) {
+		$sleepWhere = "";
+		$valWhere = "";
+		if ($day != NULL) {
+			$sleepWhere = " where start >= '$day' and start <= '$day 23:59:59' ";
+			$valWhere = " and time between '$day' and '$day 23:59:59' ";
+		}
+		$sql_sleeps = "select * from baby_sleep $sleepWhere order by start";
+		$sleeps = convertSqlRowsToArray(getSqlResult($sql_sleeps));
+		$feeds = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'feed' $valWhere order by time"));
+		$diapers = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'diaper' $valWhere order by time"));
+
 		$jsonArr = array();
 		$jsonArr["sleeps"] = $sleeps;
 		$jsonArr["feeds"] = $feeds;

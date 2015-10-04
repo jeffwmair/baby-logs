@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define INPUT_FILE "sleeps.txt"
-#define OUTPUT_FILE "insert_sleeps.sql"
+#define INPUT_FILE "baby_input.txt"
+#define OUTPUT_FILE "insert_data.sql"
 
 void generate_insert_item(char itemtype, char * insertstatement) {
 	char *time = strtok(NULL, ",");
 	char *value = strtok(NULL, ",");
+	printf("itemtype:%c\n",itemtype);
 	char *type = (itemtype == 'd') ? "diaper" : "feed";
 	sprintf(insertstatement, "insert into baby_keyval (time, entry_type, entry_value) values (TIMESTAMP('%s'), '%s', '%s');\n", time, type, value);
 }
@@ -58,7 +59,7 @@ int main() {
 			generate_insert_sleep(insertstatement);
 		}
 		else if (prefix[0] == 'd' || prefix[0] == 'f') {
-			generate_insert_item(prefix[i], insertstatement);
+			generate_insert_item(prefix[0], insertstatement);
 		}
 		else {
 			printf("Unknown prefix for line:%s\n", buffer);
@@ -71,6 +72,8 @@ int main() {
 	FILE *sql_file = fopen(OUTPUT_FILE, "w");
 	int i;
 	fputs("set time_zone = '-4:00';\n", sql_file);
+	fputs("delete from baby_sleep;\n", sql_file);
+	fputs("delete from baby_keyval;\n", sql_file);
 	printf("linecount:%d\n", linecount);
 	for(i = 0; i < linecount; i++) {
 		fputs(insert_statements[i], sql_file);

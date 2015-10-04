@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta name="viewport" content="width=device-width">	
 	<style>
 		pre { margin-bottom:40px; font-size:1.2em;}
 		a { font-size:3em; display:block; margin-bottom:30px;}
@@ -14,4 +15,13 @@
 </div>
 </body>
 </html>
-<script src="baby.js?version=2"></script>
+<script src="utils.js"></script>
+<script src="datetime.js"></script>
+<script src="dataset.js"></script>
+<script src="reportpage.js"></script>
+<script>
+var page = new APP.ReportPage();
+var container = document.getElementById('tableContainer');
+var calHelper = new DATETIME.CalendarHelper();
+page.init(container, calHelper);
+</script>

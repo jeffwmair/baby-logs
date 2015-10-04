@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width">
+		<style>
+			select,button,div#container { font-size:1.3em; }
+		</style>
+	</head>
+	<body>
+		<button id='btnBack'>&lt;&lt;</button>
+		<strong><span id='date'></span></strong>
+		<button id='btnForward'>&gt;&gt;</button>
+		<br>
+		<br>
+		<div id='container'></div>
+	</body>
+</html>
+<script type='text/javascript' src='utils.js'></script>
+<script type='text/javascript' src='datetime.js'></script>
+<script type='text/javascript' src='dataset.js'></script>
+<script type='text/javascript' src='entrypage.js'></script>
+<script>
+
+	var container = document.getElementById('container');
+	var backButton = document.getElementById('btnBack');
+	var forwardButton = document.getElementById('btnForward');
+	var entryPage = new APP.EntryPage();
+	var now = new Date();
+	var dateEl = document.getElementById('date');
+	entryPage.init(now, container, backButton, forwardButton, dateEl);
+
+</script>
