@@ -18,6 +18,9 @@
 			startSleep($_GET['sleepstart'], $_GET['sleepend']);
 			header('Location: ../submitted.html');
 			break;
+		case 'removesleep':
+			removeSleep($_GET['sleepstart']);
+			break;
 		case 'endsleep':
 			endSleep($_GET['sleepend']);
 			header('Location: ../submitted.html');
@@ -127,6 +130,11 @@
 			$sql = "update baby_sleep set start = start, end = TIMESTAMP('$now_yr-$now_mon-$now_day $now_time') where id = $rowId;";
 			getSqlResult($sql);
 		}
+	}
+
+	function removeSleep($sleepstart) {
+		$sql = "delete from baby_sleep where start =  TIMESTAMP('$sleepstart');";
+		$res = getSqlResult($sql);
 	}
 
 	function startSleep($sleepstart, $sleepend) {

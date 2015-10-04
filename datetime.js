@@ -57,3 +57,9 @@ DATETIME.getNextQuarterHourTime = function(date) {
 	newDate.setMinutes(newDate.getMinutes() + (15 - qtrHourDiff));
 	return newDate;
 }
+
+DATETIME.parse24HrTime = function(time) {
+	var split = time.split(':');
+	var dummyDate = new Date(2000, 01, 01, split[0], split[1], 0);
+	return dummyDate;
+}

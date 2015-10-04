@@ -11,7 +11,15 @@ UTILS.ajaxGetJson = function(url, callback) {
 
 		if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
 			if(xmlhttp.status == 200){
-				callback(JSON.parse(xmlhttp.responseText));
+				var json = null;
+				try {
+					console.log(xmlhttp.responseText);
+					json = JSON.parse(xmlhttp.responseText);
+				} 
+				catch (e) {
+					console.warn(e);
+				}
+				callback(json);
 			}
 			else if(xmlhttp.status == 400) {
 				alert('There was an error 400')

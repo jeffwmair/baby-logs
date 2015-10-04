@@ -6,6 +6,36 @@ var APP = APP || {};
 APP.EntryPage = function() {
 
 	this.loadData = function() {
+
+		// hook up event handler for sleep button
+		var that = this;
+		var sleepClickHandlerNotSleeping = function(e) {
+			var mystartdate = new Date(that.getDate().getTime());
+			var time = e.target.parentElement.parentElement.childNodes[0].innerText;
+			var timeDate = DATETIME.parse24HrTime(time);
+			mystartdate.setMinutes(timeDate.getMinutes());
+			mystartdate.setHours(timeDate.getHours());
+			mystartdate.setSeconds(0);
+			var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
+			var myendate = new Date(mystartdate.getTime() + (15*60000));
+			var formattedEndDate = DATETIME.getYyyymmddFormat(myendate) + ' ' + DATETIME.getFormattedTime(myendate.getHours(), myendate.getMinutes());
+			UTILS.ajaxGetJson("services/BabyApi.php?action=sleep&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, function(json) {
+				that.loadData();
+			});
+		}
+		var sleepClickHandlerIsSleeping = function(e) {
+			var mystartdate = new Date(that.getDate().getTime());
+			var time = e.target.parentElement.parentElement.childNodes[0].innerText;
+			var timeDate = DATETIME.parse24HrTime(time);
+			mystartdate.setMinutes(timeDate.getMinutes());
+			mystartdate.setHours(timeDate.getHours());
+			mystartdate.setSeconds(0);
+			var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
+			UTILS.ajaxGetJson("services/BabyApi.php?action=removesleep&sleepstart="+formatteddate, function(json) {
+				that.loadData();
+			});
+		}
+
 		var date = this.getDate();
 		var containerEl = this.getContainer();
 		containerEl.innerHTML = '';
@@ -33,14 +63,18 @@ APP.EntryPage = function() {
 					else if (j <= colCount-nonButtonColumns) {
 						var button = document.createElement('button');
 						button.innerHTML = buttonText[j-1];
-						var isSleeping = false;
 						if (j == 1 && datasets.length == 1) {
 							var sleepAtTime = datasets[0].getSleepAtTime(timeField);
 							if (sleepAtTime != undefined) {
-								isSleeping = true;
 								button.setAttribute('style', 'background-color:#50d050');
+								button.onclick = sleepClickHandlerIsSleeping;
+							}
+							else {
+								button.onclick = sleepClickHandlerNotSleeping;
 							}
 						}
+						else { button.onclick = sleepClickHandlerNotSleeping; }
+
 						td.appendChild(button);
 					}
 					else {

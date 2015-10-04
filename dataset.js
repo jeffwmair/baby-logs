@@ -22,7 +22,6 @@ DATA.Dataset = function(pDate, pSleeps, pFeeds, pDiapers) {
 			var splitNum = Math.ceil(sleep.getDurationInMinutes() / 15);
 			var start = sleep.getStart();
 			var end = DATETIME.getNextQuarterHourTime(start);
-			debugger;
 			for (var i = 0; i < splitNum; i++) {
 				var partialSleep = new DATA.Dataset.Sleep(start, end);
 				start = DATETIME.getNextQuarterHourTime(start);
