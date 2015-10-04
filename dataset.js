@@ -16,8 +16,31 @@ DATA.Dataset = function(pDate, pSleeps, pFeeds, pDiapers) {
 	if (!diapers) diapers = [];
 	if (!feeds) feeds = [];
 
+	var splitSleepInto15MinuteSleeps = function(sleep) {
+		var sleeps = [];
+		if (sleep.getDurationInMinutes() > 15) {
+			var splitNum = Math.ceil(sleep.getDurationInMinutes() / 15);
+			var start = sleep.getStart();
+			var end = DATETIME.getNextQuarterHourTime(start);
+			debugger;
+			for (var i = 0; i < splitNum; i++) {
+				var partialSleep = new DATA.Dataset.Sleep(start, end);
+				start = DATETIME.getNextQuarterHourTime(start);
+				end = DATETIME.getNextQuarterHourTime(end);
+				sleeps.push(partialSleep);
+			}
+		}
+		else { 
+			sleeps.push(sleep);
+		}
+		return sleeps;
+	}
+
 	this.addSleep = function(sleep) {
-		sleeps.push(sleep);
+		var splitSleeps = splitSleepInto15MinuteSleeps(sleep);
+		for(var i = 0, len = splitSleeps.length; i < len; i++) {
+			sleeps.push(splitSleeps[i]);
+		}
 	}
 	this.addDiaper = function(diaper) {
 		diapers.push(diaper);
@@ -52,6 +75,12 @@ DATA.Dataset.Sleep = function(start, end) {
 	// when did the sleep begin?
 	this.getStartingBlock = function() {
 		return DATETIME.getTimeBlockFromDate(sleepStart);
+	}
+
+	this.getDurationInMinutes = function() {
+		if (!sleepEnd) return 0;
+		var msDiff = this.getEnd().getTime() - this.getStart().getTime();	
+		return msDiff / 60000;
 	}
 
 	// how long was the sleep? in 15 minute blocks

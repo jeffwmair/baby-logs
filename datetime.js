@@ -48,3 +48,12 @@ DATETIME.getTimeBlockFromDate = function(date) {
 	blocks += Math.round(date.getMinutes() / blockSize);
 	return blocks;
 }
+
+DATETIME.getNextQuarterHourTime = function(date) {
+	var newDate = new Date(date.getTime());
+	newDate.setSeconds(0);	
+	newDate.setMilliseconds(0);	
+	var qtrHourDiff = newDate.getMinutes() % 15;
+	newDate.setMinutes(newDate.getMinutes() + (15 - qtrHourDiff));
+	return newDate;
+}
