@@ -8,7 +8,6 @@ APP.EntryPage = function() {
 	var sleepButtonList = [];
 
 	this.generateTable = function() {
-		//var datasets = DATA.getNewDatasetsForJsonData(json);
 		var table = document.createElement('table');
 		var buttonText = ['sleep', 'pee', 'poo'];
 		var rowCount = 24*UTILS.HOURLY_DIVISIONS;
@@ -33,20 +32,6 @@ APP.EntryPage = function() {
 						sleepButtonList.push(button);
 					}
 					button.innerHTML = buttonText[j-1];
-					/*
-					if (j == 1 && datasets.length == 1) {
-					var sleepAtTime = datasets[0].getSleepAtTime(timeField);
-					if (sleepAtTime != undefined) {
-					button.setAttribute('style', 'background-color:#50d050');
-					button.onclick = sleepClickHandlerIsSleeping;
-					}
-					else {
-					button.onclick = sleepClickHandlerNotSleeping;
-					}
-					}
-					else { button.onclick = sleepClickHandlerNotSleeping; }
-					*/
-
 					td.appendChild(button);
 				}
 				else {
@@ -60,30 +45,27 @@ APP.EntryPage = function() {
 	};
 
 	this.loadData = function() {
-
-		// hook up event handler for sleep button
 		var that = this;
-		var sleepClickHandlerNotSleeping = function(e) {
+		var getSleepClickStartDate = function(e) {
 			var mystartdate = new Date(that.getDate().getTime());
 			var time = e.target.parentElement.parentElement.childNodes[0].innerText;
 			var timeDate = DATETIME.parse24HrTime(time);
 			mystartdate.setMinutes(timeDate.getMinutes());
 			mystartdate.setHours(timeDate.getHours());
 			mystartdate.setSeconds(0);
-			var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
+			return mystartdate;
+		}
+		var sleepClickHandlerNotSleeping = function(e) {
+			var mystartdate = getSleepClickStartDate(e);
 			var myendate = new Date(mystartdate.getTime() + (15*60000));
+			var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
 			var formattedEndDate = DATETIME.getYyyymmddFormat(myendate) + ' ' + DATETIME.getFormattedTime(myendate.getHours(), myendate.getMinutes());
 			UTILS.ajaxGetJson("services/BabyApi.php?action=sleep&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, function(json) {
 				that.loadData();
 			});
 		}
 		var sleepClickHandlerIsSleeping = function(e) {
-			var mystartdate = new Date(that.getDate().getTime());
-			var time = e.target.parentElement.parentElement.childNodes[0].innerText;
-			var timeDate = DATETIME.parse24HrTime(time);
-			mystartdate.setMinutes(timeDate.getMinutes());
-			mystartdate.setHours(timeDate.getHours());
-			mystartdate.setSeconds(0);
+			var mystartdate = getSleepClickStartDate(e);
 			var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
 			UTILS.ajaxGetJson("services/BabyApi.php?action=removesleep&sleepstart="+formatteddate, function(json) {
 				that.loadData();
