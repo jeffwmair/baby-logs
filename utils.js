@@ -13,7 +13,6 @@ UTILS.ajaxGetJson = function(url, callback) {
 			if(xmlhttp.status == 200){
 				var json = null;
 				try {
-					console.log(xmlhttp.responseText);
 					json = JSON.parse(xmlhttp.responseText);
 				} 
 				catch (e) {

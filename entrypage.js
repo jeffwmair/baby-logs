@@ -5,6 +5,60 @@ var APP = APP || {};
 */
 APP.EntryPage = function() {
 
+	var sleepButtonList = [];
+
+	this.generateTable = function() {
+		//var datasets = DATA.getNewDatasetsForJsonData(json);
+		var table = document.createElement('table');
+		var buttonText = ['sleep', 'pee', 'poo'];
+		var rowCount = 24*UTILS.HOURLY_DIVISIONS;
+		var nonButtonColumns = 2;
+		var colCount = buttonText.length + nonButtonColumns;
+		var feedOptions = this.generateFeedOptions();
+		for(var i = 0; i < rowCount; i++) {
+			var timeField = DATETIME.getTimeFromRange(UTILS.HOURLY_DIVISIONS, i);
+			var tr = document.createElement('tr');
+			table.appendChild(tr);
+			for(var j = 0; j < colCount; j++) {
+				var td = document.createElement('td');
+				tr.appendChild(td);
+				if (j == 0) {
+					td.innerText = timeField;
+				}
+				else if (j <= colCount-nonButtonColumns) {
+					var button = document.createElement('button');
+					if (j == 1) {
+						// css tag for sleep
+						button.setAttribute('class', 'sleep_'+timeField);
+						sleepButtonList.push(button);
+					}
+					button.innerHTML = buttonText[j-1];
+					/*
+					if (j == 1 && datasets.length == 1) {
+					var sleepAtTime = datasets[0].getSleepAtTime(timeField);
+					if (sleepAtTime != undefined) {
+					button.setAttribute('style', 'background-color:#50d050');
+					button.onclick = sleepClickHandlerIsSleeping;
+					}
+					else {
+					button.onclick = sleepClickHandlerNotSleeping;
+					}
+					}
+					else { button.onclick = sleepClickHandlerNotSleeping; }
+					*/
+
+					td.appendChild(button);
+				}
+				else {
+					var feedBox = document.createElement('select');
+					this.putFeedOptionsInSelect(feedBox, feedOptions);
+					td.appendChild(feedBox);
+				}
+			}
+		}
+		container.appendChild(table);
+	};
+
 	this.loadData = function() {
 
 		// hook up event handler for sleep button
@@ -36,55 +90,33 @@ APP.EntryPage = function() {
 			});
 		}
 
+		var findSleepButton = function(starttime) {
+			var cssClass = 'sleep_' + DATETIME.getFormattedTime(starttime);
+			return document.getElementsByClassName(cssClass)[0];
+		}
+
 		var date = this.getDate();
-		var containerEl = this.getContainer();
-		containerEl.innerHTML = '';
 		var formatteddate = DATETIME.getYyyymmddFormat(date);
 		var that = this;
 		var url = "services/BabyApi.php?action=loaddata&day="+formatteddate;
 		UTILS.ajaxGetJson(url, function(json) {
-			var datasets = DATA.getNewDatasetsForJsonData(json);
-			var table = document.createElement('table');
-			var buttonText = ['sleep', 'pee', 'poo'];
-			var rowCount = 24*UTILS.HOURLY_DIVISIONS;
-			var nonButtonColumns = 2;
-			var colCount = buttonText.length + nonButtonColumns;
-			var feedOptions = that.generateFeedOptions();
-			for(var i = 0; i < rowCount; i++) {
-				var timeField = DATETIME.getTimeFromRange(UTILS.HOURLY_DIVISIONS, i);
-				var tr = document.createElement('tr');
-				table.appendChild(tr);
-				for(var j = 0; j < colCount; j++) {
-					var td = document.createElement('td');
-					tr.appendChild(td);
-					if (j == 0) {
-						td.innerText = timeField;
-					}
-					else if (j <= colCount-nonButtonColumns) {
-						var button = document.createElement('button');
-						button.innerHTML = buttonText[j-1];
-						if (j == 1 && datasets.length == 1) {
-							var sleepAtTime = datasets[0].getSleepAtTime(timeField);
-							if (sleepAtTime != undefined) {
-								button.setAttribute('style', 'background-color:#50d050');
-								button.onclick = sleepClickHandlerIsSleeping;
-							}
-							else {
-								button.onclick = sleepClickHandlerNotSleeping;
-							}
-						}
-						else { button.onclick = sleepClickHandlerNotSleeping; }
 
-						td.appendChild(button);
-					}
-					else {
-						var feedBox = document.createElement('select');
-						that.putFeedOptionsInSelect(feedBox, feedOptions);
-						td.appendChild(feedBox);
-					}
+			var datasets = DATA.getNewDatasetsForJsonData(json);
+			var ds = datasets[0];
+			for(var i = 0, len = sleepButtonList.length; i < len; i++) {
+				var btn = sleepButtonList[i];
+				var time = btn.classList[0].split('_')[1];
+				if (ds && ds.getSleepAtTime(time)) {
+					btn.setAttribute('style', 'color:#50c050');
+					btn.innerText = 'Sleeping';
+					btn.onclick = sleepClickHandlerIsSleeping;
+				}
+				else {
+					btn.onclick = sleepClickHandlerNotSleeping;
+					btn.setAttribute('style', 'color:black');
+					btn.innerText = 'Not Sleeping';
 				}
 			}
-			container.appendChild(table);
 		});
 	}
 
@@ -142,6 +174,7 @@ APP.EntryPage = function() {
 			that.setDate(that.getDate(), +1);
 			that.loadData();
 		}
+		this.generateTable();
 		this.loadData();
 	}
 }
