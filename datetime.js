@@ -7,7 +7,7 @@ DATETIME.getFormattedTime = function(hr, min) {
 }
 
 DATETIME.getTimeFromRange = function(houlyDivisions, position) {
-	var hr = Math.round(position / houlyDivisions);
+	var hr = Math.floor(position / houlyDivisions);
 	var min = (position % houlyDivisions) * (60/houlyDivisions);
 	var timeField = DATETIME.getFormattedTime(hr, min);
 	return timeField;

@@ -12,6 +12,16 @@
 		<button id='btnForward'>&gt;&gt;</button>
 		<br>
 		<br>
+		<br>
+		<h2>Sleep Range Entry</h2>
+		<strong>Start</strong>
+		<select id='startDateRange'>
+		</select>
+		<strong>End</strong>
+		<select id='endDateRange'>
+		</select>
+		<button id='btnSubmitSleepRange'>Submit</button>
+		<h2>Activity Table</h2>
 		<div id='container'></div>
 	</body>
 </html>
@@ -27,6 +37,9 @@
 	var entryPage = new APP.EntryPage();
 	var now = new Date();
 	var dateEl = document.getElementById('date');
-	entryPage.init(now, container, backButton, forwardButton, dateEl);
+	var cboStart = document.getElementById('startDateRange');
+	var cboEnd = document.getElementById('endDateRange');
+	var btnSubmitSleepRange = document.getElementById('btnSubmitSleepRange');
+	entryPage.init(now, container, backButton, forwardButton, dateEl, startDateRange, endDateRange, btnSubmitSleepRange);
 
 </script>
