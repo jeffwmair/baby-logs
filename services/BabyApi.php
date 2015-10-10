@@ -11,19 +11,21 @@
 
 	switch($method) {
 		case 'addvalue':
-			addValueItem($_GET['type'], $_GET['value']);
-			header('Location: ../submitted.html');
+			addValueItem($_GET['type'], $_GET['value'], $_GET['time']);
+			//header('Location: ../submitted.html');
 			break;
+		case 'removevalue':
+			removeValueItem($_GET['type'], $_GET['value'], $_GET['time']);
 		case 'sleep':
 			startSleep($_GET['sleepstart'], $_GET['sleepend']);
-			header('Location: ../submitted.html');
+			//header('Location: ../submitted.html');
 			break;
 		case 'removesleep':
 			removeSleep($_GET['sleepstart']);
 			break;
 		case 'endsleep':
 			endSleep($_GET['sleepend']);
-			header('Location: ../submitted.html');
+			//header('Location: ../submitted.html');
 			break;
 		case 'loaddata':
 			$optionalDay = $_GET['day'];
@@ -80,8 +82,13 @@
 		returnJson(json_encode($jsonArr));
 	}
 
-	function addValueItem($type, $val) {
-		$sql = "insert into baby_keyval(time, entry_type, entry_value) values(CURRENT_TIMESTAMP, '$type', '$val');";
+	function removeValueItem($type, $value, $time) {
+		$sql = "delete from baby_keyval where entry_type = '$type' and time = '$time' and entry_value = '$value';";
+		getSqlResult($sql);
+	}
+
+	function addValueItem($type, $val, $time) {
+		$sql = "insert into baby_keyval(time, entry_type, entry_value) values('$time', '$type', '$val');";
 		$res = getSqlResult($sql);
 	}
 

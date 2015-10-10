@@ -51,6 +51,26 @@ DATA.Dataset = function(pDate, pSleeps, pFeeds, pDiapers) {
 	this.getDiapers = function() { return diapers; }
 	this.getFeeds = function() { return feeds; }
 
+	this.getPooAtTime = function(time) {
+		return this.getDiaperAtTime(time, 2) != undefined;
+	}
+
+	this.getPeeAtTime = function(time) {
+		return this.getDiaperAtTime(time, 1) != undefined;
+	}
+
+	this.getDiaperAtTime = function(time, val) {
+		var diaper;
+		for(var i = 0, len = diapers.length; i < len; i++) {
+			var thisDiaperTime = DATETIME.getTime(diapers[i].getTime());
+			if (thisDiaperTime == time && diapers[i].getValue() == val) {
+				diaper = diapers[i];
+				break;
+			}
+		}
+		return diaper;
+	}
+
 	this.getSleepAtTime = function(time) {
 		var sleep;
 		for(var i = 0, len = sleeps.length; i < len; i++) {

@@ -5,7 +5,17 @@ var APP = APP || {};
 */
 APP.EntryPage = function() {
 
+	/*
 	var sleepButtonList = [];
+	var peeButtonList = [];
+	var pooButtonList = [];
+	*/
+	var buttonList = [];
+	/*
+	buttonLists.push(sleepButtonList);
+	buttonLists.push(peeButtonList);
+	buttonLists.push(pooButtonList);
+	*/
 	var that = this;
 
 	var sleepClickHandlerNotSleeping = function(e) {
@@ -22,6 +32,35 @@ APP.EntryPage = function() {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
 		UTILS.ajaxGetJson("services/BabyApi.php?action=removesleep&sleepstart="+formatteddate, function(json) {
+			that.loadData();
+		});
+	}
+
+	var peeHandlerClickAddPee = function(e) {
+		var mystartdate = getSleepClickStartDate(e);
+		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
+		UTILS.ajaxGetJson("services/BabyApi.php?action=addvalue&type=diaper&value=1&time="+formatteddate, function(json) {
+			that.loadData();
+		});
+	}
+	var peeHandlerClickRemovePee = function(e) {
+		var mystartdate = getSleepClickStartDate(e);
+		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
+		UTILS.ajaxGetJson("services/BabyApi.php?action=removevalue&type=diaper&value=1&time="+formatteddate, function(json) {
+			that.loadData();
+		});
+	}
+	var pooHandlerClickAddPoo = function(e) {
+		var mystartdate = getSleepClickStartDate(e);
+		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
+		UTILS.ajaxGetJson("services/BabyApi.php?action=addvalue&type=diaper&value=2&time="+formatteddate, function(json) {
+			that.loadData();
+		});
+	}
+	var pooHandlerClickRemovePoo = function(e) {
+		var mystartdate = getSleepClickStartDate(e);
+		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
+		UTILS.ajaxGetJson("services/BabyApi.php?action=removevalue&type=diaper&value=2&time="+formatteddate, function(json) {
 			that.loadData();
 		});
 	}
@@ -112,6 +151,20 @@ APP.EntryPage = function() {
 		this.loadData();
 	}
 
+	var assignButtonClass = function(column, button, timeval) {
+		switch(column) {
+			case 1:
+				button.setAttribute('class', 'sleep_'+timeval);
+				break;
+			case 2:
+				button.setAttribute('class', 'pee_'+timeval);
+				break;
+			case 3:
+				button.setAttribute('class', 'poo_'+timeval);
+				break;
+		}
+	}
+
 	/**
 	* Generate the table of buttons and such
 	*/
@@ -152,11 +205,8 @@ APP.EntryPage = function() {
 				}
 				else if (j <= colCount-nonButtonColumns) {
 					var button = document.createElement('button');
-					if (j == 1) {
-						// css tag for sleep
-						button.setAttribute('class', 'sleep_'+timeField);
-						sleepButtonList.push(button);
-					}
+					assignButtonClass(j, button, timeField);
+					buttonList.push(button);
 					button.innerHTML = buttonText[j-1];
 					td.appendChild(button);
 				}
@@ -177,32 +227,65 @@ APP.EntryPage = function() {
 
 		var date = this.pageState.getDate();
 		var formatteddate = DATETIME.getYyyymmddFormat(date);
+		var clearButtonStyle = function(button) {
+			button.setAttribute('style', 'color:black');
+		}
+		var setActiveButtonStyle = function(button) {
+			button.setAttribute('style', 'color:#50c050');
+		}
+
 
 		UTILS.ajaxGetJson("services/BabyApi.php?action=loaddata&day="+formatteddate, function(json) {
 
 			var datasets = DATA.getNewDatasetsForJsonData(json);
 			var ds = datasets[0];
-			for(var i = 0, len = sleepButtonList.length; i < len; i++) {
-				var btn = sleepButtonList[i];
-				var time = btn.classList[0].split('_')[1];
-				if (ds && ds.getSleepAtTime(time)) {
-					btn.setAttribute('style', 'color:#50c050');
-					btn.innerText = 'Sleeping';
-					btn.onclick = sleepClickHandlerIsSleeping;
-				}
-				else {
-					btn.onclick = sleepClickHandlerNotSleeping;
-					btn.setAttribute('style', 'color:black');
-					btn.innerText = 'Not Sleeping';
+			for(var i = 0, len = buttonList.length; i < len; i++) {
+				var btn = buttonList[i];
+				var btnClassSplit = btn.classList[0].split('_');
+				var btnType = btnClassSplit[0];
+				var time = btnClassSplit[1];
+				clearButtonStyle(btn);
+				switch(btnType) {
+					case 'sleep':
+						if (ds && ds.getSleepAtTime(time)) {
+							setActiveButtonStyle(btn);
+							btn.innerText = 'Sleeping';
+							btn.onclick = sleepClickHandlerIsSleeping;
+						}
+						else {
+							btn.onclick = sleepClickHandlerNotSleeping;
+							btn.innerText = 'Not Sleeping';
+						}
+						break;
+					case 'pee':
+						if (ds && ds.getPeeAtTime(time)) {
+							setActiveButtonStyle(btn);
+							btn.onclick = peeHandlerClickRemovePee;
+						}
+						else {
+							btn.onclick = peeHandlerClickAddPee;
+						}
+						break;
+					case 'poo':
+					debugger;
+						if (ds && ds.getPooAtTime(time)) {
+							setActiveButtonStyle(btn);
+							btn.onclick = pooHandlerClickRemovePoo;
+						}
+						else {
+							btn.onclick = pooHandlerClickAddPoo;
+						}
+						break;
 				}
 			}
+
 		});
 
 	}
 
 	/**
-	 * Basically for keeping track of the state of the page
-	 */
+	* Basically for keeping track of the state of the page
+	*/
 	this.PageState = function() {
 
 		this.setDate = function(date, addDays) {
