@@ -71,6 +71,18 @@ DATA.Dataset = function(pDate, pSleeps, pFeeds, pDiapers) {
 		return diaper;
 	}
 
+	this.getFeedAtTime = function(time) {
+		var feed;
+		for(var i = 0, len = feeds.length; i < len; i++) {
+			var thisFeedTime = DATETIME.getTime(feeds[i].getTime());
+			if (thisFeedTime == time) {
+				feed = feeds[i];
+				break;
+			}
+		}
+		return feed;
+	}
+
 	this.getSleepAtTime = function(time) {
 		var sleep;
 		for(var i = 0, len = sleeps.length; i < len; i++) {

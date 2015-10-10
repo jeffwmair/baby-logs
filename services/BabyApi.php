@@ -27,6 +27,9 @@
 			endSleep($_GET['sleepend']);
 			//header('Location: ../submitted.html');
 			break;
+		case 'feed':
+			feed($_GET['time'], $_GET['amount']);
+			break;
 		case 'loaddata':
 			$optionalDay = $_GET['day'];
 			loadData($optionalDay);
@@ -40,6 +43,7 @@
 		default:
 			echo "Unknown action:'$method'";
 	}
+
 
 	function showDiagnostics() {
 		$sql = "select current_timestamp;";
@@ -90,6 +94,16 @@
 	function addValueItem($type, $val, $time) {
 		$sql = "insert into baby_keyval(time, entry_type, entry_value) values('$time', '$type', '$val');";
 		$res = getSqlResult($sql);
+	}
+
+	function feed($time, $amount) {
+		if ($amount == 'none') {
+			getSqlResult("delete from baby_keyval where entry_type = 'feed' and time = '$time';");
+			return;
+		}
+
+		getSqlResult("insert into baby_keyval (time, entry_type, entry_value) values('$time', 'feed', '$amount');");
+
 	}
 
 	function endSleep($sleepend) {

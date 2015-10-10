@@ -5,18 +5,17 @@ var APP = APP || {};
 */
 APP.EntryPage = function() {
 
-	/*
-	var sleepButtonList = [];
-	var peeButtonList = [];
-	var pooButtonList = [];
-	*/
 	var buttonList = [];
-	/*
-	buttonLists.push(sleepButtonList);
-	buttonLists.push(peeButtonList);
-	buttonLists.push(pooButtonList);
-	*/
 	var that = this;
+
+	var feedClickHandler = function(e) {
+		var mystartdate = getSleepClickStartDate(e);
+		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
+		var amt = e.target.value;
+		UTILS.ajaxGetJson("services/BabyApi.php?action=feed&amount="+amt+"&time="+formatteddate, function(json) {
+			that.loadData();
+		});
+	}
 
 	var sleepClickHandlerNotSleeping = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
@@ -162,6 +161,9 @@ APP.EntryPage = function() {
 			case 3:
 				button.setAttribute('class', 'poo_'+timeval);
 				break;
+			case 4:
+				button.setAttribute('class', 'feed_'+timeval);
+				break;
 		}
 	}
 
@@ -212,6 +214,8 @@ APP.EntryPage = function() {
 				}
 				else {
 					var feedBox = document.createElement('select');
+					assignButtonClass(j, feedBox, timeField);
+					buttonList.push(feedBox);
 					putFeedOptionsInSelect(feedBox, feedOptions);
 					td.appendChild(feedBox);
 				}
@@ -267,13 +271,18 @@ APP.EntryPage = function() {
 						}
 						break;
 					case 'poo':
-					debugger;
 						if (ds && ds.getPooAtTime(time)) {
 							setActiveButtonStyle(btn);
 							btn.onclick = pooHandlerClickRemovePoo;
 						}
 						else {
 							btn.onclick = pooHandlerClickAddPoo;
+						}
+						break;
+					case 'feed':
+						btn.onchange = feedClickHandler;
+						if (ds && ds.getFeedAtTime(time)) {
+							btn.value = ds.getFeedAtTime(time).getValue();
 						}
 						break;
 				}
