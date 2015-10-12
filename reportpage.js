@@ -90,7 +90,7 @@ APP.ReportPage = function(container, calHelper) {
 				hrs = calcHoursBetweenTimes(mostRecentSleep.getStart(), now).toFixed(1);
 			}
 			else { 
-				hrs = APP.calcHoursBetweenTimes(mostRecentSleep.getEnd(), now).toFixed(1);
+				hrs = calcHoursBetweenTimes(mostRecentSleep.getEnd(), now).toFixed(1);
 			}
 			msg = hrs + msg;
 			var msg_arr = msg.split('');
@@ -148,7 +148,6 @@ APP.ReportPage = function(container, calHelper) {
 				}
 				else {
 					var ml = parseInt(item.getValue());
-					console.log("ml:" + ml + "sum:"+sumBottleMl);
 					sumBottleMl += ml;
 				}
 			}

@@ -5,6 +5,9 @@ var APP = APP || {};
 */
 APP.EntryPage = function() {
 
+	var COLOR_CURRENT_TIME_ROW = "#FAFAA9";
+	var COLOR_CURRENT_TIME_ROW_NIGHT = "blue";
+
 	var buttonList = [];
 	var that = this;
 
@@ -85,6 +88,45 @@ APP.EntryPage = function() {
 		return times;
 	}
 
+	var getMostRecentTimeBlock = function() {
+		var now = new Date();	
+		var nowRoundedMs = DATETIME.getNextQuarterHourTime(now).getTime() - (15*60000);
+		var nowRoundedDate = new Date(nowRoundedMs);
+		var time = DATETIME.getTime(nowRoundedDate);
+		return time;
+	}
+
+	var highlightMostRecentTimeBlockRow = function(color) {
+		var time = getMostRecentTimeBlock();
+		var timeElement = document.getElementById('td_'+time);
+		var row = timeElement.parentElement;
+		for(var i = 0, len = row.children.length; i < len; i++) {
+			var td = row.children[i];
+			td.setAttribute('style', 'background-color:'+color);
+		}
+	}
+
+	var setPageDayNightColor = function() {
+		var hr = (new Date()).getHours();
+		var isNight = hr > 20 || hr < 7;
+		var pageBody = document.getElementsByTagName('body')[0];
+		if (isNight) {
+			pageBody.setAttribute('style', 'color:white;background-color:black');
+		}
+		else {
+			pageBody.setAttribute('style', 'color:black;background-color:white');
+		}
+
+		var color = isNight ? COLOR_CURRENT_TIME_ROW_NIGHT : COLOR_CURRENT_TIME_ROW;
+		highlightMostRecentTimeBlockRow(color);
+	}
+
+	var scrollToCurrentTime = function() {
+		var time = getMostRecentTimeBlock();
+		var timeElement = document.getElementById('td_'+time);
+		timeElement.scrollIntoView(true);
+	}
+
 	var populateTimeComboBox = function(element, times) {
 		for(var i = 0, len = times.length; i < len; i++) {
 			var time = times[i];
@@ -148,6 +190,7 @@ APP.EntryPage = function() {
 		populateTimeComboBox(startRangeCombo, timesThroughDay);
 		populateTimeComboBox(endRangeCombo, timesThroughDay);
 		this.loadData();
+		scrollToCurrentTime();
 	}
 
 	var assignButtonClass = function(column, button, timeval) {
@@ -204,6 +247,7 @@ APP.EntryPage = function() {
 				tr.appendChild(td);
 				if (j == 0) {
 					td.innerText = timeField;
+					td.setAttribute('id', 'td_'+timeField);
 				}
 				else if (j <= colCount-nonButtonColumns) {
 					var button = document.createElement('button');
@@ -232,14 +276,16 @@ APP.EntryPage = function() {
 		var date = this.pageState.getDate();
 		var formatteddate = DATETIME.getYyyymmddFormat(date);
 		var clearButtonStyle = function(button) {
-			button.setAttribute('style', 'color:black');
+			button.setAttribute('style', 'background-color:none');
 		}
 		var setActiveButtonStyle = function(button) {
-			button.setAttribute('style', 'color:#50c050');
+			button.setAttribute('style', 'background-color:#50c050');
 		}
 
-
 		UTILS.ajaxGetJson("services/BabyApi.php?action=loaddata&day="+formatteddate, function(json) {
+
+			//highlight current time row
+			setPageDayNightColor();
 
 			var datasets = DATA.getNewDatasetsForJsonData(json);
 			var ds = datasets[0];
@@ -253,12 +299,10 @@ APP.EntryPage = function() {
 					case 'sleep':
 						if (ds && ds.getSleepAtTime(time)) {
 							setActiveButtonStyle(btn);
-							btn.innerText = 'Sleeping';
 							btn.onclick = sleepClickHandlerIsSleeping;
 						}
 						else {
 							btn.onclick = sleepClickHandlerNotSleeping;
-							btn.innerText = 'Not Sleeping';
 						}
 						break;
 					case 'pee':
@@ -282,7 +326,11 @@ APP.EntryPage = function() {
 					case 'feed':
 						btn.onchange = feedClickHandler;
 						if (ds && ds.getFeedAtTime(time)) {
+							setActiveButtonStyle(btn);
 							btn.value = ds.getFeedAtTime(time).getValue();
+						}
+						else {
+							btn.value = 'none';
 						}
 						break;
 				}
