@@ -3,7 +3,7 @@ DATA = {};
 
 DATA.DatasetList = function(datasets) {
 	var datasets = datasets;
-	var days = [], sleepData = [], milkData = [], diaperData = [];
+	var days = [], sleepData = [], milkMlData = [], milkByBreastData = [], diaperData = [];
 	var init = function() {
 		datasets.forEach(function(ds) {
 
@@ -16,27 +16,26 @@ DATA.DatasetList = function(datasets) {
 
 			if (!skip) {
 				days.push(ds.date);
-				var sleepHrs = 0, milkMl = 0, diaperChange = 0;
+				var sleepHrs = 0, milkMl = 0, breastFeedCount = 0, diaperChange = 0;
 				ds.getSleeps().forEach(function(sleep) {
 					sleepHrs += (sleep.getDurationInMinutes() / 60.0);
 				});
 				ds.getFeeds().forEach(function(feed) {
 					var amt;
 					if (!isNaN(feed.getValue())) {
-						amt = parseInt(feed.getValue());
+						milkMl += parseInt(feed.getValue());
 					}
 					else {
-						// assume breast is 40; todo, put this const elsewhere
-						amt = 40;
+						breastFeedCount++;
 					}
-					milkMl += amt;
 				});
 				ds.getDiapers().forEach(function(diaper) {
 					diaperChange += 1;
 				});
 
 				sleepData.push(sleepHrs);
-				milkData.push(milkMl);
+				milkMlData.push(milkMl);
+				milkByBreastData.push(breastFeedCount);
 				diaperData.push(diaperChange);
 			}
 		});
@@ -49,7 +48,10 @@ DATA.DatasetList = function(datasets) {
 		return sleepData;
 	}
 	this.getMilkMlData = function() {
-		return milkData;
+		return milkMlData;
+	}
+	this.getBreastFeedsData = function() {
+		return milkByBreastData;
 	}
 	this.getDiaperCountData = function() {
 		return diaperData;
