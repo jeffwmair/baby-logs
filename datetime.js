@@ -1,5 +1,13 @@
 DATETIME = {};
 
+DATETIME.datesToSimpleDisplay = function(dates) {
+	var simpleDays = [];
+	dates.forEach(function(d) {
+		simpleDays.push(DATETIME.getShortDayFormatForDate(d));
+	});
+	return simpleDays;
+}
+
 DATETIME.getFormattedTime = function(hr, min) {
 	var hr = UTILS.get2DigitFormat(hr); 
 	var min = UTILS.get2DigitFormat(min);
@@ -22,8 +30,19 @@ DATETIME.CalendarHelper = function() {
 
 	this.getDayName = function(day) {
 		return days[day];
+	};
+
+	this.getDayNameShort = function(day) {
+		return this.getDayName(day).substring(0,3);
 	}
+
 };
+
+DATETIME.getShortDayFormatForDate = function(date) {
+	var calHelper = new DATETIME.CalendarHelper();
+	var dayNameShort = calHelper.getDayNameShort(date.getDay());
+	return dayNameShort + ' ' + calHelper.getMonthName(date.getMonth()) + ' ' + date.getDate();
+}
 
 DATETIME.getDateFormatForDay = function(date) {
 	var calHelper = new DATETIME.CalendarHelper();

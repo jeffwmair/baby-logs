@@ -1,6 +1,62 @@
 DATA = {};
 
 
+DATA.DatasetList = function(datasets) {
+	var datasets = datasets;
+	var days = [], sleepData = [], milkData = [], diaperData = [];
+	var init = function() {
+		datasets.forEach(function(ds) {
+
+			// older data is not so good, so starting on Sept 26
+			var dsDate = ds.date;
+			var skip = false;
+			if (dsDate.getMonth() == 8 && dsDate.getDate() < 26 && (dsDate.getYear()+1900) == 2015) {
+				skip = true;
+			}
+
+			if (!skip) {
+				days.push(ds.date);
+				var sleepHrs = 0, milkMl = 0, diaperChange = 0;
+				ds.getSleeps().forEach(function(sleep) {
+					sleepHrs += (sleep.getDurationInMinutes() / 60.0);
+				});
+				ds.getFeeds().forEach(function(feed) {
+					var amt;
+					if (!isNaN(feed.getValue())) {
+						amt = parseInt(feed.getValue());
+					}
+					else {
+						// assume breast is 40; todo, put this const elsewhere
+						amt = 40;
+					}
+					milkMl += amt;
+				});
+				ds.getDiapers().forEach(function(diaper) {
+					diaperChange += 1;
+				});
+
+				sleepData.push(sleepHrs);
+				milkData.push(milkMl);
+				diaperData.push(diaperChange);
+			}
+		});
+	}
+
+	this.getDays = function() {
+		return days;
+	}
+	this.getSleepHrsData = function() {
+		return sleepData;
+	}
+	this.getMilkMlData = function() {
+		return milkData;
+	}
+	this.getDiaperCountData = function() {
+		return diaperData;
+	}
+
+	init();
+}
 
 DATA.Dataset = function(pDate, pSleeps, pFeeds, pDiapers) {
 

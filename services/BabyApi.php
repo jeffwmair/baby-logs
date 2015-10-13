@@ -12,20 +12,17 @@
 	switch($method) {
 		case 'addvalue':
 			addValueItem($_GET['type'], $_GET['value'], $_GET['time']);
-			//header('Location: ../submitted.html');
 			break;
 		case 'removevalue':
 			removeValueItem($_GET['type'], $_GET['value'], $_GET['time']);
 		case 'sleep':
 			startSleep($_GET['sleepstart'], $_GET['sleepend']);
-			//header('Location: ../submitted.html');
 			break;
 		case 'removesleep':
 			removeSleep($_GET['sleepstart']);
 			break;
 		case 'endsleep':
 			endSleep($_GET['sleepend']);
-			//header('Location: ../submitted.html');
 			break;
 		case 'feed':
 			feed($_GET['time'], $_GET['amount']);
