@@ -194,9 +194,7 @@ DATA.Dataset = function(pDate, pSleeps, pFeeds, pDiapers) {
 
 	this.addSleep = function(sleep) {
 		var splitSleeps = splitSleepInto15MinuteSleeps(sleep);
-		for(var i = 0, len = splitSleeps.length; i < len; i++) {
-			sleeps.push(splitSleeps[i]);
-		}
+		splitSleeps.forEach(function(ss) { sleeps.push(ss); });
 	}
 	this.addDiaper = function(diaper) {
 		diapers.push(diaper);
@@ -327,45 +325,41 @@ DATA.Dataset.Feed = function(pTime, value) {
 }
 
 DATA.populateDatasetsFromJsonData = function(datasets, json) {
-	for(var i = 0, len = json.sleeps.length; i < len; i++) {
-		var sleep = json.sleeps[i];
+	json.sleeps.forEach(function(sleep) {
 		var ds = DATA.getDatasetForDate(datasets, new Date(sleep.start));
 		var sleepEnd = sleep.end == null ? undefined : new Date(sleep.end);
 		ds.addSleep(new DATA.Dataset.Sleep(new Date(sleep.start), sleepEnd));
-	}
-	for(var i = 0, len = json.feeds.length; i < len; i++) {
-		var feed = json.feeds[i];
+	});
+	json.feeds.forEach(function(feed) {
 		var ds = DATA.getDatasetForDate(datasets, new Date(feed.time));
 		ds.addFeed(new DATA.Dataset.Feed(new Date(feed.time), feed.entry_value));
-	}
-	for(var i = 0, len = json.diapers.length; i < len; i++) {
-		var diaper = json.diapers[i];
+	});
+	json.diapers.forEach(function(diaper) {
 		var ds = DATA.getDatasetForDate(datasets, new Date(diaper.time));
 		ds.addDiaper(new DATA.Dataset.Diaper(new Date(diaper.time), diaper.entry_value));
-	}
+	});
 }
 
 DATA.getNewDatasetsForJsonData = function(json) {
 
 	var datasets = [];
-	for(var i = 0, len = json.sleeps.length; i < len; i++) {
-		var item = json.sleeps[i];
+	json.sleeps.forEach(function(item) {
 		if (!DATA.getDatasetForDate(datasets, new Date(item.start))) {
 			datasets.push(new DATA.Dataset(item.start));
 		}
-	}
-	for(var i = 0, len = json.feeds.length; i < len; i++) {
-		var feedTime = json.feeds[i].time;
+	});
+	json.feeds.forEach(function(feed) {
+		var feedTime = feed.time;
 		if (!DATA.getDatasetForDate(datasets, new Date(feedTime))) {
 			datasets.push(new DATA.Dataset(feedTime));
 		}
-	}
-	for(var i = 0, len = json.diapers.length; i < len; i++) {
-		var diaperTime = json.diapers[i].time;
+	});
+	json.diapers.forEach(function(diaper) {
+		var diaperTime = diaper.time;
 		if (!DATA.getDatasetForDate(datasets, new Date(diaperTime))) {
 			datasets.push(new DATA.Dataset(diaperTime));
 		}
-	}
+	});
 
 	DATA.populateDatasetsFromJsonData(datasets, json);
 	return datasets;

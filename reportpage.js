@@ -6,23 +6,6 @@ APP.ReportPage = function(container, calHelper) {
 		return msDiff / (60000.0 * 60);
 	}
 
-	this.generate = function(datasets, container, calHelper) {
-		var now = new Date();
-		for(var i = 0, len = datasets.length; i < len; i++) {
-			var el = document.createElement('pre');
-			container.appendChild(el);
-			var ds = datasets[i];
-			var header = this.generateHeader(ds.date, calHelper);
-			var sleepRow = this.generateSleepRow(now, ds.getSleeps());
-			var diaperRow = this.generateValueItemRow(now, "Diaper", ds.getDiapers());
-			var feedRow = this.generateValueItemRow(now, "Feed", ds.getFeeds());
-			el.innerText = header 
-			+ '\n' + sleepRow
-			+ '\n' + feedRow
-			+ '\n' + diaperRow;
-		}
-	}
-
 	this.init = function(container, calHelper) {
 		var that = this;
 		UTILS.ajaxGetJson("services/BabyApi.php?action=loaddata", function(json) {
