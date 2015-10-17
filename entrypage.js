@@ -129,16 +129,12 @@ APP.EntryPage = function() {
 	}
 
 	var populateTimeComboBox = function(element, times) {
-		for(var i = 0, len = times.length; i < len; i++) {
-			var time = times[i];
+		times.forEach(function(time) {
 			var opt = document.createElement('option');
 			opt.innerText = time;
 			opt.value = time;
 			element.appendChild(opt);
-		}
-	}
-
-	var submitSleepRange = function(e) {
+		});
 	}
 
 	/**
@@ -216,13 +212,12 @@ APP.EntryPage = function() {
 	var generateTable = function(times) {
 
 		var putFeedOptionsInSelect = function(selectEl, feedOptions) {
-			for(var i = 0, len = feedOptions.length; i < len; i++) {
-				var feedVal = feedOptions[i];
+			feedOptions.forEach(function(feedVal) {
 				var opt = document.createElement('option');
 				opt.setAttribute('value', feedVal);
 				opt.innerHTML = feedVal;
 				selectEl.appendChild(opt);
-			}
+			});
 		}
 
 		var generateFeedOptions = function() {
@@ -336,7 +331,9 @@ APP.EntryPage = function() {
 				}
 			}
 
-			scrollToCurrentTime();
+			if (date.getDayTime() == (new Date()).getDayTime()) {
+				scrollToCurrentTime();
+			}
 
 		});
 

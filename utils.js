@@ -34,6 +34,15 @@ UTILS.ajaxGetJson = function(url, callback) {
 	xmlhttp.send();
 }
 
+Date.prototype.getDayTime = function() {
+	var dayDate = new Date(this.getTime());
+	dayDate.setHours(0);
+	dayDate.setMinutes(0);
+	dayDate.setSeconds(0);
+	dayDate.setMilliseconds(0);
+	return dayDate.getTime();
+}
+
 Array.prototype.contains = function(obj) {
 	var i = this.length;
 	while (i--) {
