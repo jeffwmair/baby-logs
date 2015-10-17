@@ -59,31 +59,21 @@ APP.ReportPage = function(container, calHelper) {
 
 			// last 5 days
 			var dataToReport = datasets.slice(datasets.length-10);
-			configureLineChart(1, datasets.slice(dataToReport));
+			configureLineChart(dataToReport);
 			//configureBarChart(dataToReport);
 		});
 	}
 
-	var configureLineChart = function(mode, datasets) {
-
-		var title = '';
-		switch(mode) {
-			case 1:
-				title = 'Liam Daily Data';
-				break;
-			case 2:
-				title = 'Weekly';
-				break;
-		}
-
+	var configureLineChart = function(datasets) {
+		var title = 'Liam Data';
 		var dsList = new DATA.DatasetList(datasets);
 		var categoryData = DATETIME.datesToSimpleDisplay(dsList.getDays());
 		var sleepData = dsList.getSleepHrsData();
+		var sleepMaxHrsPerNight = dsList.getSleepMaxHrsPerNight();
 		var milkData = dsList.getMilkMlData();
 		var breastFeedsData = dsList.getBreastFeedsData();
 		//var diaperData = dsList.getDiaperCountData();
 
-debugger;
 		$('#container_linechart').highcharts({
 			chart: { zoomType: 'xy' },
 			credits: { enabled:false },
@@ -98,7 +88,7 @@ debugger;
 					style: { color: Highcharts.getOptions().colors[2] }
 				},
 				title: {
-					text: 'Milk',
+					text: 'Bottle Feeding',
 					style: { color: Highcharts.getOptions().colors[2] }
 				},
 				opposite: true
@@ -141,27 +131,35 @@ debugger;
 				backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
 			},
 			series: [{
-				name: 'Sleep',
+				name: 'Total Sleep',
 				type: 'column',
 				yAxis: 1,
 				data: sleepData,
 				tooltip: {
 					valueSuffix: ' hrs'
 				}
-
 			}, 
 			{
-				name: 'Milk - Bottle',
-				type: 'spline',
-				data: milkData,
-				tooltip: { valueSuffix: ' ml' }
+				name: 'Max Sleep Per Night',
+				type: 'column',
+				yAxis: 1,
+				data: sleepMaxHrsPerNight,
+				tooltip: {
+					valueSuffix: ' hrs'
+				}
 			},
 			{
-				name: 'Milk - Breast',
+				name: 'Feeding - Breast',
 				yAxis : 2,
 				type: 'spline',
 				data: breastFeedsData,
 				tooltip: { valueSuffix: ' feedings' }
+			},
+			{
+				name: 'Feeding - Bottle',
+				type: 'spline',
+				data: milkData,
+				tooltip: { valueSuffix: ' ml' }
 			}
 			]
 		});

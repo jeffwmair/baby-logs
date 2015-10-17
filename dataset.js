@@ -1,9 +1,97 @@
 DATA = {};
 
+var isDatePartOfNight = function(nightDayTime, time) {
+	//night starts at 8pm, ends the next day at 6:30am
+	var start = nightDayTime + (20*60*60000);
+	var end = start + (10.5 * 60*60000);
+	return (time >= start && time <= end);
+}
+
+var calcMaxSleeps = function(sleeps) {
+	var sleepBlocks = divideSleepsIntoBlocks(sleeps);
+	var dates = getDatesFromSleeps(sleeps);
+	var maxBlocks = [];
+	dates.forEach(function(time) {
+		var maxBlock;
+		var sleepsForDay = getSleepsOnDayTime(time, sleepBlocks);
+		sleepsForDay.forEach(function(sleep) {
+			if (!maxBlock) {
+				maxBlock = sleep;
+			}
+			else {
+				if (sleep.getDurationInMinutes() > maxBlock.getDurationInMinutes()) {
+					maxBlock = sleep;
+				}
+			}
+		});
+		if (!maxBlock) {
+			maxBlock = new DATA.Dataset.Sleep(new Date(time), new Date(time));
+		}
+		maxBlocks.push(maxBlock);
+	});
+
+	return maxBlocks;
+}
+
+var getSleepsOnDayTime = function(time, sleeps) {
+	var sleepsFiltered = [];
+	sleeps.forEach(function(sleep) {
+		if (isDatePartOfNight(time, sleep.getMidPoint().getTime())) {
+			sleepsFiltered.push(sleep);
+		}
+	});
+
+	return sleepsFiltered;
+}
+
+var getDatesFromSleeps = function(sleeps) {
+	var dates = [];
+	sleeps.forEach(function(s) {
+		var date = new Date(s.getStart().getTime());
+		date.setHours(0);
+		date.setMinutes(0);
+		date.setSeconds(0);
+		if (!dates.contains(date.getTime())) {
+			dates.push(date.getTime());
+		}
+	});
+	return dates;
+}
+
+var divideSleepsIntoBlocks = function(sleeps) {
+	if (!sleeps || sleeps.length == 0) {
+		return [];
+	}
+
+	var blocks = [];
+	var sleep;
+	sleeps.forEach(function(s) {
+		// first entry
+			if (!sleep) {
+				sleep = new DATA.Dataset.Sleep(s.getStart(), s.getEnd());
+			}
+			else {
+			// if no end, skip it
+				if (s.getEnd()) {
+					if (s.getStart().getTime() == sleep.getEnd().getTime()) {
+						sleep.setEnd(s.getEnd());
+					}
+					else {
+						// new sleep block, so push the old one
+						blocks.push(sleep);
+						sleep = new DATA.Dataset.Sleep(s.getStart(), s.getEnd());
+					}
+				}
+			}
+	});
+
+	return blocks;
+}
 
 DATA.DatasetList = function(datasets) {
 	var datasets = datasets;
-	var days = [], sleepData = [], milkMlData = [], milkByBreastData = [], diaperData = [];
+	var days = [], sleepData = [], sleepMaxHrsPerNight = [], milkMlData = [], milkByBreastData = [], diaperData = [];
+	var allSleeps = [];
 	var init = function() {
 		datasets.forEach(function(ds) {
 
@@ -18,6 +106,7 @@ DATA.DatasetList = function(datasets) {
 				days.push(ds.date);
 				var sleepHrs = 0, milkMl = 0, breastFeedCount = 0, diaperChange = 0;
 				ds.getSleeps().forEach(function(sleep) {
+					allSleeps.push(sleep);
 					sleepHrs += (sleep.getDurationInMinutes() / 60.0);
 				});
 				ds.getFeeds().forEach(function(feed) {
@@ -39,10 +128,20 @@ DATA.DatasetList = function(datasets) {
 				diaperData.push(diaperChange);
 			}
 		});
+
+		// calculate max sleeps per night
+		var maxSleepBlocks = calcMaxSleeps(allSleeps);
+		maxSleepBlocks.forEach(function(sleep) {
+			sleepMaxHrsPerNight.push(sleep.getDurationInMinutes() / 60.0);	
+		})
+		
 	}
 
 	this.getDays = function() {
 		return days;
+	}
+	this.getSleepMaxHrsPerNight = function() {
+		return sleepMaxHrsPerNight;
 	}
 	this.getSleepHrsData = function() {
 		return sleepData;
@@ -160,6 +259,19 @@ DATA.Dataset.Sleep = function(start, end) {
 
 	this.getStart = function() { return sleepStart; }
 	this.getEnd = function() { return sleepEnd; }
+	this.setEnd = function(end) { sleepEnd = end; }
+	this.getDay = function() {
+		var day = new Date(this.getStart().getTime());
+		day.setHours(0);
+		day.setMinutes(0);
+		day.setSeconds(0);
+		return day;
+	}
+	this.getMidPoint = function() {
+		var dur = (this.getEnd().getTime() - this.getStart().getTime()) / 2.0;
+		var midMs = this.getStart().getTime() + dur;
+		return new Date(midMs);
+	}
 
 	// when did the sleep begin?
 	this.getStartingBlock = function() {
@@ -182,6 +294,10 @@ DATA.Dataset.Sleep = function(start, end) {
 		var blockSize = 60 / UTILS.HOURLY_DIVISIONS;
 		var blocks = Math.round(mins / blockSize);
 		return blocks;
+	}
+
+	this.toString = function() {
+		return "start:"+sleepStart+", end:"+sleepEnd+", mid:"+this.getMidPoint()+", duration:"+this.getDurationInMinutes();
 	}
 };
 

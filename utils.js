@@ -33,3 +33,13 @@ UTILS.ajaxGetJson = function(url, callback) {
 	xmlhttp.open("GET", url, doAsync);
 	xmlhttp.send();
 }
+
+Array.prototype.contains = function(obj) {
+	var i = this.length;
+	while (i--) {
+		if (this[i] === obj) {
+			return true;
+		}
+	}
+	return false;
+}
