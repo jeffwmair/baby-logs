@@ -124,7 +124,8 @@ APP.EntryPage = function() {
 	var scrollToCurrentTime = function() {
 		var time = getMostRecentTimeBlock();
 		var timeElement = document.getElementById('td_'+time);
-		timeElement.scrollIntoView(true);
+		console.log('scrolling element:'+timeElement);
+		timeElement.scrollIntoView({behavior:"smooth", block:"start"});
 	}
 
 	var populateTimeComboBox = function(element, times) {
@@ -190,7 +191,6 @@ APP.EntryPage = function() {
 		populateTimeComboBox(startRangeCombo, timesThroughDay);
 		populateTimeComboBox(endRangeCombo, timesThroughDay);
 		this.loadData();
-		scrollToCurrentTime();
 	}
 
 	var assignButtonClass = function(column, button, timeval) {
@@ -335,6 +335,8 @@ APP.EntryPage = function() {
 						break;
 				}
 			}
+
+			scrollToCurrentTime();
 
 		});
 
