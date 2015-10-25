@@ -128,25 +128,15 @@ APP.EntryPage = function() {
 		timeElement.scrollIntoView({behavior:"smooth", block:"start"});
 	}
 
-	var populateTimeComboBox = function(element, times) {
-		times.forEach(function(time) {
-			var opt = document.createElement('option');
-			opt.innerText = time;
-			opt.value = time;
-			element.appendChild(opt);
-		});
-	}
 
 	/**
 	* Init the page
 	*/
-	this.init = function(date, containerEl, btnBack, btnFwd, dateEl, startRangeCombo, endRangeCombo, btnSubmitDateRange) {
+	this.init = function(date, containerEl, btnBack, btnFwd, dateEl) {
 		var pageState = new this.PageState();
 		this.pageState = pageState;
 		this.pageState.setDateEl(dateEl);
 		this.pageState.setContainer(containerEl);
-		this.pageState.setStartRangeEl(startRangeCombo);
-		this.pageState.setEndRangeEl(endRangeCombo);
 		this.pageState.setDate(date);
 		document.onkeydown = function(e) {
 			// handle keypresses
@@ -170,23 +160,10 @@ APP.EntryPage = function() {
 			pageState.setDate(pageState.getDate(), +1);
 			that.loadData();
 		}
-		btnSubmitDateRange.onclick = function(e) {
-			var starttime = pageState.getStartRangeEl().value;
-			var endtime = pageState.getEndRangeEl().value;
-			var date = pageState.getDate();
-			var formattedstart = DATETIME.getYyyymmddFormat(date) + ' ' + starttime;
-			var formattedend = DATETIME.getYyyymmddFormat(date) + ' ' + endtime;
-			UTILS.ajaxGetJson("services/BabyApi.php?action=sleep&sleepstart="+formattedstart+"&sleepend="+formattedend, function(json) {
-				that.loadData();	
-			});
-
-		}
 
 		var timesThroughDay = generateAllTimes();
 		generateTable(timesThroughDay);
-		populateTimeComboBox(startRangeCombo, timesThroughDay);
-		populateTimeComboBox(endRangeCombo, timesThroughDay);
-		this.loadData();
+		this.loadData(true);
 	}
 
 	var assignButtonClass = function(column, button, timeval) {
@@ -222,7 +199,8 @@ APP.EntryPage = function() {
 
 		var generateFeedOptions = function() {
 			var options = ['none', 'BL', 'BR'];
-			for(var i = 50; i <= 95; i+=5) options.push(i);
+			for(var i = 50; i <= 80; i+=10) options.push(i);
+			for(var i = 85; i <= 140; i+=5) options.push(i);
 			return options;
 		}
 
@@ -266,7 +244,7 @@ APP.EntryPage = function() {
 	/**
 	* Load data into the page (internally finds the appropriate date)
 	*/
-	this.loadData = function() {
+	this.loadData = function(scrollToTime) {
 
 		var date = this.pageState.getDate();
 		var formatteddate = DATETIME.getYyyymmddFormat(date);
@@ -331,7 +309,7 @@ APP.EntryPage = function() {
 				}
 			}
 
-			if (date.getDayTime() == (new Date()).getDayTime()) {
+			if (scrollToTime &&  date.getDayTime() == (new Date()).getDayTime()) {
 				scrollToCurrentTime();
 			}
 
@@ -367,18 +345,6 @@ APP.EntryPage = function() {
 		}	
 		this.getContainer = function() {
 			return this.container;
-		}
-		this.setStartRangeEl = function(cboStartRange) {
-			this.cboStartRange = cboStartRange
-		}
-		this.setEndRangeEl = function(cboEndRange) {
-			this.cboEndRange = cboEndRange
-		}
-		this.getStartRangeEl = function() {
-			return this.cboStartRange;
-		}
-		this.getEndRangeEl = function() {
-			return this.cboEndRange;
 		}
 	}
 

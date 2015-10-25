@@ -39,11 +39,9 @@ APP.ReportPage = function(container, calHelper) {
 			txtLastFeed.innerText = hrsAgoFeed;
 			txtLastDiaper.innerText = hrsAgoDiaper;
 
-
 			// last 5 days
 			var dataToReport = datasets.slice(datasets.length-10);
 			configureLineChart(dataToReport);
-			//configureBarChart(dataToReport);
 		});
 	}
 
@@ -68,11 +66,11 @@ APP.ReportPage = function(container, calHelper) {
 			yAxis: [{ // Primary yAxis
 				labels: {
 					format: '{value} ml',
-					style: { color: Highcharts.getOptions().colors[2] }
+					style: { color: Highcharts.getOptions().colors[3] }
 				},
 				title: {
 					text: 'Bottle Feeding',
-					style: { color: Highcharts.getOptions().colors[2] }
+					style: { color: Highcharts.getOptions().colors[3] }
 				},
 				opposite: true
 
@@ -91,11 +89,11 @@ APP.ReportPage = function(container, calHelper) {
 				gridLineWidth: 0,
 				title: {
 					text: 'Breast Feedings',
-					style: { color: Highcharts.getOptions().colors[1] }
+					style: { color: Highcharts.getOptions().colors[2] }
 				},
 				labels: {
 					format: '{value}',
-					style: { color: Highcharts.getOptions().colors[1] }
+					style: { color: Highcharts.getOptions().colors[2] }
 				},
 				opposite: true
 			}

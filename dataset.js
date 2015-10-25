@@ -35,6 +35,7 @@ var calcMaxSleeps = function(sleeps) {
 
 var getSleepsOnDayTime = function(time, sleeps) {
 	var sleepsFiltered = [];
+	var tempsleeps = sleeps;
 	sleeps.forEach(function(sleep) {
 		if (isDatePartOfNight(time, sleep.getMidPoint().getTime())) {
 			sleepsFiltered.push(sleep);
@@ -63,6 +64,7 @@ var divideSleepsIntoBlocks = function(sleeps) {
 		return [];
 	}
 
+
 	var blocks = [];
 	var sleep;
 	sleeps.forEach(function(s) {
@@ -84,6 +86,10 @@ var divideSleepsIntoBlocks = function(sleeps) {
 				}
 			}
 	});
+
+	if (sleep && sleep.getStart().getTime() != blocks[blocks.length-1].getStart().getTime()) {
+		blocks.push(sleep);
+	}
 
 	return blocks;
 }
