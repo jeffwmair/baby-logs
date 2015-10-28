@@ -99,8 +99,8 @@
 			return;
 		}
 
+		getSqlResult("delete from baby_keyval where time = '$time' and entry_type = 'feed';");
 		getSqlResult("insert into baby_keyval (time, entry_type, entry_value) values('$time', 'feed', '$amount');");
-
 	}
 
 	function endSleep($sleepend) {
