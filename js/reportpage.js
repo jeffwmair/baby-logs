@@ -39,14 +39,13 @@ APP.ReportPage = function(container, calHelper) {
 			txtLastFeed.innerText = hrsAgoFeed;
 			txtLastDiaper.innerText = hrsAgoDiaper;
 
-			// last 5 days
-			var dataToReport = datasets.slice(datasets.length-10);
-			configureLineChart(dataToReport);
+			var last10Days = datasets.slice(datasets.length-10);
+			configureLineChart('#container_linechart', 'Last 10 Days', last10Days);
 		});
 	}
 
-	var configureLineChart = function(datasets) {
-		var title = 'Liam Data';
+	var configureLineChart = function(chartEl, chartTitle, datasets) {
+		var title = chartTitle;
 		var dsList = new DATA.DatasetList(datasets);
 		var categoryData = DATETIME.datesToSimpleDisplay(dsList.getDays());
 		var sleepData = dsList.getSleepHrsData();
@@ -55,7 +54,7 @@ APP.ReportPage = function(container, calHelper) {
 		var breastFeedsData = dsList.getBreastFeedsData();
 		//var diaperData = dsList.getDiaperCountData();
 
-		$('#container_linechart').highcharts({
+		$(chartEl).highcharts({
 			chart: { zoomType: 'xy' },
 			credits: { enabled:false },
 			title: { text: title },

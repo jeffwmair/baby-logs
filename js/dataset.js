@@ -1,4 +1,5 @@
 DATA = {};
+DATA.MS_PER_WEEK = 604800000;
 
 var isDatePartOfNight = function(nightDayTime, time) {
 	//night starts at 8pm, ends the next day at 6:30am
@@ -92,6 +93,95 @@ var divideSleepsIntoBlocks = function(sleeps) {
 	}
 
 	return blocks;
+}
+
+DATA.DatasetWeekGroup = function(weekDate) {
+	this.datasets = [];
+	this.week = weekDate;
+	this.week.setMilliseconds(0);
+	this.week.setSeconds(0);
+	this.week.setMinutes(0);
+	this.week.setHours(0);
+	while (this.week.getDay() > 0) {
+		this.week.setDate(this.week.getDate() - 1);
+	}
+	this.doesDsBelongInGroup = function(ds) {
+		// belongs in this week if the date
+		var dsMs = ds.date.getTime();
+		var weekMs = this.week.getTime();
+		var diff = dsMs - weekMs;
+		return diff > 0 && diff < DATA.MS_PER_WEEK;
+	}
+	this.addDataset = function(ds) {
+		this.datasets.push(ds);
+	}
+	this.aggregate = function() {
+//DATA.Dataset = function(pDate, pSleeps, pFeeds, pDiapers) {
+		
+		var totSleep = 0, nightSleep = 0, feedBottle = 0, feedBreast = 0, numPoo = 0, numPee = 0;
+		var count = 0;
+		this.datasets.forEach(function(ds) {
+			ds.getSleeps().forEach(function(sleep) {
+				totSleep += sleep.getDurationInMinutes();
+			});
+		});
+		
+		// TODO: check for divide by zero case
+		var avgSleep = totSleep / count;
+		//var aggDs = new DATA.Dataset(this.week, [], [])
+		
+	}
+}
+
+DATA.DatasetSummary = function() {
+	
+}
+
+DATA.DatasetWeekGroupList = function() {
+	this.weekGroups = [];
+	this.add = function(ds) {
+		var found = false;
+		for(var i = 0, len = this.weekGroups.length; i < len && !found; i++) {
+			var wk = this.weekGroups[i];
+			if (wk.doesDsBelongInGroup(ds)) {
+				wk.addDataset(ds);
+				found = true;
+			}
+		}
+		
+		if (!found) {
+			var newWeekGroup = new DATA.DatasetWeekGroup(ds.date);
+			newWeekGroup.addDataset(ds);
+			this.weekGroups.push(newWeekGroup);
+		}
+	}
+	
+	this.getAggregatedDatasets = function() {
+		var sets = [];
+	
+		
+	}
+	
+}
+
+DATA.DatasetAggregator = function(datasets) {
+	var weekGroupings = undefined, monthGroupings = undefined;
+	this.getDatasetsweekGroupings = function() {
+		if (!weekGroupings) {
+			weekGroupings = new DATA.DatasetWeekGroupList();
+			datasets.forEach(function(ds) {
+				weekGroupings.add(ds);
+			});
+		}
+		
+		return weekGroupings.getAggregatedDatasets();
+	}
+	this.getDatasetsmonthGroupings = function() {
+		if (monthGroupings) {
+			return monthGroupings;
+		}
+		
+	}
 }
 
 DATA.DatasetList = function(datasets) {
