@@ -40,13 +40,21 @@ APP.ReportPage = function(container, calHelper) {
 			txtLastDiaper.innerText = hrsAgoDiaper;
 
 			var last10Days = datasets.slice(datasets.length-10);
-			configureLineChart('#container_linechart', 'Last 10 Days', last10Days);
+			var last10DaysSummary = new DATA.DatasetSummary(last10Days);
+			/*
+			var dsAgg = new DATA.DatasetAggregator(datasets);
+			var dsWeeksAll = dsAgg.getDatasetsGroupedByWeek();
+			var last10WeeksSummary = dsWeeksAll.slice(dsWeeksAll.length-10);
+			*/
+
+			configureLineChart('#container_linechart_daily', 'Last 10 Days', last10DaysSummary);
+			//configureLineChart('#container_linechart_weekly', 'Last 10 Weeks', last10WeeksSummary);
 		});
 	}
 
-	var configureLineChart = function(chartEl, chartTitle, datasets) {
+	var configureLineChart = function(chartEl, chartTitle, dsList) {
 		var title = chartTitle;
-		var dsList = new DATA.DatasetList(datasets);
+	//	var dsList = new DATA.DatasetSummary(datasets);
 		var categoryData = DATETIME.datesToSimpleDisplay(dsList.getDays());
 		var sleepData = dsList.getSleepHrsData();
 		var sleepMaxHrsPerNight = dsList.getSleepMaxHrsPerNight();

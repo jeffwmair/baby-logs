@@ -88,7 +88,7 @@ var divideSleepsIntoBlocks = function(sleeps) {
 			}
 	});
 
-	if (sleep && sleep.getStart().getTime() != blocks[blocks.length-1].getStart().getTime()) {
+	if (sleep && (blocks.length == 0 || sleep.getStart().getTime() != blocks[blocks.length-1].getStart().getTime())) {
 		blocks.push(sleep);
 	}
 
@@ -112,30 +112,8 @@ DATA.DatasetWeekGroup = function(weekDate) {
 		var diff = dsMs - weekMs;
 		return diff > 0 && diff < DATA.MS_PER_WEEK;
 	}
-	this.addDataset = function(ds) {
-		this.datasets.push(ds);
-	}
-	this.aggregate = function() {
-//DATA.Dataset = function(pDate, pSleeps, pFeeds, pDiapers) {
-		
-		var totSleep = 0, nightSleep = 0, feedBottle = 0, feedBreast = 0, numPoo = 0, numPee = 0;
-		var count = 0;
-		this.datasets.forEach(function(ds) {
-			ds.getSleeps().forEach(function(sleep) {
-				totSleep += sleep.getDurationInMinutes();
-			});
-		});
-		
-		// TODO: check for divide by zero case
-		var avgSleep = totSleep / count;
-		//var aggDs = new DATA.Dataset(this.week, [], [])
-		
-	}
 }
 
-DATA.DatasetSummary = function() {
-	
-}
 
 DATA.DatasetWeekGroupList = function() {
 	this.weekGroups = [];
@@ -144,29 +122,33 @@ DATA.DatasetWeekGroupList = function() {
 		for(var i = 0, len = this.weekGroups.length; i < len && !found; i++) {
 			var wk = this.weekGroups[i];
 			if (wk.doesDsBelongInGroup(ds)) {
-				wk.addDataset(ds);
+				wk.datasets.push(ds);
 				found = true;
 			}
 		}
 		
 		if (!found) {
 			var newWeekGroup = new DATA.DatasetWeekGroup(ds.date);
-			newWeekGroup.addDataset(ds);
+			newWeekGroup.datasets.push(ds);
 			this.weekGroups.push(newWeekGroup);
 		}
 	}
 	
-	this.getAggregatedDatasets = function() {
-		var sets = [];
-	
-		
+	this.getSummary = function() {
+		var summaries = [];
+		this.weekGroups.forEach(function(wk) {
+			summaries.push(new DATA.DatasetSummary(wk.datasets));
+		});
+
+debugger;
+		var weekSummary = new DATA.DatasetSummary(summaries);
+		return weekSummary;
 	}
-	
 }
 
 DATA.DatasetAggregator = function(datasets) {
 	var weekGroupings = undefined, monthGroupings = undefined;
-	this.getDatasetsweekGroupings = function() {
+	this.getDatasetsGroupedByWeek = function() {
 		if (!weekGroupings) {
 			weekGroupings = new DATA.DatasetWeekGroupList();
 			datasets.forEach(function(ds) {
@@ -174,9 +156,9 @@ DATA.DatasetAggregator = function(datasets) {
 			});
 		}
 		
-		return weekGroupings.getAggregatedDatasets();
+		return weekGroupings.getSummary();
 	}
-	this.getDatasetsmonthGroupings = function() {
+	this.getDatasetsGroupedByMonth = function() {
 		if (monthGroupings) {
 			return monthGroupings;
 		}
@@ -184,7 +166,10 @@ DATA.DatasetAggregator = function(datasets) {
 	}
 }
 
-DATA.DatasetList = function(datasets) {
+DATA.DatasetSummaryAggregator = function(datasetSummaries) {
+}
+
+DATA.DatasetSummary = function(datasets) {
 	var datasets = datasets;
 	var days = [], sleepData = [], sleepMaxHrsPerNight = [], milkMlData = [], milkByBreastData = [], diaperData = [];
 	var allSleeps = [];
@@ -192,6 +177,7 @@ DATA.DatasetList = function(datasets) {
 		datasets.forEach(function(ds) {
 
 			// older data is not so good, so starting on Sept 26
+			// This is the wrong place to put this filter. Filter on server.
 			var dsDate = ds.date;
 			var skip = false;
 			if (dsDate.getMonth() == 8 && dsDate.getDate() < 26 && (dsDate.getYear()+1900) == 2015) {
@@ -255,6 +241,27 @@ DATA.DatasetList = function(datasets) {
 	init();
 }
 
+DATA.DatasetConverter = function(dataset) {
+	var ds = dataset;
+	var dsSummary = null;
+	this.getSummary = function() {
+		if (dsSummary == null) {
+			var sleepHrs = 0, nightSleep = 0, bottleMl = 0, breastCount = 0, pooCount = 0, peeCount = 0;
+			ds.getSleeps().forEach(function(sleep) {
+				sleepHrs += sleep.getDurationInMinutes() / 60.0;
+			});
+		}
+
+		return dsSummary;
+	}
+}
+
+/*
+DATA.DatasetSummary = function(date, hrsSleep, hrsSleepNight, bottleMl, breastCount, pooCount, peeCount) {
+	this.date = date, this.hrsSleep = hrsSleep, this.hrsSleepNight = hrsSleepNight, this.bottleMl = bottleMl, this.breastCount = breastCount, this.pooCount = pooCount, this.peeCount = peeCount;
+}
+
+*/
 DATA.Dataset = function(pDate, pSleeps, pFeeds, pDiapers) {
 
 	this.date = new Date(pDate);

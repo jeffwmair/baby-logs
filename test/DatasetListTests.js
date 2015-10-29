@@ -1,7 +1,6 @@
 QUnit.test( "WeeklyDatasetAggregation", function( assert ) {
 	
 	var datasets = DATA.getNewDatasetsForJsonData(getData());
-	debugger;
 	var dsAgg = new DATA.DatasetAggregator(datasets);
 	var dsWeeks = dsAgg.getDatasetsGroupedByWeek();
 	var dsMonths = dsAgg.getDatasetsGroupedByMonth();
