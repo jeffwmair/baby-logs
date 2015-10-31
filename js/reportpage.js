@@ -9,7 +9,7 @@ APP.ReportPage = function(container, calHelper) {
 	this.init = function(container, calHelper) {
 		var that = this;
 		UTILS.ajaxGetJson("services/BabyApi.php?action=loaddata", function(json) {
-			var datasets = DATA.getNewDatasetsForJsonData(json);
+			var datasets = new CONVERTER.getNewDatasetsForJsonData(json);
 			//that.generate(datasets.reverse(), container, calHelper);
 
 			var now = new Date();
@@ -22,13 +22,13 @@ APP.ReportPage = function(container, calHelper) {
 			var mostRecentDiaper = diapers[diapers.length-1];
 			var hrsAgoSleep = '', hrsAgoFeed = '', hrsAgoDiaper = '';
 			if (mostRecentSleep) {
-				var hrsAgoSleep = calcHoursBetweenTimes(mostRecentSleep.getStart(), now).toFixed(1);
+				var hrsAgoSleep = calcHoursBetweenTimes(mostRecentSleep.start, now).toFixed(1);
 			}
 			if (mostRecentFeed) {
-				var hrsAgoFeed = calcHoursBetweenTimes(mostRecentFeed.getTime(), now).toFixed(1);
+				var hrsAgoFeed = calcHoursBetweenTimes(mostRecentFeed.time, now).toFixed(1);
 			}
 			if (mostRecentDiaper) {
-				var hrsAgoDiaper = calcHoursBetweenTimes(mostRecentDiaper.getTime(), now).toFixed(1);
+				var hrsAgoDiaper = calcHoursBetweenTimes(mostRecentDiaper.time, now).toFixed(1);
 			}
 
 			var txtLastSleep = document.getElementById('txtLastSleep');
@@ -40,7 +40,14 @@ APP.ReportPage = function(container, calHelper) {
 			txtLastDiaper.innerText = hrsAgoDiaper;
 
 			var last10Days = datasets.slice(datasets.length-10);
-			var last10DaysSummary = new DATA.DatasetSummary(last10Days);
+			var converter = new CONVERTER.DatasetConverter();
+			var summaries = converter.convertDatasetsToSummaries(datasets);
+			var last10DaysSummary = converter.convertSummariesToSingleArraySummary(summaries.slice(summaries.length-10));
+
+			var grouper = new DATA.DataGroup();
+			var weekGroupings = grouper.groupSummariesByWeek(summaries);
+			var weekSummaryForChart = weekGroupings.getSingleSummary();
+
 			/*
 			var dsAgg = new DATA.DatasetAggregator(datasets);
 			var dsWeeksAll = dsAgg.getDatasetsGroupedByWeek();
@@ -48,19 +55,18 @@ APP.ReportPage = function(container, calHelper) {
 			*/
 
 			configureLineChart('#container_linechart_daily', 'Last 10 Days', last10DaysSummary);
-			//configureLineChart('#container_linechart_weekly', 'Last 10 Weeks', last10WeeksSummary);
+			configureLineChart('#container_linechart_weekly', 'Weekly Averages', weekSummaryForChart);
 		});
 	}
 
-	var configureLineChart = function(chartEl, chartTitle, dsList) {
+	var configureLineChart = function(chartEl, chartTitle, dsSummaries) {
 		var title = chartTitle;
-	//	var dsList = new DATA.DatasetSummary(datasets);
-		var categoryData = DATETIME.datesToSimpleDisplay(dsList.getDays());
-		var sleepData = dsList.getSleepHrsData();
-		var sleepMaxHrsPerNight = dsList.getSleepMaxHrsPerNight();
-		var milkData = dsList.getMilkMlData();
-		var breastFeedsData = dsList.getBreastFeedsData();
-		//var diaperData = dsList.getDiaperCountData();
+		var categoryData, sleepData, sleepMaxHrsPerNight, milkData, breastFeedsData;
+		categoryData = DATETIME.datesToSimpleDisplay(dsSummaries.date);
+		sleepData = dsSummaries.totalSleepHrs;
+		sleepMaxHrsPerNight = dsSummaries.nightSleepHrs;
+		milkData = dsSummaries.milkBottleMl;
+		breastFeedsData = dsSummaries.milkBreastCount;
 
 		$(chartEl).highcharts({
 			chart: { zoomType: 'xy' },

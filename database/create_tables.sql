@@ -12,3 +12,10 @@ create table baby_keyval(
 	entry_value varchar(8) NOT NULL,
 	constraint const_uk_babykeyval UNIQUE (time, entry_type, entry_value)
 );
+
+create table baby_log(
+	id INT(6) AUTO_INCREMENT PRIMARY KEY,
+	time TIMESTAMP NOT NULL,
+	log_type varchar(10) NOT NULL,
+	message varchar(1000) NOT NULL
+);

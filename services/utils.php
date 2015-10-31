@@ -31,13 +31,19 @@
 		return $conn;
 	}
 
+	function logMsg($logType, $msg, $conn) {
+		$msg_clean = str_replace("'", "\"", $msg);
+		$sql = "insert into baby_log (time, log_type, message) values (current_timestamp, '$logType', '$msg_clean');";
+		$res = mysql_query($sql, $conn);
+	}
+
 	/* helper to execute sql and deal with errors */
 	function getSqlResult($sql) {
 		$conn = connect();
 		$res = mysql_query($sql, $conn);
 		$err = mysql_error($conn);
 		if ($err) {
-			//logMsg('ERROR', $err);
+			logMsg('ERROR', $err, $conn);
 			die('Sql Error:' . $err);
 		}
 		return $res;

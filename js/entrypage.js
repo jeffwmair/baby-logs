@@ -124,7 +124,6 @@ APP.EntryPage = function() {
 	var scrollToCurrentTime = function() {
 		var time = getMostRecentTimeBlock();
 		var timeElement = document.getElementById('td_'+time);
-		console.log('scrolling element:'+timeElement);
 		timeElement.scrollIntoView({behavior:"smooth", block:"start"});
 	}
 
@@ -150,7 +149,6 @@ APP.EntryPage = function() {
 			}
 			if (e.keyIdentifier == 'Left') {
 			}
-			console.log(e);
 		}
 		btnBack.onclick = function(e) {
 			pageState.setDate(pageState.getDate(), -1);
@@ -260,7 +258,7 @@ APP.EntryPage = function() {
 			//highlight current time row
 			setPageDayNightColor();
 
-			var datasets = DATA.getNewDatasetsForJsonData(json);
+			var datasets = CONVERTER.getNewDatasetsForJsonData(json);
 			var ds = datasets[0];
 			for(var i = 0, len = buttonList.length; i < len; i++) {
 				var btn = buttonList[i];
@@ -300,7 +298,7 @@ APP.EntryPage = function() {
 						btn.onchange = feedClickHandler;
 						if (ds && ds.getFeedAtTime(time)) {
 							setActiveButtonStyle(btn);
-							btn.value = ds.getFeedAtTime(time).getValue();
+							btn.value = ds.getFeedAtTime(time).value;
 						}
 						else {
 							btn.value = 'none';
