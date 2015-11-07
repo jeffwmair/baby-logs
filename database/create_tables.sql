@@ -1,8 +1,8 @@
 create table baby_sleep (
 	id INT(6) AUTO_INCREMENT PRIMARY KEY,
 	start TIMESTAMP NOT NULL,
-	end TIMESTAMP NULL,
-	constraint const_uk UNIQUE (start, end)
+	end TIMESTAMP NOT NULL,
+	constraint const_uk UNIQUE (start)
 );
 
 create table baby_keyval(
