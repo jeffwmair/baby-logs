@@ -197,8 +197,8 @@ APP.EntryPage = function() {
 
 		var generateFeedOptions = function() {
 			var options = ['none', 'BL', 'BR'];
-			for(var i = 50; i <= 80; i+=10) options.push(i);
-			for(var i = 85; i <= 140; i+=5) options.push(i);
+			for(var i = 50; i <= 90; i+=10) options.push(i);
+			for(var i = 95; i <= 200; i+=5) options.push(i);
 			return options;
 		}
 

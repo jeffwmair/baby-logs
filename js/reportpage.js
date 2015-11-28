@@ -39,20 +39,23 @@ APP.ReportPage = function(container, calHelper) {
 			txtLastFeed.innerText = hrsAgoFeed;
 			txtLastDiaper.innerText = hrsAgoDiaper;
 
-			var last10Days = datasets.slice(datasets.length-10);
 			var converter = new CONVERTER.DatasetConverter();
 			var summaries = converter.convertDatasetsToSummaries(datasets);
 			var last10DaysSummary = converter.convertSummariesToSingleArraySummary(summaries.slice(summaries.length-10));
+
+/*
+			var twodays = datasets.slice(datasets.length-2);
+			var merger = new DATA.SleepMerge();
+			var sleeps = twodays[0].getSleeps();
+			sleeps = sleeps.concat(twodays[1].getSleeps());
+			var mergedSleeps = merger.mergeSleeps(sleeps);
+			*/
+
 
 			var grouper = new DATA.DataGroup();
 			var weekGroupings = grouper.groupSummariesByWeek(summaries);
 			var weekSummaryForChart = weekGroupings.getSingleSummary();
 
-			/*
-			var dsAgg = new DATA.DatasetAggregator(datasets);
-			var dsWeeksAll = dsAgg.getDatasetsGroupedByWeek();
-			var last10WeeksSummary = dsWeeksAll.slice(dsWeeksAll.length-10);
-			*/
 
 			configureLineChart('#container_linechart_daily', 'Last 10 Days', last10DaysSummary);
 			configureLineChart('#container_linechart_weekly', 'Weekly Averages', weekSummaryForChart);
@@ -134,7 +137,7 @@ APP.ReportPage = function(container, calHelper) {
 				}
 			}, 
 			{
-				name: 'Max Sleep Per Night',
+				name: 'Uninterrupted Night Sleep',
 				type: 'column',
 				yAxis: 1,
 				data: sleepMaxHrsPerNight,

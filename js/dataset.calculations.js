@@ -16,9 +16,10 @@ DATA.DataGroup = function() {
 DATA.SleepCalculator = function() {
 
 	var isDatePartOfNight = function(nightDayTime, time) {
-		//night starts at 8pm, ends the next day at 6:30am
+		//night starts at 8pm, ends the next day at 7:30am
+		var hrsTillEnd = 11.5;
 		var start = nightDayTime + (20*60*60000);
-		var end = start + (10.5 * 60*60000);
+		var end = start + (hrsTillEnd * 60*60000);
 		return (time >= start && time <= end);
 	}
 
