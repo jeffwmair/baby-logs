@@ -23,6 +23,7 @@
 			break;
 		case 'removevalue':
 			removeValueItem(get('type'), get('value'), get('time'));
+			break;
 		case 'sleep':
 			enterSleep(get('sleepstart'), get('sleepend'));
 			break;
