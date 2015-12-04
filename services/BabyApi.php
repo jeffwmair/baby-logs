@@ -28,9 +28,6 @@
 			$optionalDay = $_GET['day'];
 			loadData($optionalDay);
 			break;
-		case 'loaddata2':
-			loadData2();
-			break;
 		case 'diagnostics':
 			showDiagnostics();
 			break;
@@ -50,15 +47,6 @@
 
 		$now_time = date('G:i:s');
 		echo "now: $now_time";
-	}
-
-	function loadData2() {
-		$sleeps = convertSqlRowsToArray(getSqlResult("select * from baby_sleep order by start"));
-		$feeds = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'feed' order by time"));
-		$diapers = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'diaper' order by time"));
-		$dsGenerator = new DatasetGenerator($sleeps, $feeds, $diapers);
-		echo "done";
-
 	}
 
 	function loadData($day) {
