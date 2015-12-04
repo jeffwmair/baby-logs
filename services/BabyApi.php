@@ -1,7 +1,7 @@
 <?php
 	require "utils.php";
 	require "Dataset.php";
-	$method = $_GET['action'];
+	$method = get('action');
 
 	/*
 	 * if there is an unended sleep, the end the sleep;
@@ -9,23 +9,31 @@
 	 * then start and end another record for this new day.
 	 */
 
+	function get($index) {
+		if (!isset($_GET[$index])) {
+			return NULL;
+		}
+
+		return $_GET[$index];
+	}
+
 	switch($method) {
 		case 'addvalue':
-			addValueItem($_GET['type'], $_GET['value'], $_GET['time']);
+			addValueItem(get('type'), get('value'), get('time'));
 			break;
 		case 'removevalue':
-			removeValueItem($_GET['type'], $_GET['value'], $_GET['time']);
+			removeValueItem(get('type'), get('value'), get('time'));
 		case 'sleep':
-			enterSleep($_GET['sleepstart'], $_GET['sleepend']);
+			enterSleep(get('sleepstart'), get('sleepend'));
 			break;
 		case 'removesleep':
-			removeSleep($_GET['sleepstart']);
+			removeSleep(get('sleepstart'));
 			break;
 		case 'feed':
-			feed($_GET['time'], $_GET['amount']);
+			feed(get('time'), get('amount'));
 			break;
 		case 'loaddata':
-			$optionalDay = $_GET['day'];
+			$optionalDay = get('day');
 			loadData($optionalDay);
 			break;
 		case 'diagnostics':
@@ -71,31 +79,41 @@
 	function removeValueItem($type, $value, $time) {
 		$sql = "delete from baby_keyval where entry_type = '$type' and time = '$time' and entry_value = '$value';";
 		getSqlResult($sql);
+		loadData(getDayFromTimeStr($time));
 	}
 
 	function addValueItem($type, $val, $time) {
 		$sql = "insert into baby_keyval(time, entry_type, entry_value) values('$time', '$type', '$val');";
 		$res = getSqlResult($sql);
+		loadData(getDayFromTimeStr($time));
 	}
 
 	function feed($time, $amount) {
 		if ($amount == 'none') {
 			getSqlResult("delete from baby_keyval where entry_type = 'feed' and time = '$time';");
+			loadData(getDayFromTimeStr($time));
 			return;
 		}
 
 		getSqlResult("delete from baby_keyval where time = '$time' and entry_type = 'feed';");
 		getSqlResult("insert into baby_keyval (time, entry_type, entry_value) values('$time', 'feed', '$amount');");
+		loadData(getDayFromTimeStr($time));
 	}
 
 	function removeSleep($sleepstart) {
 		$sql = "delete from baby_sleep where start =  TIMESTAMP('$sleepstart');";
 		$res = getSqlResult($sql);
+		loadData(getDayFromTimeStr($sleepstart));
 	}
 
 	function enterSleep($sleepstart, $sleepend) {
 		$sql = "insert into baby_sleep(start, end) values (TIMESTAMP('$sleepstart'), TIMESTAMP('$sleepend'));";
 		$res = getSqlResult($sql);
+		loadData(getDayFromTimeStr($sleepstart));
+	}
+
+	function getDayFromTimeStr($time) {
+		return substr($time, 0, 10);
 	}
 	
 ?>

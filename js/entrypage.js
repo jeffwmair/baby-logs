@@ -16,7 +16,7 @@ APP.EntryPage = function() {
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
 		var amt = e.target.value;
 		UTILS.ajaxGetJson("services/BabyApi.php?action=feed&amount="+amt+"&time="+formatteddate, function(json) {
-			that.loadData();
+			that.handleDataLoad(false, null, json);
 		});
 	}
 
@@ -26,7 +26,7 @@ APP.EntryPage = function() {
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
 		var formattedEndDate = DATETIME.getYyyymmddFormat(myendate) + ' ' + DATETIME.getFormattedTime(myendate.getHours(), myendate.getMinutes());
 		UTILS.ajaxGetJson("services/BabyApi.php?action=sleep&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, function(json) {
-			that.loadData();
+			that.handleDataLoad(false, null, json);
 		});
 	}
 
@@ -34,7 +34,7 @@ APP.EntryPage = function() {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
 		UTILS.ajaxGetJson("services/BabyApi.php?action=removesleep&sleepstart="+formatteddate, function(json) {
-			that.loadData();
+			that.handleDataLoad(false, null, json);
 		});
 	}
 
@@ -42,28 +42,28 @@ APP.EntryPage = function() {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
 		UTILS.ajaxGetJson("services/BabyApi.php?action=addvalue&type=diaper&value=1&time="+formatteddate, function(json) {
-			that.loadData();
+			that.handleDataLoad(false, null, json);
 		});
 	}
 	var peeHandlerClickRemovePee = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
 		UTILS.ajaxGetJson("services/BabyApi.php?action=removevalue&type=diaper&value=1&time="+formatteddate, function(json) {
-			that.loadData();
+			that.handleDataLoad(false, null, json);
 		});
 	}
 	var pooHandlerClickAddPoo = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
 		UTILS.ajaxGetJson("services/BabyApi.php?action=addvalue&type=diaper&value=2&time="+formatteddate, function(json) {
-			that.loadData();
+			that.handleDataLoad(false, null, json);
 		});
 	}
 	var pooHandlerClickRemovePoo = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
 		UTILS.ajaxGetJson("services/BabyApi.php?action=removevalue&type=diaper&value=2&time="+formatteddate, function(json) {
-			that.loadData();
+			that.handleDataLoad(false, null, json);
 		});
 	}
 
@@ -239,13 +239,8 @@ APP.EntryPage = function() {
 		container.appendChild(table);
 	};
 
-	/**
-	* Load data into the page (internally finds the appropriate date)
-	*/
-	this.loadData = function(scrollToTime) {
+	this.handleDataLoad = function(scrollToTime, date, json) {
 
-		var date = this.pageState.getDate();
-		var formatteddate = DATETIME.getYyyymmddFormat(date);
 		var clearButtonStyle = function(button) {
 			button.setAttribute('style', 'background-color:none');
 		}
@@ -253,64 +248,73 @@ APP.EntryPage = function() {
 			button.setAttribute('style', 'background-color:#50c050');
 		}
 
+
+		//highlight current time row
+		setPageDayNightColor();
+
+		var datasets = CONVERTER.getNewDatasetsForJsonData(json);
+		var ds = datasets[0];
+		for(var i = 0, len = buttonList.length; i < len; i++) {
+			var btn = buttonList[i];
+			var btnClassSplit = btn.classList[0].split('_');
+			var btnType = btnClassSplit[0];
+			var time = btnClassSplit[1];
+			clearButtonStyle(btn);
+			switch(btnType) {
+				case 'sleep':
+					if (ds && ds.getSleepAtTime(time)) {
+						setActiveButtonStyle(btn);
+						btn.onclick = sleepClickHandlerIsSleeping;
+					}
+					else {
+						btn.onclick = sleepClickHandlerNotSleeping;
+					}
+					break;
+				case 'pee':
+					if (ds && ds.getPeeAtTime(time)) {
+						setActiveButtonStyle(btn);
+						btn.onclick = peeHandlerClickRemovePee;
+					}
+					else {
+						btn.onclick = peeHandlerClickAddPee;
+					}
+					break;
+				case 'poo':
+					if (ds && ds.getPooAtTime(time)) {
+						setActiveButtonStyle(btn);
+						btn.onclick = pooHandlerClickRemovePoo;
+					}
+					else {
+						btn.onclick = pooHandlerClickAddPoo;
+					}
+					break;
+				case 'feed':
+					btn.onchange = feedClickHandler;
+					if (ds && ds.getFeedAtTime(time)) {
+						setActiveButtonStyle(btn);
+						btn.value = ds.getFeedAtTime(time).value;
+					}
+					else {
+						btn.value = 'none';
+					}
+					break;
+			}
+		}
+
+		if (scrollToTime &&  date.getDayTime() == (new Date()).getDayTime()) {
+			scrollToCurrentTime();
+		}
+	};
+
+	/**
+	* Load data into the page (internally finds the appropriate date)
+	*/
+	this.loadData = function(scrollToTime) {
+
+		var date = this.pageState.getDate();
+		var formatteddate = DATETIME.getYyyymmddFormat(date);
 		UTILS.ajaxGetJson("services/BabyApi.php?action=loaddata&day="+formatteddate, function(json) {
-
-			//highlight current time row
-			setPageDayNightColor();
-
-			var datasets = CONVERTER.getNewDatasetsForJsonData(json);
-			var ds = datasets[0];
-			for(var i = 0, len = buttonList.length; i < len; i++) {
-				var btn = buttonList[i];
-				var btnClassSplit = btn.classList[0].split('_');
-				var btnType = btnClassSplit[0];
-				var time = btnClassSplit[1];
-				clearButtonStyle(btn);
-				switch(btnType) {
-					case 'sleep':
-						if (ds && ds.getSleepAtTime(time)) {
-							setActiveButtonStyle(btn);
-							btn.onclick = sleepClickHandlerIsSleeping;
-						}
-						else {
-							btn.onclick = sleepClickHandlerNotSleeping;
-						}
-						break;
-					case 'pee':
-						if (ds && ds.getPeeAtTime(time)) {
-							setActiveButtonStyle(btn);
-							btn.onclick = peeHandlerClickRemovePee;
-						}
-						else {
-							btn.onclick = peeHandlerClickAddPee;
-						}
-						break;
-					case 'poo':
-						if (ds && ds.getPooAtTime(time)) {
-							setActiveButtonStyle(btn);
-							btn.onclick = pooHandlerClickRemovePoo;
-						}
-						else {
-							btn.onclick = pooHandlerClickAddPoo;
-						}
-						break;
-					case 'feed':
-						btn.onchange = feedClickHandler;
-						if (ds && ds.getFeedAtTime(time)) {
-							setActiveButtonStyle(btn);
-							btn.value = ds.getFeedAtTime(time).value;
-						}
-						else {
-							btn.value = 'none';
-						}
-						break;
-				}
-			}
-
-			if (scrollToTime &&  date.getDayTime() == (new Date()).getDayTime()) {
-				scrollToCurrentTime();
-			}
-
+			that.handleDataLoad(scrollToTime, date, json);
 		});
 
 	}
