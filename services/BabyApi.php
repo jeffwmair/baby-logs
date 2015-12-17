@@ -1,6 +1,11 @@
 <?php
+
 	require "utils.php";
 	require "Dataset.php";
+	require "src/DatasetConverter.php";
+	require "src/ReportService.php";
+	require "src/RecordMapper.php";
+
 	$method = get('action');
 
 	/*
@@ -8,14 +13,6 @@
 	 * If the sleep started on the previous day, we need to end it that day at 23:59:59,
 	 * then start and end another record for this new day.
 	 */
-
-	function get($index) {
-		if (!isset($_GET[$index])) {
-			return NULL;
-		}
-
-		return $_GET[$index];
-	}
 
 	switch($method) {
 		case 'addvalue':
@@ -37,8 +34,25 @@
 			$optionalDay = get('day');
 			loadData($optionalDay);
 			break;
+		case 'loadreportdata':
+			$reportSvc = new ReportService();
+			return $reportSvc->getReportData();
+			break;
 		case 'diagnostics':
 			showDiagnostics();
+			break;
+		case 'test':
+			/*
+			$con = connect();
+			$mapper = new RecordMapper($con);
+			$svc = new ReportService($mapper);
+			$report = $svc->getBarCharReport();
+			 */
+
+			$st = new DateTime('2015-12-12');
+			$et = new DateTime('2015-12-12 03:15:00');
+			$sr = new SleepRecord($st, $et);
+			$sr->getDurationInHrs();
 			break;
 		default:
 			echo "Unknown action:'$method'";
@@ -69,6 +83,10 @@
 		$sleeps = convertSqlRowsToArray(getSqlResult($sql_sleeps));
 		$feeds = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'feed' $valWhere order by time"));
 		$diapers = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'diaper' $valWhere order by time"));
+
+//		$dsConverter = new DatasetConverter($sleeps, $diapers, $feeds);
+//		var_dump($dsConverter);
+
 
 		$jsonArr = array();
 		$jsonArr["sleeps"] = $sleeps;
@@ -115,6 +133,13 @@
 
 	function getDayFromTimeStr($time) {
 		return substr($time, 0, 10);
+	}
+
+	function get($index) {
+		if (!isset($_GET[$index])) {
+			return NULL;
+		}
+		return $_GET[$index];
 	}
 	
 ?>
