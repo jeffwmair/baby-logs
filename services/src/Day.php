@@ -5,12 +5,13 @@
  */
 class Day {
 
+	private $day;
 	private $sleeps;
 	private $diapers;
 	private $feeds;
 	private $summarizedSleeps;
 
-	public function __construct($sleeps, $diapers, $feeds) {
+	public function __construct($day, $sleeps, $diapers, $feeds) {
 		$this->sleeps = $sleeps;
 		$this->diapers = $diapers;
 		$this->feeds = $feeds;
@@ -28,7 +29,11 @@ class Day {
 		return $hrs;
 	}
 
+	/**
+	 * Sleep records between 8:30pm and 7:00am.
+	 */
 	public function getNightSleeps() {
+		$sleeps = $this->getSummarizedSleeps();
 		throw new Exception("not yet implemented");
 	}
 
