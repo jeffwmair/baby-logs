@@ -6,19 +6,69 @@
 class Day {
 
 	private $day;
+	private $dayEnd;
 	private $sleeps;
+	private $sleepsPastMidnight;
 	private $diapers;
 	private $feeds;
 	private $summarizedSleeps;
 
-	public function __construct($day, $sleeps, $diapers, $feeds) {
-		$this->sleeps = $sleeps;
-		$this->diapers = $diapers;
-		$this->feeds = $feeds;
+	public function __construct($day) {
+		$this->day = new DateTime($day);
+		$this->dayEnd = new DateTime("$day 23:59:59");
+		$this->sleeps = array();
+		$this->sleepsPastMidnight = array();
+		$this->diapers = array();
+		$this->feeds = array();
 	}
 
-	public function getNightSleepTimeHrs() {
-		throw new Exception("not yet implemented");
+	public function addSleepRecord($record) {
+		array_push($this->sleeps, $record);
+	}
+
+	public function addPastMidnightSleep( $sleepRecord ) {
+		array_push( $this->sleepsPastMidnight, $sleepRecord );
+	}
+
+	public function addDiaperRecord($record) {
+		array_push($this->diapers, $record);
+	}
+
+	public function addFeedRecord($record) {
+		array_push($this->feeds, $record);
+	}
+
+	public function getDay() {
+		return $this->day;
+	}
+
+	public function getUninterruptedNightSleepTimeHrs() {
+
+		$eveningSleeps = $this->getSummarizedSleeps();
+		$afterMidnightSleeps = $this->summarizeSleeps($this->sleepsPastMidnight);
+
+		$nightSleeps = array();
+		foreach($eveningSleeps as $s) {
+			$hr = $s->getStartTime()->format('H');
+			if ( $hr >= 20 ) {
+				array_push( $nightSleeps, $s );
+			}
+		}
+		foreach($afterMidnightSleeps as $s) {
+			array_push( $nightSleeps, $s );
+		}
+
+		$summarizedNightSleeps = $this->summarizeSleeps( $nightSleeps );
+
+		$maxDuration = 0;
+		foreach ($summarizedNightSleeps as $s ) {
+			if ( $s->getDurationInHrs() > $maxDuration ) {
+				$maxDuration = $s->getDurationInHrs();
+			}
+		}
+
+		return $maxDuration;
+
 	}
 
 	public function getTotalSleepTimeHrs() {
@@ -27,14 +77,6 @@ class Day {
 			$hrs += $s->getDurationInHrs();
 		}
 		return $hrs;
-	}
-
-	/**
-	 * Sleep records between 8:30pm and 7:00am.
-	 */
-	public function getNightSleeps() {
-		$sleeps = $this->getSummarizedSleeps();
-		throw new Exception("not yet implemented");
 	}
 
 	public function getSummarizedSleeps() {

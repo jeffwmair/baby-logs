@@ -6,13 +6,11 @@ include_once('../src/SleepRecord.php');
 class DayTest extends PHPUnit_Framework_TestCase {
 
 	public function testSleepSummarize() {
-		$sleeps = array();
-		$diapers = array();
-		$feeds = array();
 
-		array_push($sleeps, new SleepRecord( new DateTime("2015-12-01 08:00:00"), new DateTime("2015-12-01 08:15:00") ));
-		array_push($sleeps, new SleepRecord( new DateTime("2015-12-01 08:15:00"), new DateTime("2015-12-01 08:30:00") ));
-		$day = new Day(null, $sleeps, $diapers, $feeds);
+		$day = new Day('2015-12-01');
+		$day->addSleepRecord( new SleepRecord( new DateTime("2015-12-01 08:00:00"), new DateTime("2015-12-01 08:15:00") ) );
+		$day->addSleepRecord( new SleepRecord( new DateTime("2015-12-01 08:15:00"), new DateTime("2015-12-01 08:30:00") ) );
+ 
 
 		$sleepSummaries = $day->getSummarizedSleeps();
 		$this->assertEquals(1, count($sleepSummaries));
@@ -23,15 +21,23 @@ class DayTest extends PHPUnit_Framework_TestCase {
 
 	public function testSleepTotalTime() {
 
-		$sleeps = array();
-		array_push( $sleeps, new SleepRecord( new DateTime("2015-12-01 08:00:00"), new DateTime("2015-12-01 08:15:00") ) );
-		array_push( $sleeps, new SleepRecord( new DateTime("2015-12-01 08:15:00"), new DateTime("2015-12-01 08:30:00") ) );
-		array_push( $sleeps, new SleepRecord( new DateTime("2015-12-01 08:30:00"), new DateTime("2015-12-01 08:45:00") ) );
-
-		$day = new Day( null, $sleeps, null, null );
+		$day = new Day( '2015-12-01' );
+		$day->addSleepRecord( new SleepRecord( new DateTime("2015-12-01 08:00:00"), new DateTime("2015-12-01 08:15:00") ) );
+		$day->addSleepRecord( new SleepRecord( new DateTime("2015-12-01 08:15:00"), new DateTime("2015-12-01 08:30:00") ) );
+		$day->addSleepRecord( new SleepRecord( new DateTime("2015-12-01 08:30:00"), new DateTime("2015-12-01 08:45:00") ) );
 
 		$this->assertEquals( 0.75, $day->getTotalSleepTimeHrs() );
 
+	}
+
+	public function testGetNightSleep() {
+
+		$day = new Day( '2015-12-01' );
+		$day->addSleepRecord( new SleepRecord( new DateTime("2015-12-01 20:00:00"), new DateTime("2015-12-02 00:00:00") ) );
+		$day->addPastMidnightSleep( new SleepRecord( new DateTime("2015-12-02 00:00:00"), new DateTime("2015-12-02 00:30:00") ) );
+		$day->addPastMidnightSleep( new SleepRecord( new DateTime("2015-12-02 01:00:00"), new DateTime("2015-12-02 06:00:00") ) );
+
+		$this->assertEquals( 5.0, $day->getUninterruptedNightSleepTimeHrs() );
 	}
 
 }

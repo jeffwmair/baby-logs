@@ -12,7 +12,7 @@ class DiaperRecord {
 		if ( $type < 1 || $type > 3 ) {
 			throw new Exception("Invalid diaper type: $type");
 		}
-		$this->time = $time;
+		$this->time = new DateTime( $time );
 		$this->type = $type;
 	}
 }

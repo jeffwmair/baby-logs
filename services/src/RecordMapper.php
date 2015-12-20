@@ -12,18 +12,59 @@ class RecordMapper {
 		$this->connection = $connection;
 	}
 
+	private function createDayIfNotExists(&$days, $dayKey) {
+
+		$day = null;
+		if (!array_key_exists($dayKey, $days)) {
+			$day = new Day($dayKey);
+			$days["$dayKey"] = $day;
+		}
+		return $days["$dayKey"];
+
+	}
+
 	public function getAllDays() {
 
-		$sleeps = $this->getAllSleepRecords();
-		$diapers = $this->getAllDiaperRecords();
-		$feeds = $this->getAllFeedRecords();
+		$days = array();
 
-		/* get all the distinct days; just getting from baby_keyval is enough because he surely eats every day */
-		$sql = "select distinct(DATE_FORMAT(time, '%Y-%m-%d')) from baby_keyval order by time asc";
-		$rows  = getSqlResult($sql);
-		while ($row = @ mysql_fetch_array($rows, MYSQL_ASSOC))  {
-			// day object for each day
+		$sql = "select id, start, end, DATE_FORMAT(start, '%Y-%m-%d') as day from baby_sleep order by start ASC";
+		$sleepRows  = getSqlResult($sql);
+
+		while ($row = @ mysql_fetch_array($sleepRows, MYSQL_ASSOC))  {
+			$day = $this->createDayIfNotExists($days, $row['day']);
+			$sleepRecord = new SleepRecord(new DateTime($row['start']), new DateTime($row['end']));
+			$day->addSleepRecord($sleepRecord);
+
+			/**
+			 * if sleep start is between midnight and 6:30am, then add as night sleep to previous day
+			 */
+
+			$hr = $sleepRecord->getStartTime()->format('H');
+			if ( $hr >= 00 && $hr <= 7 ) {
+				// add to the previous day
+				$prevDayDate = new DateTime();
+				$prevDayDate->setTimestamp( $day->getDay()->getTimestamp() - ( 24 * 60 * 60 ) );
+				$prevDay = $this->createDayIfNotExists($days, $prevDayDate->format('Y-m-d') );
+				$prevDay->addPastMidnightSleep( $sleepRecord );
+			}
 		}
+
+		$sql = "select time, DATE_FORMAT(time, '%Y-%m-%d') as day, entry_type, entry_value from baby_keyval order by time ASC";
+		$rows  = getSqlResult($sql);
+
+		while ($row = @ mysql_fetch_array($rows, MYSQL_ASSOC))  {
+			$day = $this->createDayIfNotExists($days, $row['day']);
+			switch ($row['entry_type']) {
+				case "feed":
+					$day->addFeedRecord( new FeedRecord( $row['time'], $row['entry_value'] ) );
+					break;
+				case "diaper":
+					$day->addDiaperRecord( new DiaperRecord( $row['time'], $row['entry_value'] ) );
+					break;
+			}
+		}
+
+		return $days;
 
 	}
 
@@ -35,7 +76,7 @@ class RecordMapper {
 		$rows  = getSqlResult($sql);
 		$res = Array();
 		while ($row = @ mysql_fetch_array($rows, MYSQL_ASSOC))  {
-			$sleepRecord = new SleepRecord($row['start'], $row['end']);
+			$sleepRecord = new SleepRecord( new DateTime( $row['start'] ), new DateTime( $row['end'] ));
 			array_push($res, $sleepRecord);
 		}
 		return $res;
@@ -45,6 +86,7 @@ class RecordMapper {
 	//
 
 	public function getAllDiaperRecords() {
+		/*
 		$diapers = array();
 		$records = $this->getAllKeyValRecords();
 		foreach( $records as $record ) {
@@ -53,9 +95,11 @@ class RecordMapper {
 			}
 		}
 		return $diapers;
+		 */
 	}
 
 	public function getAllFeedRecords() {
+		/*
 		$feeds = array();
 		$records = $this->getAllKeyValRecords();
 		foreach( $records as $record ) {
@@ -64,24 +108,9 @@ class RecordMapper {
 			}
 		}
 		return $feeds;
+		 */
 	}
 
-	private $keyvalRecords = null;
-	private function getAllKeyValRecords() {
-
-		if ($this->keyvalRecords == null) {
-
-			$this->keyvalRecords = array();
-			$sql = "select time, entry_type, entry_value from baby_keyval order by time ASC";
-			$rows  = getSqlResult($sql);
-			while ($row = @ mysql_fetch_array($rows, MYSQL_ASSOC))  {
-				array_push($this->keyvalRecords, $row);
-			}
-
-		}
-
-		return $this->keyvalRecords;
-	}
 
 	/* helper to execute sql and deal with errors */
 	private function getSqlResult($sql) {

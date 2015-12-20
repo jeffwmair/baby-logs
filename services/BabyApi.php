@@ -44,8 +44,8 @@
 		case 'test':
 			$con = connect();
 			$mapper = new RecordMapper($con);
-			$x = $mapper->getAllFeedRecords();
-			var_dump($x);
+			$x = $mapper->getAllDays();
+			//var_dump($x);
 			/*
 			$svc = new ReportService($mapper);
 			$report = $svc->getBarCharReport();
