@@ -36,9 +36,8 @@ class RecordMapper {
 			$day->addSleepRecord($sleepRecord);
 
 			/**
-			 * if sleep start is between midnight and 6:30am, then add as night sleep to previous day
+			 * if sleep start is between midnight and 7am, then add as night sleep to previous day
 			 */
-
 			$hr = $sleepRecord->getStartTime()->format('H');
 			if ( $hr >= 00 && $hr <= 7 ) {
 				// add to the previous day
@@ -80,35 +79,6 @@ class RecordMapper {
 			array_push($res, $sleepRecord);
 		}
 		return $res;
-	}
-
-	// time entry_type, entry_value (diaper, feed)
-	//
-
-	public function getAllDiaperRecords() {
-		/*
-		$diapers = array();
-		$records = $this->getAllKeyValRecords();
-		foreach( $records as $record ) {
-			if ( $record['entry_type'] == 'diaper' ) {
-				array_push($diapers, new DiaperRecord( $record['time'], $record['entry_value'] ) );
-			}
-		}
-		return $diapers;
-		 */
-	}
-
-	public function getAllFeedRecords() {
-		/*
-		$feeds = array();
-		$records = $this->getAllKeyValRecords();
-		foreach( $records as $record ) {
-			if ( $record['entry_type'] == 'feed' ) {
-				array_push($feeds, new FeedRecord( $record['time'], $record['entry_value'] ) );
-			}
-		}
-		return $feeds;
-		 */
 	}
 
 

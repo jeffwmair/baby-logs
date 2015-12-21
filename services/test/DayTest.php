@@ -30,7 +30,7 @@ class DayTest extends PHPUnit_Framework_TestCase {
 
 	}
 
-	public function testGetNightSleep() {
+	public function testGetNightSleepDuration() {
 
 		$day = new Day( '2015-12-01' );
 		$day->addSleepRecord( new SleepRecord( new DateTime("2015-12-01 20:00:00"), new DateTime("2015-12-02 00:00:00") ) );

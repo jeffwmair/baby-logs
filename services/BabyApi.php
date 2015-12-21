@@ -44,17 +44,11 @@
 		case 'test':
 			$con = connect();
 			$mapper = new RecordMapper($con);
-			$x = $mapper->getAllDays();
-			//var_dump($x);
-			/*
 			$svc = new ReportService($mapper);
 			$report = $svc->getBarCharReport();
-
-			$st = new DateTime('2015-12-12');
-			$et = new DateTime('2015-12-12 03:15:00');
-			$sr = new SleepRecord($st, $et);
-			$sr->getDurationInHrs();
-			 */
+			$json = json_encode($report);
+			header('Content-Type: application/json');
+			echo $json;
 			break;
 		default:
 			echo "Unknown action:'$method'";
