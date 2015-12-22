@@ -1,8 +1,9 @@
 <?php
 
-require "SleepRecord.php";
-require "DiaperRecord.php";
-require "FeedRecord.php";
+require_once('SleepRecord.php');
+require_once('DiaperRecord.php');
+require_once('FeedRecord.php');
+require_once('Day.php');
 
 class RecordMapper {
 

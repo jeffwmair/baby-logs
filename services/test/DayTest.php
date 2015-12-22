@@ -40,4 +40,36 @@ class DayTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals( 5.0, $day->getUninterruptedNightSleepTimeHrs() );
 	}
 
+	public function testPooCount() {
+
+		$day = new Day( '2015-01-01' );
+		$day->addDiaperRecord( new DiaperRecord('2015-01-01 08:00', 1) );
+		$day->addDiaperRecord( new DiaperRecord('2015-01-01 08:15', 2) );
+		$day->addDiaperRecord( new DiaperRecord('2015-01-01 08:30', 3) );
+		$this->assertEquals( 2, $day->getPooCount() );
+
+	}
+
+	public function testGetFeedAmounts() {
+
+		$day = new Day( '2015-01-01' );
+		$day->addFeedRecord( new FeedRecord('2015-01-01 08:00', '100') );
+		$day->addFeedRecord( new FeedRecord('2015-01-01 08:10', '100') );
+		$day->addFeedRecord( new FeedRecord('2015-01-01 08:20', 'BR') );
+		$day->addFeedRecord( new FeedRecord('2015-01-01 08:30', 'BL') );
+		$day->addFeedRecord( new FeedRecord('2015-01-01 08:40', 'BR') );
+		$day->addFeedRecord( new FeedRecord('2015-01-01 08:50', '300') );
+		$this->assertEquals( 500, $day->getBottleMlAmount() );
+		$this->assertEquals( 3, $day->getBreastFeedCount() );
+
+
+	}
+
+	public function testGetBreastFeedCount() {
+
+	}
+
+
+
+
 }

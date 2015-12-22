@@ -8,6 +8,9 @@ class ReportService {
 		$this->dataMapper = $dataMapper;
 	}
 
+	/**
+	 * Get an array of summarized data for the report
+	 */
 	public function getBarCharReport() {
 		$days = $this->dataMapper->getAllDays();
 		$daysReversed = array_reverse($days);
@@ -32,16 +35,20 @@ class ReportService {
 				"day" => $day->getDay()->format('Y-m-d'),
 				"totalSleepHrs" => $day->getTotalSleepTimeHrs(),
 				"nightSleepHrs" => $day->getUninterruptedNightSleepTimeHrs(),
-				"bottleMl" => 0,
-				"breastCount" => 0
+				"poos" => $day->getPooCount(),
+				"bottleMl" => $day->getBottleMlAmount(),
+				"breastCount" => $day->getBreastFeedCount()
 			);
 
 			array_push($reportDaily, $daySummary);
 			$i++;
 		}
 
+		$reportWeekly = array();
+
 		$report = array();
-		$report["daily"] = $reportDaily;
+		$report["daily"] = array_reverse($reportDaily);
+		$report["weekly"] = array_reverse($reportWeekly);
 
 		/**
 		 *

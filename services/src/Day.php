@@ -42,6 +42,36 @@ class Day {
 		return $this->day;
 	}
 
+	public function getPooCount() {
+		$count = 0;
+		foreach($this->diapers as $diaper) {
+			if ($diaper->type == 2 || $diaper->type == 3) {
+				$count++;
+			}
+		}
+		return $count;
+	}
+
+	public function getBottleMlAmount() {
+		$ml = 0;
+		foreach($this->feeds as $feed) {
+			if (is_numeric($feed->value)) {
+				$ml += floatval($feed->value);
+			}
+		}
+		return $ml;
+	}
+
+	public function getBreastFeedCount() {
+		$num = 0;
+		foreach($this->feeds as $feed) {
+			if ( $feed->value == 'BR' || $feed->value == 'BL' ) {
+				$num++;
+			}
+		}
+		return $num;
+	}
+
 	public function getUninterruptedNightSleepTimeHrs() {
 
 		$eveningSleeps = $this->getSummarizedSleeps();

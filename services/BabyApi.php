@@ -2,7 +2,6 @@
 
 	require "utils.php";
 	require "Dataset.php";
-	require "src/DatasetConverter.php";
 	require "src/ReportService.php";
 	require "src/RecordMapper.php";
 
