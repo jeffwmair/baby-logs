@@ -5,6 +5,7 @@
  */
 class Day {
 
+
 	private $day;
 	private $dayEnd;
 	private $sleeps;
@@ -13,35 +14,57 @@ class Day {
 	private $feeds;
 	private $summarizedSleeps;
 
+
+	/**
+	 * Constructor
+	 */
 	public function __construct($day) {
+
 		$this->day = new DateTime($day);
 		$this->dayEnd = new DateTime("$day 23:59:59");
 		$this->sleeps = array();
 		$this->sleepsPastMidnight = array();
 		$this->diapers = array();
 		$this->feeds = array();
+
 	}
+
 
 	public function addSleepRecord($record) {
 		array_push($this->sleeps, $record);
 	}
 
+
+	/**
+	 * Add a sleep record that is not strictly part of this day
+	 * but counted as this day's night sleep.
+	 */
 	public function addPastMidnightSleep( $sleepRecord ) {
 		array_push( $this->sleepsPastMidnight, $sleepRecord );
 	}
+
 
 	public function addDiaperRecord($record) {
 		array_push($this->diapers, $record);
 	}
 
+
 	public function addFeedRecord($record) {
 		array_push($this->feeds, $record);
 	}
 
+
+	/**
+	 * What day is it?
+	 */
 	public function getDay() {
 		return $this->day;
 	}
 
+
+	/**
+	 * how many poopie diapers
+	 */
 	public function getPooCount() {
 		$count = 0;
 		foreach($this->diapers as $diaper) {
@@ -52,6 +75,10 @@ class Day {
 		return $count;
 	}
 
+
+	/**
+	 * How many millilitres of bottle-fed milk in the day
+	 */
 	public function getBottleMlAmount() {
 		$ml = 0;
 		foreach($this->feeds as $feed) {
@@ -62,6 +89,10 @@ class Day {
 		return $ml;
 	}
 
+
+	/**
+	 * How many times was fed directly at the breast in the day
+	 */
 	public function getBreastFeedCount() {
 		$num = 0;
 		foreach($this->feeds as $feed) {
@@ -71,6 +102,7 @@ class Day {
 		}
 		return $num;
 	}
+
 
 	public function getUninterruptedNightSleepTimeHrs() {
 
@@ -101,6 +133,7 @@ class Day {
 
 	}
 
+
 	public function getTotalSleepTimeHrs() {
 		$hrs = 0.0;
 		foreach($this->sleeps as $s) {
@@ -117,6 +150,7 @@ class Day {
 
 		return $this->summarizedSleeps;
 	}
+
 
 	/**
 	 * Summarize the $sleeps records by merging those that are contiguous
@@ -148,4 +182,5 @@ class Day {
 
 		return $records;
 	}
+
 }

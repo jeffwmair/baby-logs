@@ -11,24 +11,34 @@ class ReportService {
 	/**
 	 * Get an array of summarized data for the report
 	 */
-	public function getBarCharReport() {
+	public function getBarChartReport( $dailyDays ) {
+
 		$days = $this->dataMapper->getAllDays();
+		$reportDaily = $this->getDailyReportData( $dailyDays, $days );
+		$reportWeekly = $this->getWeeklyReportData( $days );
+
+		$report = array(
+			"daily" => $reportDaily,
+			"weekly" => $reportWeekly 
+		);
+
+		return $report;
+
+	}
+
+	
+	private function getDailyReportData($nDays, $days) {
+
+		// reverse initially so we can easily get the last N days
 		$daysReversed = array_reverse($days);
 
-		/*
-		 * last 4
-		 * a b c d* e* f* g*
-		 *
-		 */
-
 		$reportDaily = array();
-		$maxDaily = 10;
 		$i = 1;
 
 		foreach($daysReversed as $day) {
 
 			// only include this many
-			if ($i > $maxDaily) break;
+			if ($i > $nDays) break;
 
 			// create a summary entry array
 			$daySummary = array(
@@ -44,29 +54,103 @@ class ReportService {
 			$i++;
 		}
 
-		$reportWeekly = array();
-
-		$report = array();
-		$report["daily"] = array_reverse($reportDaily);
-		$report["weekly"] = array_reverse($reportWeekly);
-
-		/**
-		 *
-		 * report:
-		 * 		daily (10)
-		 * 			total sleep
-		 * 			night sleep uninterrupted
-		 * 			bottle ml
-		 * 			breast count
-		 * 		weekly (~)
-		 * 			total sleep
-		 * 			night sleep uninterrupted
-		 * 			bottle ml
-		 * 			breast count
-		 */
-
-		return $report;
+		return array_reverse( $reportDaily );
 
 	}
 
+
+	private function getWeeklyReportData( $days ) {
+
+		$reportData = array();
+
+		$prevWeekSummaryStart = null;
+		$i = 0;
+		$totalSleepHrs = 0;
+		$nightSleepHrs = 0;
+		$poos = 0;
+		$bottleMl = 0;
+		$breastCount = 0;
+
+		$day = null;
+		foreach( $days as $day ) {
+
+			// first time only
+			if ( $prevWeekSummaryStart == null ) {
+				$prevWeekSummaryStart = new DateTime();
+				$prevWeekSummaryStart->setTimestamp( $day->getDay()->getTimestamp() );
+			}
+
+			// summarize if we are on a new week
+			$weekSummaryStart = $this->getPreviousSunday( $day->getDay() );
+			if ( $weekSummaryStart->getTimestamp() != $prevWeekSummaryStart->getTimestamp() && $i > 0 ) {
+				$summary = $this->summarizeWeek( $prevWeekSummaryStart, $totalSleepHrs, $nightSleepHrs, $poos, $bottleMl, $breastCount, $i );
+				array_push($reportData, $summary);
+				$totalSleepHrs = 0; $nightSleepHrs = 0; $poos = 0; $bottleMl = 0; $breastCount = 0; $i = 0;
+				$prevWeekSummaryStart = $weekSummaryStart;
+			}
+
+			// aggregate the numbers
+			$totalSleepHrs += $day->getTotalSleepTimeHrs();
+			$nightSleepHrs += $day->getUninterruptedNightSleepTimeHrs();
+			$poos += $day->getPooCount();
+			$bottleMl += $day->getBottleMlAmount();
+			$breastCount += $day->getBreastFeedCount();
+			$i++;
+
+		}
+
+		// summarize the last week or week fragment
+		if ( $i > 0 ) {
+			$summary = $this->summarizeWeek( $prevWeekSummaryStart, $totalSleepHrs, $nightSleepHrs, $poos, $bottleMl, $breastCount, $i );
+			array_push($reportData, $summary);
+			$i = 0;
+			$prevWeekSummaryStart = $weekSummaryStart;
+		}
+
+		return $reportData;
+	}
+
+
+	private function getPreviousSunday( $day ) {
+		// subtract from the given date until we pass 1 sunday and reach another
+		$foundFirstSunday = false;
+		$foundSecondSunday = false;
+		$tempDay = new DateTime();
+		$tempDay->setTimestamp( $day->getTimestamp() );
+		while ( ! $foundSecondSunday ) {
+
+			$tempDay->setTimestamp( $tempDay->getTimestamp() - (24 * 60 * 60) );
+			if ( $tempDay->format("D") == "Sun" ) {
+				//$foundSecondSunday = $foundFirstSunday;
+				//$foundFirstSunday = true;
+				$foundSecondSunday = true;
+			}	
+
+		}
+
+		return $tempDay;
+	}
+
+
+	private function summarizeWeek($sundayDate, $totalSleepHrs, $nightSleepHrs, $poos, $bottleMl, $breastCount, $dayCount) {
+
+		$roundPrecision = 1;
+		$summary = array(
+			"day" => $sundayDate->format("Y-m-d"),
+			"totalSleepHrs" => round($totalSleepHrs / $dayCount, $roundPrecision),
+			"nightSleepHrs" => round($nightSleepHrs / $dayCount, $roundPrecision),
+			"poos" => round($poos / $dayCount, $roundPrecision),
+			"bottleMl" => round($bottleMl / $dayCount, $roundPrecision),
+			"breastCount" => round($breastCount / $dayCount, $roundPrecision)
+		);
+		return $summary;
+
+	}
+
+
+	private function getWeekNumber( $date ) {
+		$nextDay = new DateTime();
+		$nextDay->setTimestamp( $date->getTimestamp() + ( 24 * 60  * 60 ) );
+		return $nextDay->format("W");	
+	}
 }

@@ -33,18 +33,15 @@
 			$optionalDay = get('day');
 			loadData($optionalDay);
 			break;
-		case 'loadreportdata':
-			$reportSvc = new ReportService();
-			return $reportSvc->getReportData();
-			break;
 		case 'diagnostics':
 			showDiagnostics();
 			break;
-		case 'test':
+		case 'loadreportdata':
 			$con = connect();
 			$mapper = new RecordMapper($con);
 			$svc = new ReportService($mapper);
-			$report = $svc->getBarCharReport();
+			$dailyRptDays = 10;
+			$report = $svc->getBarChartReport( $dailyRptDays );
 			$json = json_encode($report);
 			header('Content-Type: application/json');
 			echo $json;

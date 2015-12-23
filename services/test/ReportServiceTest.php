@@ -5,9 +5,89 @@ require_once('../src/ReportService.php');
 
 class ReportServiceTest extends PHPUnit_Framework_TestCase {
 
-	function testCorrectNumberOfDaysReturned() {
+	function testWeeklyReport() {
 		
 		// arrange
+		//
+		$days = array();
+
+		$wk1Sun = $this->getMockBuilder('Day')->disableOriginalConstructor()->getMock();
+		$wk1Sun->method('getDay')->willReturn( new DateTime( '2015-12-13' ) );
+		$wk1Sun->method('getTotalSleepTimeHrs')->willReturn( 14 );
+		$wk1Sun->method('getUninterruptedNightSleepTimeHrs')->willReturn( 8 );
+		$wk1Sun->method('getPooCount')->willReturn( 10 );
+		$wk1Sun->method('getBottleMlAmount')->willReturn( 750 );
+		$wk1Sun->method('getBreastFeedCount')->willReturn( 5 );
+
+		$wk1Mon = $this->getMockBuilder('Day')->disableOriginalConstructor()->getMock();
+		$wk1Mon->method('getDay')->willReturn( new DateTime( '2015-12-14' ) );
+		$wk1Mon->method('getTotalSleepTimeHrs')->willReturn( 16 );
+		$wk1Mon->method('getUninterruptedNightSleepTimeHrs')->willReturn( 10 );
+		$wk1Mon->method('getPooCount')->willReturn( 12 );
+		$wk1Mon->method('getBottleMlAmount')->willReturn( 850 );
+		$wk1Mon->method('getBreastFeedCount')->willReturn( 7 );
+
+		$wk2Mon = $this->getMockBuilder('Day')->disableOriginalConstructor()->getMock();
+		$wk2Mon->method('getDay')->willReturn( new DateTime( '2015-12-21' ) );
+		$wk2Mon->method('getTotalSleepTimeHrs')->willReturn( 18 );
+		$wk2Mon->method('getUninterruptedNightSleepTimeHrs')->willReturn( 12 );
+		$wk2Mon->method('getPooCount')->willReturn( 4 );
+		$wk2Mon->method('getBottleMlAmount')->willReturn( 300 );
+		$wk2Mon->method('getBreastFeedCount')->willReturn( 4 );
+
+		$wk2Tue = $this->getMockBuilder('Day')->disableOriginalConstructor()->getMock();
+		$wk2Tue->method('getDay')->willReturn( new DateTime( '2015-12-22' ) );
+		$wk2Tue->method('getTotalSleepTimeHrs')->willReturn( 16 );
+		$wk2Tue->method('getUninterruptedNightSleepTimeHrs')->willReturn( 11 );
+		$wk2Tue->method('getPooCount')->willReturn( 5 );
+		$wk2Tue->method('getBottleMlAmount')->willReturn( 400 );
+		$wk2Tue->method('getBreastFeedCount')->willReturn( 8 );
+
+		$days['2015-12-13'] = $wk1Sun;
+		$days['2015-12-14'] = $wk1Mon;
+		$days['2015-12-21'] = $wk2Mon;
+		$days['2015-12-22'] = $wk2Tue;
+
+		$mapperStub = $this->getMockBuilder('RecordMapper')->disableOriginalConstructor()->getMock();
+		$mapperStub->method('getAllDays')->willReturn($days);
+		$service = new ReportService($mapperStub);
+
+		// act
+		//
+		$report = $service->getBarChartReport( 15 );
+
+		// assert
+		//
+		$reportWeekly = $report["weekly"];
+		$expectedWeeks = 2;
+		$this->assertEquals( $expectedWeeks, count($reportWeekly) );
+		
+		// get the summary records
+		$wkSummary1 = $reportWeekly[0];
+		$wkSummary2 = $reportWeekly[1];
+
+		$this->assertEquals( '2015-12-13', $wkSummary1['day'] );
+		$this->assertEquals( 15, $wkSummary1['totalSleepHrs']);
+		$this->assertEquals( 9, $wkSummary1['nightSleepHrs'] );
+		$this->assertEquals( 11, $wkSummary1['poos'] );
+		$this->assertEquals( 800, $wkSummary1['bottleMl'] );
+		$this->assertEquals( 6, $wkSummary1['breastCount'] );
+
+		$this->assertEquals( '2015-12-20', $wkSummary2['day'] );
+		$this->assertEquals( 17, $wkSummary2['totalSleepHrs']);
+		$this->assertEquals( 11.5, $wkSummary2['nightSleepHrs'] );
+		$this->assertEquals( 4.5, $wkSummary2['poos'] );
+		$this->assertEquals( 350, $wkSummary2['bottleMl'] );
+		$this->assertEquals( 6, $wkSummary2['breastCount'] );
+		
+
+
+	}
+
+	function testDailyReport() {
+		
+		// arrange
+		//
 		$days = array();
 		$day1 = $this->getMockBuilder('Day')->disableOriginalConstructor()->getMock();
 		$day1->method('getDay')->willReturn( new DateTime( '2000-01-01' ) );
@@ -31,19 +111,20 @@ class ReportServiceTest extends PHPUnit_Framework_TestCase {
 		$service = new ReportService($mapperStub);
 
 		// act
-		$report = $service->getBarCharReport();
+		//
+		$report = $service->getBarChartReport( 10 );
 
 		// assert
+		//
 		$toplevelElements = 2;
 		$this->assertEquals($toplevelElements, count($report));
 
 		$reportDaily = $report["daily"];
-		$reportWeekly = $report["weekly"];
 
 		// one entry for each day
 		$this->assertEquals(2, count($reportDaily));
 
-		// test one of the day summaries
+		// get the summary records
 		$daySummary1 = $reportDaily[0];
 		$daySummary2 = $reportDaily[1];
 		
@@ -61,11 +142,6 @@ class ReportServiceTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(850, $daySummary2['bottleMl']);
 		$this->assertEquals(7, $daySummary2['breastCount']);
 		
-	}
-
-	function testFoo() {
-	}
-	function testBar() {
 	}
 
 }

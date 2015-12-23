@@ -1,5 +1,7 @@
 if (typeof CONVERTER === "undefined" ) CONVERTER = {};
 
+
+
 CONVERTER.populateDatasetsFromJsonData = function(datasets, json) {
 	json.sleeps.forEach(function(sleep) {
 		var ds = CONVERTER.getDatasetForDate(datasets, new Date(sleep.start));
@@ -39,6 +41,33 @@ CONVERTER.getNewDatasetsForJsonData = function(json) {
 
 	CONVERTER.populateDatasetsFromJsonData(datasets, json);
 	return datasets;
+}
+
+CONVERTER.ReportDataConverterForChart = function() {
+
+	this.getChartData = function( reportJson ) {
+
+		var resultObj = {};
+		resultObj.dates = [];
+		resultObj.totalSleepHrs = [];
+		resultObj.nightSleepHrs = [];
+		resultObj.bottleMl = [];
+		resultObj.breastCount = [];
+		resultObj.poos = [];
+
+		reportJson.forEach( function( summary ) {
+			resultObj.dates.push( new Date(summary.day) );
+			resultObj.totalSleepHrs.push( summary.totalSleepHrs );
+			resultObj.nightSleepHrs.push( summary.nightSleepHrs );
+			resultObj.bottleMl.push( summary.bottleMl );
+			resultObj.breastCount.push( summary.breastCount );
+			resultObj.poos.push( summary.poos );
+		});
+
+		return resultObj;
+
+	}
+
 }
 
 CONVERTER.DatasetConverter = function() {
