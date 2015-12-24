@@ -5,6 +5,85 @@ require_once('../src/ReportService.php');
 
 class ReportServiceTest extends PHPUnit_Framework_TestCase {
 
+	function testWeeklyAverage() {
+
+		print "\n\nSTART TEST\n\n";
+		// arrange
+		//
+		$days = array();
+
+		$day1 = $this->getMockBuilder('Day')->disableOriginalConstructor()->getMock();
+		$day1->method('getDay')->willReturn( new DateTime( '2015-12-12' ) );
+		$day1->method('getUninterruptedNightSleepTimeHrs')->willReturn( 8.25 );
+
+		$day2 = $this->getMockBuilder('Day')->disableOriginalConstructor()->getMock();
+		$day2->method('getDay')->willReturn( new DateTime( '2015-12-13' ) );
+		$day2->method('getUninterruptedNightSleepTimeHrs')->willReturn( 9.75 );
+
+		$day3 = $this->getMockBuilder('Day')->disableOriginalConstructor()->getMock();
+		$day3->method('getDay')->willReturn( new DateTime( '2015-12-14' ) );
+		$day3->method('getUninterruptedNightSleepTimeHrs')->willReturn( 9.5 );
+
+		$day4 = $this->getMockBuilder('Day')->disableOriginalConstructor()->getMock();
+		$day4->method('getDay')->willReturn( new DateTime( '2015-12-15' ) );
+		$day4->method('getUninterruptedNightSleepTimeHrs')->willReturn( 9.75 );
+
+		$day5 = $this->getMockBuilder('Day')->disableOriginalConstructor()->getMock();
+		$day5->method('getDay')->willReturn( new DateTime( '2015-12-16' ) );
+		$day5->method('getUninterruptedNightSleepTimeHrs')->willReturn( 6 );
+
+		$day6 = $this->getMockBuilder('Day')->disableOriginalConstructor()->getMock();
+		$day6->method('getDay')->willReturn( new DateTime( '2015-12-17' ) );
+		$day6->method('getUninterruptedNightSleepTimeHrs')->willReturn( 8.75 );
+
+		$day7 = $this->getMockBuilder('Day')->disableOriginalConstructor()->getMock();
+		$day7->method('getDay')->willReturn( new DateTime( '2015-12-18' ) );
+		$day7->method('getUninterruptedNightSleepTimeHrs')->willReturn( 9 );
+
+		$day8 = $this->getMockBuilder('Day')->disableOriginalConstructor()->getMock();
+		$day8->method('getDay')->willReturn( new DateTime( '2015-12-19' ) );
+		$day8->method('getUninterruptedNightSleepTimeHrs')->willReturn( 9.25 );
+
+		$day9 = $this->getMockBuilder('Day')->disableOriginalConstructor()->getMock();
+		$day9->method('getDay')->willReturn( new DateTime( '2015-12-20' ) );
+		$day9->method('getUninterruptedNightSleepTimeHrs')->willReturn( 8.75 );
+
+
+		$days['2015-12-12'] = $day1;
+		$days['2015-12-13'] = $day2;
+		$days['2015-12-14'] = $day3;
+		$days['2015-12-15'] = $day4;
+		$days['2015-12-16'] = $day5;
+		$days['2015-12-17'] = $day6;
+		$days['2015-12-18'] = $day7;
+		$days['2015-12-19'] = $day8;
+		$days['2015-12-20'] = $day9;
+
+		$mapperStub = $this->getMockBuilder('RecordMapper')->disableOriginalConstructor()->getMock();
+		$mapperStub->method('getAllDays')->willReturn($days);
+		$dateService = new DateService();
+		$service = new ReportService($mapperStub, $dateService);
+
+		// act
+		//
+		$report = $service->getBarChartReport( 15 );
+		print "\n\n-----------END TEST\n\n";
+
+		// assert
+		//
+		$reportWeekly = $report["weekly"];
+
+		$this->assertEquals( 3, count($reportWeekly) );
+		$wkSummary1 = $reportWeekly[0];
+		$this->assertEquals( '2015-12-06 00:00:00', $wkSummary1['day'] );
+		$wkSummary2 = $reportWeekly[1];
+		$this->assertEquals( '2015-12-13 00:00:00', $wkSummary2['day'] );
+		$wkSummary3 = $reportWeekly[2];
+		$this->assertEquals( '2015-12-20 00:00:00', $wkSummary3['day'] );
+
+		$this->assertEquals( 6.69, $wkSummary1['nightSleepHrs']);
+	}
+
 	function testWeeklyReport() {
 		
 		// arrange
@@ -50,7 +129,8 @@ class ReportServiceTest extends PHPUnit_Framework_TestCase {
 
 		$mapperStub = $this->getMockBuilder('RecordMapper')->disableOriginalConstructor()->getMock();
 		$mapperStub->method('getAllDays')->willReturn($days);
-		$service = new ReportService($mapperStub);
+		$dateService = new DateService();
+		$service = new ReportService($mapperStub, $dateService);
 
 		// act
 		//
@@ -66,14 +146,14 @@ class ReportServiceTest extends PHPUnit_Framework_TestCase {
 		$wkSummary1 = $reportWeekly[0];
 		$wkSummary2 = $reportWeekly[1];
 
-		$this->assertEquals( '2015-12-13', $wkSummary1['day'] );
+		$this->assertEquals( '2015-12-13 00:00:00', $wkSummary1['day'] );
 		$this->assertEquals( 15, $wkSummary1['totalSleepHrs']);
 		$this->assertEquals( 9, $wkSummary1['nightSleepHrs'] );
 		$this->assertEquals( 11, $wkSummary1['poos'] );
 		$this->assertEquals( 800, $wkSummary1['bottleMl'] );
 		$this->assertEquals( 6, $wkSummary1['breastCount'] );
 
-		$this->assertEquals( '2015-12-20', $wkSummary2['day'] );
+		$this->assertEquals( '2015-12-20 00:00:00', $wkSummary2['day'] );
 		$this->assertEquals( 17, $wkSummary2['totalSleepHrs']);
 		$this->assertEquals( 11.5, $wkSummary2['nightSleepHrs'] );
 		$this->assertEquals( 4.5, $wkSummary2['poos'] );
@@ -108,7 +188,8 @@ class ReportServiceTest extends PHPUnit_Framework_TestCase {
 
 		$mapperStub = $this->getMockBuilder('RecordMapper')->disableOriginalConstructor()->getMock();
 		$mapperStub->method('getAllDays')->willReturn($days);
-		$service = new ReportService($mapperStub);
+		$dateService = new DateService();
+		$service = new ReportService($mapperStub, $dateService);
 
 		// act
 		//
@@ -128,14 +209,14 @@ class ReportServiceTest extends PHPUnit_Framework_TestCase {
 		$daySummary1 = $reportDaily[0];
 		$daySummary2 = $reportDaily[1];
 		
-		$this->assertEquals('2000-01-01', $daySummary1['day']);
+		$this->assertEquals('2000-01-01 00:00:00', $daySummary1['day']);
 		$this->assertEquals(14, $daySummary1['totalSleepHrs']);
 		$this->assertEquals(8, $daySummary1['nightSleepHrs']);
 		$this->assertEquals(10, $daySummary1['poos']);
 		$this->assertEquals(750, $daySummary1['bottleMl']);
 		$this->assertEquals(5, $daySummary1['breastCount']);
 
-		$this->assertEquals('2000-01-02', $daySummary2['day']);
+		$this->assertEquals('2000-01-02 00:00:00', $daySummary2['day']);
 		$this->assertEquals(16, $daySummary2['totalSleepHrs']);
 		$this->assertEquals(10, $daySummary2['nightSleepHrs']);
 		$this->assertEquals(12, $daySummary2['poos']);

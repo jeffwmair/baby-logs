@@ -4,6 +4,7 @@
 	require "Dataset.php";
 	require "src/ReportService.php";
 	require "src/RecordMapper.php";
+	require "src/DateService.php";
 
 	$method = get('action');
 
@@ -39,8 +40,9 @@
 		case 'loadreportdata':
 			$con = connect();
 			$mapper = new RecordMapper($con);
-			$svc = new ReportService($mapper);
-			$dailyRptDays = 10;
+			$dateService = new DateService();
+			$svc = new ReportService($mapper, $dateService);
+			$dailyRptDays = 12;
 			$report = $svc->getBarChartReport( $dailyRptDays );
 			$json = json_encode($report);
 			header('Content-Type: application/json');

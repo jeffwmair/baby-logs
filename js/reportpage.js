@@ -6,20 +6,22 @@ APP.ReportPage = function(container, calHelper) {
 		return msDiff / (60000.0 * 60);
 	}
 
-	this.init_new = function( container, calHelper ) {
+	this.init = function( container, calHelper ) {
 		var that = this;
+
 		UTILS.ajaxGetJson("services/BabyApi.php?action=loadreportdata", function(json) {
+
 			var converter = new CONVERTER.ReportDataConverterForChart();
 			var chartDataDaily = converter.getChartData(json.daily);
 			var chartDataWeekly = converter.getChartData(json.weekly);
-			console.log(chartDataDaily);
-			console.log(chartDataWeekly);
+
 			configureLineChartNew('#container_linechart_daily', 'Last 10 Days', chartDataDaily);
 			configureLineChartNew('#container_linechart_weekly', 'Weekly Averages', chartDataWeekly);
+
 		});
 	}
 
-	this.init = function(container, calHelper) {
+	this.initold = function(container, calHelper) {
 		var that = this;
 		UTILS.ajaxGetJson("services/BabyApi.php?action=loaddata", function(json) {
 			var datasets = new CONVERTER.getNewDatasetsForJsonData(json);
@@ -56,15 +58,6 @@ APP.ReportPage = function(container, calHelper) {
 			var summaries = converter.convertDatasetsToSummaries(datasets);
 			var last10DaysSummary = converter.convertSummariesToSingleArraySummary(summaries.slice(summaries.length-10));
 
-/*
-			var twodays = datasets.slice(datasets.length-2);
-			var merger = new DATA.SleepMerge();
-			var sleeps = twodays[0].getSleeps();
-			sleeps = sleeps.concat(twodays[1].getSleeps());
-			var mergedSleeps = merger.mergeSleeps(sleeps);
-			*/
-
-
 			var grouper = new DATA.DataGroup();
 			var weekGroupings = grouper.groupSummariesByWeek(summaries);
 			var weekSummaryForChart = weekGroupings.getSingleSummary();
@@ -76,6 +69,7 @@ APP.ReportPage = function(container, calHelper) {
 	}
 
 	var configureLineChartNew = function(chartEl, chartTitle, data) {
+		
 		var title = chartTitle;
 		var categoryData, sleepData, sleepMaxHrsPerNight, milkData, breastFeedsData;
 		categoryData = DATETIME.datesToSimpleDisplay(data.dates);
