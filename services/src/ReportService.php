@@ -4,19 +4,21 @@ class ReportService {
 
 	private $dataMapper;
 	private $dateService;
+	private $dailyDays;
 
-	public function __construct($dataMapper, $dateService) {
+	public function __construct($dailyDays, $dataMapper, $dateService) {
 		$this->dataMapper = $dataMapper;
 		$this->dateService = $dateService;
+		$this->dailyDays = $dailyDays;
 	}
 
 	/**
 	 * Get an array of summarized data for the report
 	 */
-	public function getBarChartReport( $dailyDays ) {
+	public function getBarChartReport() {
 
 		$days = $this->dataMapper->getAllDays();
-		$reportDaily = $this->getDailyReportData( $dailyDays, $days );
+		$reportDaily = $this->getDailyReportData( $this->dailyDays, $days );
 		$reportWeekly = $this->getWeeklyReportData( $days );
 
 		$report = array(

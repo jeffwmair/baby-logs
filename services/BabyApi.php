@@ -42,7 +42,7 @@
 			$mapper = new RecordMapper($con);
 			$dateService = new DateService();
 			$svc = new ReportService($mapper, $dateService);
-			$dailyRptDays = 12;
+			$dailyRptDays = 60;
 			$report = $svc->getBarChartReport( $dailyRptDays );
 			$json = json_encode($report);
 			header('Content-Type: application/json');
