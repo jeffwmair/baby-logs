@@ -41,9 +41,9 @@
 			$con = connect();
 			$mapper = new RecordMapper($con);
 			$dateService = new DateService();
-			$svc = new ReportService($mapper, $dateService);
-			$dailyRptDays = 60;
-			$report = $svc->getBarChartReport( $dailyRptDays );
+			$dailyRptDays = 10;
+			$svc = new ReportService($dailyRptDays, $mapper, $dateService);
+			$report = $svc->getBarChartReport();
 			$json = json_encode($report);
 			header('Content-Type: application/json');
 			echo $json;

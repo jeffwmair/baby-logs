@@ -38,14 +38,23 @@ class ReportServiceTest extends PHPUnit_Framework_TestCase {
 		$day9 = $this->getMockBuilder('Day')->disableOriginalConstructor()->getMock();
 		$day9->method('getDay')->willReturn( new DateTime( '2015-11-02' ) );
 
+		// sunday (wk1)
 		$days['2015-10-25'] = $day1;
+		// monday (wk1)
 		$days['2015-10-26'] = $day2;
+		// tuesday (wk1)
 		$days['2015-10-27'] = $day3;
+		// wednesday (wk1)
 		$days['2015-10-28'] = $day4;
+		// thursday (wk1)
 		$days['2015-10-29'] = $day5;
+		// friday (wk1)
 		$days['2015-10-30'] = $day6;
+		// saturday (wk1)
 		$days['2015-10-31'] = $day7;
+		// sunday (wk2)
 		$days['2015-11-01'] = $day8;
+		// monday (wk2)
 		$days['2015-11-02'] = $day9;
 
 		$mapperStub = $this->getMockBuilder('RecordMapper')->disableOriginalConstructor()->getMock();
@@ -60,6 +69,7 @@ class ReportServiceTest extends PHPUnit_Framework_TestCase {
 		// assert
 		//
 		$reportWeekly = $report["weekly"];
+		//var_dump($reportWeekly);
 
 		$this->assertEquals( 2, count($reportWeekly) );
 		$wkSummary1 = $reportWeekly[0];

@@ -79,7 +79,6 @@ class ReportService {
 		foreach( $days as $day ) {
 
 			$daystring = $day->getDay()->format("Y-m-d");
-			//print "\n...day:$daystring...\n";
 
 			// first time only
 			if ( $prevWeekSummaryStart == null ) {
@@ -87,14 +86,8 @@ class ReportService {
 			}
 
 			// summarize if we are on a new week
-			//$weekSummaryStart = $this->getPreviousSunday( $day->getDay() );
 			$weekSummaryStart = $this->dateService->getStartOfWeekForDate( $day->getDay() );
-			$a = $weekSummaryStart->format("Y-m-d");
-			//print "previous sunday: $a";
-			if ( $weekSummaryStart != $prevWeekSummaryStart && $i > 0 ) {
-				$x = $weekSummaryStart->format('Y-m-d');
-				//print "___ $x ___";
-				//print "[summarizing] for wk ";
+			if ( $weekSummaryStart->getTimestamp() != $prevWeekSummaryStart->getTimestamp() && $i > 0 ) {
 				$summary = $this->summarizeWeek( $prevWeekSummaryStart, $totalSleepHrs, $nightSleepHrs, $poos, $bottleMl, $breastCount, $i );
 				array_push($reportData, $summary);
 				$totalSleepHrs = 0; $nightSleepHrs = 0; $poos = 0; $bottleMl = 0; $breastCount = 0; $i = 0;
@@ -113,7 +106,6 @@ class ReportService {
 
 		// summarize the last week or week fragment
 		if ( $i > 0 ) {
-			//print "[final summarize]";
 			$summary = $this->summarizeWeek( $prevWeekSummaryStart, $totalSleepHrs, $nightSleepHrs, $poos, $bottleMl, $breastCount, $i );
 			array_push($reportData, $summary);
 			$i = 0;
@@ -152,7 +144,6 @@ class ReportService {
 	private function summarizeWeek($sundayDate, $totalSleepHrs, $nightSleepHrs, $poos, $bottleMl, $breastCount, $dayCount) {
 
 		$xdate = $sundayDate->format("Y-m-d 00:00:00");
-		//print "\n$xdate; daycount:$dayCount\n";
 
 		$roundPrecision = 1;
 		$summary = array(

@@ -15,7 +15,8 @@ class DateService {
 			$shiftedDate = $this->subtract1Day( $shiftedDate );
 		}
 
-		return $shiftedDate;
+		// return the date at midnight
+		return $shiftedDate->setTime(0, 0);
 
 	}
 
