@@ -1,4 +1,4 @@
-services/credentials.php
+credentials.php
 scripts/*
 !scripts/*.c
 *.swp

@@ -5,6 +5,8 @@ var APP = APP || {};
 */
 APP.EntryPage = function() {
 
+	var API = "src/web/BabyApi.php";
+
 	var COLOR_CURRENT_TIME_ROW = "#FAFAA9";
 	var COLOR_CURRENT_TIME_ROW_NIGHT = "blue";
 
@@ -15,7 +17,7 @@ APP.EntryPage = function() {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
 		var amt = e.target.value;
-		UTILS.ajaxGetJson("services/BabyApi.php?action=feed&amount="+amt+"&time="+formatteddate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=feed&amount="+amt+"&time="+formatteddate, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
@@ -25,7 +27,7 @@ APP.EntryPage = function() {
 		var myendate = new Date(mystartdate.getTime() + (15*60000));
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
 		var formattedEndDate = DATETIME.getYyyymmddFormat(myendate) + ' ' + DATETIME.getFormattedTime(myendate.getHours(), myendate.getMinutes());
-		UTILS.ajaxGetJson("services/BabyApi.php?action=sleep&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=sleep&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
@@ -33,7 +35,7 @@ APP.EntryPage = function() {
 	var sleepClickHandlerIsSleeping = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
-		UTILS.ajaxGetJson("services/BabyApi.php?action=removesleep&sleepstart="+formatteddate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=removesleep&sleepstart="+formatteddate, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
@@ -41,28 +43,28 @@ APP.EntryPage = function() {
 	var peeHandlerClickAddPee = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
-		UTILS.ajaxGetJson("services/BabyApi.php?action=addvalue&type=diaper&value=1&time="+formatteddate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=addvalue&type=diaper&value=1&time="+formatteddate, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
 	var peeHandlerClickRemovePee = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
-		UTILS.ajaxGetJson("services/BabyApi.php?action=removevalue&type=diaper&value=1&time="+formatteddate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=removevalue&type=diaper&value=1&time="+formatteddate, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
 	var pooHandlerClickAddPoo = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
-		UTILS.ajaxGetJson("services/BabyApi.php?action=addvalue&type=diaper&value=2&time="+formatteddate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=addvalue&type=diaper&value=2&time="+formatteddate, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
 	var pooHandlerClickRemovePoo = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
-		UTILS.ajaxGetJson("services/BabyApi.php?action=removevalue&type=diaper&value=2&time="+formatteddate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=removevalue&type=diaper&value=2&time="+formatteddate, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
@@ -313,7 +315,7 @@ APP.EntryPage = function() {
 
 		var date = this.pageState.getDate();
 		var formatteddate = DATETIME.getYyyymmddFormat(date);
-		UTILS.ajaxGetJson("services/BabyApi.php?action=loaddata&day="+formatteddate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=loaddata&day="+formatteddate, function(json) {
 			that.handleDataLoad(scrollToTime, date, json);
 		});
 

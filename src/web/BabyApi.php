@@ -1,10 +1,9 @@
 <?php
 
-	require "utils.php";
-	require "Dataset.php";
-	require "src/ReportService.php";
-	require "src/RecordMapper.php";
-	require "src/DateService.php";
+	require "../utils/utils.php";
+	require "../service/ReportService.php";
+	require "../service/DateService.php";
+	require "../mapping/RecordMapper.php";
 
 	$method = get('action');
 
@@ -77,11 +76,6 @@
 		$sleeps = convertSqlRowsToArray(getSqlResult($sql_sleeps));
 		$feeds = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'feed' $valWhere order by time"));
 		$diapers = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'diaper' $valWhere order by time"));
-
-//		$dsConverter = new DatasetConverter($sleeps, $diapers, $feeds);
-//		var_dump($dsConverter);
-
-
 		$jsonArr = array();
 		$jsonArr["sleeps"] = $sleeps;
 		$jsonArr["feeds"] = $feeds;

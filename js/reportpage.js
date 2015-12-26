@@ -1,6 +1,8 @@
 var APP = APP || {};
 APP.ReportPage = function(container, calHelper) {
 
+	var API = "src/web/BabyApi.php";
+
 	var calcHoursBetweenTimes = function(date1, date2) {
 		var msDiff = date2.getTime() - date1.getTime();	
 		return msDiff / (60000.0 * 60);
@@ -9,7 +11,7 @@ APP.ReportPage = function(container, calHelper) {
 	this.init = function( container, calHelper ) {
 		var that = this;
 
-		UTILS.ajaxGetJson("services/BabyApi.php?action=loadreportdata", function(json) {
+		UTILS.ajaxGetJson(API+"?action=loadreportdata", function(json) {
 
 			var converter = new CONVERTER.ReportDataConverterForChart();
 			var chartDataDaily = converter.getChartData(json.daily);
@@ -23,7 +25,7 @@ APP.ReportPage = function(container, calHelper) {
 
 	this.initold = function(container, calHelper) {
 		var that = this;
-		UTILS.ajaxGetJson("services/BabyApi.php?action=loaddata", function(json) {
+		UTILS.ajaxGetJson(API+"?action=loaddata", function(json) {
 			var datasets = new CONVERTER.getNewDatasetsForJsonData(json);
 			//that.generate(datasets.reverse(), container, calHelper);
 

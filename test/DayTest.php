@@ -1,7 +1,7 @@
 <?php
 
-include_once('../src/Day.php');
-include_once('../src/SleepRecord.php');
+include_once(__DIR__.'/../src/domain/Day.php');
+include_once(__DIR__.'/../src/domain/SleepRecord.php');
 
 class DayTest extends PHPUnit_Framework_TestCase {
 

@@ -1,6 +1,6 @@
 <?php
 
-require_once('../src/DateService.php');
+require_once('../src/service/DateService.php');
 
 class DateServiceTest extends PHPUnit_Framework_TestCase {
 

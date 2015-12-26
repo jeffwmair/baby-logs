@@ -1,9 +1,9 @@
 <?php
 
-require_once('SleepRecord.php');
-require_once('DiaperRecord.php');
-require_once('FeedRecord.php');
-require_once('Day.php');
+require_once(__DIR__.'/../domain/SleepRecord.php');
+require_once(__DIR__.'/../domain/DiaperRecord.php');
+require_once(__DIR__.'/../domain/FeedRecord.php');
+require_once(__DIR__.'/../domain/Day.php');
 
 class RecordMapper {
 
