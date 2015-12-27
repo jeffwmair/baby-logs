@@ -16,6 +16,7 @@
 	$dataservice = new DataService( $insertMapper );
 
 	// decide what to do
+	// TODO: would be ideal to clean this up into some kind of separate object
 	switch($method) {
 		case 'addvalue':
 			$time = get('time');
@@ -26,7 +27,9 @@
 			removeValueItem(get('type'), get('value'), get('time'));
 			break;
 		case 'sleep':
-			enterSleep(get('sleepstart'), get('sleepend'));
+			$sleepstart = get('sleepstart');
+			$dataservice->addSleep($sleepstart, get('sleepend'));
+			loadData(getDayFromTimeStr($sleepstart));
 			break;
 		case 'removesleep':
 			removeSleep(get('sleepstart'));
@@ -89,13 +92,6 @@
 	}
 
 
-	function addValueItem($type, $val, $time) {
-		$sql = "insert into baby_keyval(time, entry_type, entry_value) values('$time', '$type', '$val');";
-		$res = getSqlResult($sql);
-		loadData(getDayFromTimeStr($time));
-	}
-
-
 	function feed($time, $amount) {
 		if ($amount == 'none') {
 			getSqlResult("delete from baby_keyval where entry_type = 'feed' and time = '$time';");
@@ -111,13 +107,6 @@
 
 	function removeSleep($sleepstart) {
 		$sql = "delete from baby_sleep where start =  TIMESTAMP('$sleepstart');";
-		$res = getSqlResult($sql);
-		loadData(getDayFromTimeStr($sleepstart));
-	}
-
-
-	function enterSleep($sleepstart, $sleepend) {
-		$sql = "insert into baby_sleep(start, end) values (TIMESTAMP('$sleepstart'), TIMESTAMP('$sleepend'));";
 		$res = getSqlResult($sql);
 		loadData(getDayFromTimeStr($sleepstart));
 	}

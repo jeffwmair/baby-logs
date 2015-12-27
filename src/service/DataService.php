@@ -7,8 +7,9 @@ class DataService {
 		$this->insertMapper = $insertMapper;
 	}
 	
-	function addValueItem($type, $value, $time) {
+	public function addValueItem($type, $value, $time) {
 
+		//TODO: split this into two methods
 		$record = null;
 		if ($type == 'diaper') {
 			$record = new DiaperRecord($time, $value);	
@@ -21,5 +22,12 @@ class DataService {
 		}
 
 	}
+
+
+	public function addSleep($startTime, $endTime) {
+		$record = new SleepRecord( new DateTime($startTime), new DateTime($endTime) );
+		$this->insertMapper->saveSleepRecord($record);
+	}
+
 
 }
