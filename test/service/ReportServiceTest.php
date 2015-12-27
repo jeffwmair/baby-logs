@@ -1,7 +1,7 @@
 <?php
 
-require_once(__DIR__.'/../src/mapping/RecordMapper.php');
-require_once(__DIR__.'/../src/service/ReportService.php');
+require_once(__DIR__.'/../../src/mapping/RecordMapper.php');
+require_once(__DIR__.'/../../src/service/ReportService.php');
 
 class ReportServiceTest extends PHPUnit_Framework_TestCase {
 

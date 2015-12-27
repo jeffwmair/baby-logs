@@ -48,33 +48,7 @@
 		}
 		return $res;
 	}
-	
-	/*
-	*
-	* data formatting
-	*
-	*/
-	function returnJson($data) {
-		header('Content-Type: application/json');
-		echo $data;
-	}
-	
-	function cleanJson($json) {
-		$json = str_replace("\n", "\\n", $json);
-		$json = str_replace("\r", "\\r", $json);
-		return $json;
-	}
-	
-	function convertSqlRowsToJson($rows) {
-		$json = '[';
-		while ($row = @ mysql_fetch_array($rows, MYSQL_ASSOC))
-		{
-			if ($json != '[') $json .= ',';
-			$json .= json_encode($row);
-		}
-		$json .= ']';
-		return $json;
-	}
+
 
 	function convertSqlRowsToArray($rows) {
 		$arr = array();

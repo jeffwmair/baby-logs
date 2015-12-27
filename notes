@@ -1,0 +1,37 @@
+IDEAS
+=====
+
+daily and weekly data:
+	avg time between feedings
+		1. calculate all time between feedings
+	avg bottle feeding amount
+
+	avg time between naps
+	avg nap time
+
+	avg time between poops
+	avg poops per day
+
+	weight
+
+other:
+	visual
+		bootstrap theme
+	authentication
+		openid
+	admin page
+		log / diagnostics
+		control how many days are shown on daily report
+		control min and max feed amount for entry page
+	move all the sql out of BabyApi
+	lock down old entries	(3 days+)?
+		- make page read-only
+	milestones - comment + picture
+
+merge contiguous sleep records:
+	- probably best to do this all the time
+
+
+Weight:
+	dec 27: 8.1kg
+

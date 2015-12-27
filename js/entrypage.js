@@ -167,20 +167,23 @@ APP.EntryPage = function() {
 	}
 
 	var assignButtonClass = function(column, button, timeval) {
+		var specialClass = '';
 		switch(column) {
 			case 1:
-				button.setAttribute('class', 'sleep_'+timeval);
+				specialClass = 'sleep_'+timeval;
 				break;
 			case 2:
-				button.setAttribute('class', 'pee_'+timeval);
+				specialClass = 'pee_'+timeval;
 				break;
 			case 3:
-				button.setAttribute('class', 'poo_'+timeval);
+				specialClass = 'poo_'+timeval + ' ' + 'pee_' + timeval;
 				break;
 			case 4:
-				button.setAttribute('class', 'feed_'+timeval);
+				specialClass = 'feed_'+timeval;
 				break;
 		}
+		//button.setAttribute('class', specialClass + ' btn-default');
+		button.setAttribute('class', specialClass);
 	}
 
 	/**
@@ -248,6 +251,7 @@ APP.EntryPage = function() {
 		}
 		var setActiveButtonStyle = function(button) {
 			button.setAttribute('style', 'background-color:#50c050');
+			//button.setAttribute('class', 'btn-success');
 		}
 
 

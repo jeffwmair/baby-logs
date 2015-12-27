@@ -1,6 +1,6 @@
 <?php
 
-include_once(__DIR__.'/../src/domain/SleepRecord.php');
+include_once(__DIR__.'/../../src/domain/SleepRecord.php');
 
 class SleepRecordTest extends PHPUnit_Framework_TestCase {
 
