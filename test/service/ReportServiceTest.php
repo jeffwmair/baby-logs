@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__.'/../../src/mapping/RecordMapper.php');
+require_once(__DIR__.'/../../src/mapping/RecordQueryMapper.php');
 require_once(__DIR__.'/../../src/service/ReportService.php');
 
 class ReportServiceTest extends PHPUnit_Framework_TestCase {
@@ -57,7 +57,7 @@ class ReportServiceTest extends PHPUnit_Framework_TestCase {
 		// monday (wk2)
 		$days['2015-11-02'] = $day9;
 
-		$mapperStub = $this->getMockBuilder('RecordMapper')->disableOriginalConstructor()->getMock();
+		$mapperStub = $this->getMockBuilder('RecordQueryMapper')->disableOriginalConstructor()->getMock();
 		$mapperStub->method('getAllDays')->willReturn($days);
 		$dateService = new DateService();
 		$service = new ReportService(15, $mapperStub, $dateService);
@@ -132,7 +132,7 @@ class ReportServiceTest extends PHPUnit_Framework_TestCase {
 		$days['2015-12-19'] = $day8;
 		$days['2015-12-20'] = $day9;
 
-		$mapperStub = $this->getMockBuilder('RecordMapper')->disableOriginalConstructor()->getMock();
+		$mapperStub = $this->getMockBuilder('RecordQueryMapper')->disableOriginalConstructor()->getMock();
 		$mapperStub->method('getAllDays')->willReturn($days);
 		$dateService = new DateService();
 		$service = new ReportService(15, $mapperStub, $dateService);
@@ -201,7 +201,7 @@ class ReportServiceTest extends PHPUnit_Framework_TestCase {
 		$days['2015-12-21'] = $wk2Mon;
 		$days['2015-12-22'] = $wk2Tue;
 
-		$mapperStub = $this->getMockBuilder('RecordMapper')->disableOriginalConstructor()->getMock();
+		$mapperStub = $this->getMockBuilder('RecordQueryMapper')->disableOriginalConstructor()->getMock();
 		$mapperStub->method('getAllDays')->willReturn($days);
 		$dateService = new DateService();
 		$service = new ReportService(15, $mapperStub, $dateService);
@@ -260,7 +260,7 @@ class ReportServiceTest extends PHPUnit_Framework_TestCase {
 		$days['2000-01-01'] = $day1;
 		$days['2000-01-02'] = $day2;
 
-		$mapperStub = $this->getMockBuilder('RecordMapper')->disableOriginalConstructor()->getMock();
+		$mapperStub = $this->getMockBuilder('RecordQueryMapper')->disableOriginalConstructor()->getMock();
 		$mapperStub->method('getAllDays')->willReturn($days);
 		$dateService = new DateService();
 		$service = new ReportService( 15, $mapperStub, $dateService);

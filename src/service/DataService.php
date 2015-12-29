@@ -29,5 +29,4 @@ class DataService {
 		$this->insertMapper->saveSleepRecord($record);
 	}
 
-
 }

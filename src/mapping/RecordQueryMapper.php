@@ -5,7 +5,7 @@ require_once(__DIR__.'/../domain/DiaperRecord.php');
 require_once(__DIR__.'/../domain/FeedRecord.php');
 require_once(__DIR__.'/../domain/Day.php');
 
-class RecordMapper {
+class RecordQueryMapper {
 
 	private $connection;
 

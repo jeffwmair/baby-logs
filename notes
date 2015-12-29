@@ -15,6 +15,7 @@ daily and weekly data:
 	weight
 
 other:
+	move all the sql out of BabyApi
 	visual
 		bootstrap theme
 	authentication
@@ -23,7 +24,6 @@ other:
 		log / diagnostics
 		control how many days are shown on daily report
 		control min and max feed amount for entry page
-	move all the sql out of BabyApi
 	lock down old entries	(3 days+)?
 		- make page read-only
 	milestones - comment + picture
