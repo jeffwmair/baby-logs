@@ -24,6 +24,11 @@ class DataService {
 	}
 
 
+	public function deleteValueItem($time, $type) {
+
+	}
+
+
 	public function addSleep($startTime, $endTime) {
 		$record = new SleepRecord( new DateTime($startTime), new DateTime($endTime) );
 		$this->insertMapper->saveSleepRecord($record);

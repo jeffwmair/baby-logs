@@ -17,7 +17,7 @@ daily and weekly data:
 other:
 	move all the sql out of BabyApi
 	visual
-		bootstrap theme
+		bootstrap theme ?
 	authentication
 		openid
 	admin page
