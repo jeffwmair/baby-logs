@@ -74,7 +74,7 @@ APP.Dashboard = function() {
 			return mins + ' minutes ago';
 		}
 
-		return (mins / 60.0).toFixed(2) + ' hours ago';
+		return (mins / 60.0).toFixed(1) + ' hours ago';
 	}
 
 
