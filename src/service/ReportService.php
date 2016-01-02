@@ -12,6 +12,45 @@ class ReportService {
 		$this->dailyDays = $dailyDays;
 	}
 
+	public function getDashboardData() {
+
+		$now = (new DateTime())->getTimestamp();
+
+		// get most recent feed, sleep, pee, poo
+		$feedRecord = $this->dataMapper->getLatestFeedRecord();
+		$feedEndMinutesAgo = $this->getMinutesAgoFromTime($now, $feedRecord->time->getTimestamp());
+		
+		$sleepRecord = $this->dataMapper->getLatestSleepRecord();
+		$sleepEndMinutesAgo = $this->getMinutesAgoFromTime($now, $sleepRecord->getEndTime()->getTimestamp());
+
+		$peeRecord = $this->dataMapper->getLatestDiaperRecord(1);
+		$peeMinutesAgo = $this->getMinutesAgoFromTime($now, $peeRecord->time->getTimestamp());
+
+		$pooRecord = $this->dataMapper->getLatestDiaperRecord(2);
+		$pooMinutesAgo = $this->getMinutesAgoFromTime($now, $pooRecord->time->getTimestamp());
+
+		$data = array(
+			"feed" => array(
+				"prev" => array("minutesAgo"=>"$feedEndMinutesAgo","amtInMl"=>"170","breast"=>""),
+				"next" => array("minutesUntil"=>"9999")),
+			"sleep" => array(
+				"prev" => array("minutesAgo" => "$sleepEndMinutesAgo"),
+				"next" => array("minutesUntil" => "9999")),
+			"pee" => array(
+				"prev" => array("minutesAgo" => "$peeMinutesAgo"),
+				"next" => array("minutesUntil" => "9999")),
+			"poo" => array(
+				"prev" => array("minutesAgo" => "$pooMinutesAgo"),
+				"next" => array("minutesUntil" => "9999"))
+		);
+
+		return $data;
+	}
+
+	private function getMinutesAgoFromTime($nowReference, $time) {
+		return ($nowReference - $time) / 60.0;
+	}
+
 	/**
 	 * Get an array of summarized data for the report
 	 */

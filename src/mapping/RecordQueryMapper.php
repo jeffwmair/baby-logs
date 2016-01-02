@@ -68,18 +68,29 @@ class RecordQueryMapper {
 
 	}
 
-	/**
-	 * Gets all the sleep records as objects
-	 */
-	public function getAllSleepRecords() {
-		$sql = "select id, start, end from baby_sleep order by start ASC";
+	public function getLatestDiaperRecord($diapertype) {
+		$sql = "select time, entry_value from baby_keyval where entry_type = 'diaper' and entry_value = '1' order by time DESC limit 1";
 		$rows  = getSqlResult($sql);
-		$res = Array();
-		while ($row = @ mysql_fetch_array($rows, MYSQL_ASSOC))  {
-			$sleepRecord = new SleepRecord( new DateTime( $row['start'] ), new DateTime( $row['end'] ));
-			array_push($res, $sleepRecord);
-		}
-		return $res;
+		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
+		$record = new DiaperRecord( $row['time'], $row['entry_value'] );
+		return $record;
+	}
+
+
+	public function getLatestSleepRecord() {
+		$sql = "select id, start, end from baby_sleep order by start DESC limit 1";
+		$rows  = getSqlResult($sql);
+		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
+		$record = new SleepRecord( new DateTime( $row['start'] ), new DateTime( $row['end'] ));
+		return $record;
+	}
+
+	public function getLatestFeedRecord() {
+		$sql = "select time, entry_value from baby_keyval order by time DESC limit 1";
+		$rows  = getSqlResult($sql);
+		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
+		$record = new FeedRecord( new DateTime( $row['time'] ), $row['entry_value'] );
+		return $record;
 	}
 
 

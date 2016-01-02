@@ -109,6 +109,9 @@ APP.EntryPage = function() {
 	}
 
 	var setPageDayNightColor = function() {
+		//currently disabled
+		return;
+
 		var hr = (new Date()).getHours();
 		var isNight = hr > 20 || hr < 7;
 		var pageBody = document.getElementsByTagName('body')[0];
@@ -133,11 +136,11 @@ APP.EntryPage = function() {
 	/**
 	* Init the page
 	*/
-	this.init = function(date, containerEl, btnBack, btnFwd, dateEl) {
+	this.init = function(date, tableEl, btnBack, btnFwd, dateEl) {
 		var pageState = new this.PageState();
 		this.pageState = pageState;
 		this.pageState.setDateEl(dateEl);
-		this.pageState.setContainer(containerEl);
+		this.pageState.setTableEl(tableEl);
 		this.pageState.setDate(date);
 		document.onkeydown = function(e) {
 			// handle keypresses
@@ -162,7 +165,7 @@ APP.EntryPage = function() {
 		}
 
 		var timesThroughDay = generateAllTimes();
-		generateTable(timesThroughDay);
+		generateTable(timesThroughDay, tableEl);
 		this.loadData(true);
 	}
 
@@ -189,7 +192,7 @@ APP.EntryPage = function() {
 	/**
 	* Generate the table of buttons and such
 	*/
-	var generateTable = function(times) {
+	var generateTable = function(times, tableEl) {
 
 		var putFeedOptionsInSelect = function(selectEl, feedOptions) {
 			feedOptions.forEach(function(feedVal) {
@@ -207,7 +210,7 @@ APP.EntryPage = function() {
 			return options;
 		}
 
-		var table = document.createElement('table');
+		//var table = document.createElement('table');
 		var buttonText = ['sleep', 'pee', 'poo'];
 		var rowCount = 24*UTILS.HOURLY_DIVISIONS;
 		var nonButtonColumns = 2;
@@ -217,7 +220,7 @@ APP.EntryPage = function() {
 		for(var i = 0; i < rowCount; i++) {
 			var timeField = times[i];
 			var tr = document.createElement('tr');
-			table.appendChild(tr);
+			tableEl.appendChild(tr);
 			for(var j = 0; j < colCount; j++) {
 				var td = document.createElement('td');
 				tr.appendChild(td);
@@ -241,7 +244,7 @@ APP.EntryPage = function() {
 				}
 			}
 		}
-		container.appendChild(table);
+		//container.appendChild(table);
 	};
 
 	this.handleDataLoad = function(scrollToTime, date, json) {
@@ -348,11 +351,11 @@ APP.EntryPage = function() {
 		this.getDateEl = function() {
 			return this.dateEl;
 		}
-		this.setContainer = function(container) {
-			this.container = container;
+		this.setTableEl = function(table) {
+			this.tableEl = table;
 		}	
-		this.getContainer = function() {
-			return this.container;
+		this.getTableEl = function() {
+			return this.tableEl;
 		}
 	}
 

@@ -18,6 +18,9 @@ $dataservice = new DataService( $insertMapper );
 // TODO: would be ideal to clean this up into some kind of separate object
 try {
 	switch($method) {
+	case 'loadDashboard':
+		loadDashboardData($con, $mapper);
+		break;
 	case 'addvalue':
 		$time = get('time');
 		$dataservice->addValueItem(get('type'), get('value'), $time);
@@ -55,6 +58,15 @@ catch (Exception $e) {
 	echo "$msg";
 }
 
+function loadDashboardData($con, $mapper) {
+	$dateService = new DateService();
+	$dailyRptDays = 10;
+	$svc = new ReportService($dailyRptDays, $mapper, $dateService);
+	$report = $svc->getDashboardData();
+	$json = json_encode($report);
+	header('Content-Type: application/json');
+	echo $json;
+}
 
 function loadReportData( $con, $mapper ) {
 	$dateService = new DateService();
