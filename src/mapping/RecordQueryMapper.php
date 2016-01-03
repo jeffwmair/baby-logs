@@ -69,7 +69,7 @@ class RecordQueryMapper {
 	}
 
 	public function getLatestDiaperRecord($diapertype) {
-		$sql = "select time, entry_value from baby_keyval where entry_type = 'diaper' and entry_value = '1' order by time DESC limit 1";
+		$sql = "select time, entry_value from baby_keyval where entry_type = 'diaper' and entry_value = '$diapertype' order by time DESC limit 1";
 		$rows  = getSqlResult($sql);
 		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
 		$record = new DiaperRecord( $row['time'], $row['entry_value'] );
@@ -86,7 +86,7 @@ class RecordQueryMapper {
 	}
 
 	public function getLatestFeedRecord() {
-		$sql = "select time, entry_value from baby_keyval order by time DESC limit 1";
+		$sql = "select time, entry_value from baby_keyval where entry_type = 'feed' order by time DESC limit 1";
 		$rows  = getSqlResult($sql);
 		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
 		$record = new FeedRecord( new DateTime( $row['time'] ), $row['entry_value'] );

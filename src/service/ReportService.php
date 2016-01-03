@@ -17,30 +17,80 @@ class ReportService {
 		$now = (new DateTime())->getTimestamp();
 
 		// get most recent feed, sleep, pee, poo
-		$feedRecord = $this->dataMapper->getLatestFeedRecord();
-		$feedEndMinutesAgo = $this->getMinutesAgoFromTime($now, $feedRecord->time->getTimestamp());
+		$feedRecordTime = $this->dataMapper->getLatestFeedRecord()->time;
+		$feedRecordTimeFmt = $feedRecordTime->format("g:ia");
+		$feedEndMinutesAgo = $this->getMinutesAgoFromTime($now, $feedRecordTime->getTimestamp());
+		$feedStatus = 0;
+		if ($feedEndMinutesAgo > (60*3)) {
+			$feedStatus = 3;
+		}
+		else if ($feedEndMinutesAgo > (60*2)) {
+			$feedStatus = 2;
+		}
+		else {
+			$feedStatus = 1;
+		}
 		
-		$sleepRecord = $this->dataMapper->getLatestSleepRecord();
-		$sleepEndMinutesAgo = $this->getMinutesAgoFromTime($now, $sleepRecord->getEndTime()->getTimestamp());
+		$sleepRecordTime = $this->dataMapper->getLatestSleepRecord()->getEndTime();
+		$sleepRecordTimeFmt = $sleepRecordTime->format("g:ia");
+		$sleepEndMinutesAgo = $this->getMinutesAgoFromTime($now, $sleepRecordTime->getTimestamp());
+		$sleepStatus = 0;
+		if ($sleepEndMinutesAgo > (60*2)) {
+			$sleepStatus = 3;
+		}
+		else if ($sleepEndMinutesAgo > (60*1.5)) {
+			$sleepStatus = 2;
+		}
+		else {
+			$sleepStatus = 1;
+		}
 
-		$peeRecord = $this->dataMapper->getLatestDiaperRecord(1);
-		$peeMinutesAgo = $this->getMinutesAgoFromTime($now, $peeRecord->time->getTimestamp());
 
-		$pooRecord = $this->dataMapper->getLatestDiaperRecord(2);
-		$pooMinutesAgo = $this->getMinutesAgoFromTime($now, $pooRecord->time->getTimestamp());
+		$peeRecordTime = $this->dataMapper->getLatestDiaperRecord(1)->time;
+		$peeRecordTimeFmt = $peeRecordTime->format("g:ia");
+		$peeMinutesAgo = $this->getMinutesAgoFromTime($now, $peeRecordTime->getTimestamp());
+		$peeStatus = 0;
+		if ($peeMinutesAgo > (60*3.5)) {
+			$peeStatus = 3;
+		}
+		else if ($peeMinutesAgo > (60*2.75)) {
+			$peeStatus = 2;
+		}
+		else {
+			$peeStatus = 1;
+		}
+
+
+		$pooRecordTime = $this->dataMapper->getLatestDiaperRecord(2)->time;
+		$pooRecordTimeFmt = $pooRecordTime->format("g:ia");
+		$pooMinutesAgo = $this->getMinutesAgoFromTime($now, $pooRecordTime->getTimestamp());
+		$pooStatus = 0;
+		/*
+		if ($pooMinutesAgo > (60*7)) {
+			$pooStatus = 3;
+		}
+		 */
+		if ($pooMinutesAgo > (60*5)) {
+			$pooStatus = 2;
+		}
+		else {
+			$pooStatus = 1;
+		}
+
+
 
 		$data = array(
 			"feed" => array(
-				"prev" => array("minutesAgo"=>"$feedEndMinutesAgo","amtInMl"=>"170","breast"=>""),
+				"prev" => array("status" => "$feedStatus", "time" => "$feedRecordTimeFmt", "minutesAgo"=>"$feedEndMinutesAgo","amtInMl"=>"170","breast"=>""),
 				"next" => array("minutesUntil"=>"9999")),
 			"sleep" => array(
-				"prev" => array("minutesAgo" => "$sleepEndMinutesAgo"),
+				"prev" => array("status" => "$sleepStatus", "time" => "$sleepRecordTimeFmt", "minutesAgo" => "$sleepEndMinutesAgo"),
 				"next" => array("minutesUntil" => "9999")),
 			"pee" => array(
-				"prev" => array("minutesAgo" => "$peeMinutesAgo"),
+				"prev" => array("status" => "$peeStatus", "time" => "$peeRecordTimeFmt", "minutesAgo" => "$peeMinutesAgo"),
 				"next" => array("minutesUntil" => "9999")),
 			"poo" => array(
-				"prev" => array("minutesAgo" => "$pooMinutesAgo"),
+				"prev" => array("status" => "$pooStatus", "time" => "$pooRecordTimeFmt", "minutesAgo" => "$pooMinutesAgo"),
 				"next" => array("minutesUntil" => "9999"))
 		);
 

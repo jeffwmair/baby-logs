@@ -42,29 +42,29 @@
 								<tr>
 									<th>Activity</th>
 									<th class='text-center'>Most Recent</th>
-									<th class='text-center'>Next Expected</th>
+									<!--<th class='text-center'>Next Expected</th>-->
 								</tr>
 							</thead>
 							<tbody>
 								<tr>
 									<td>Feed</td>
 									<td id='txtMostRecentFeed' class='text-center'></td>
-									<td id='txtNextFeed' class='text-center'></td>
+									<!--<td id='txtNextFeed' class='text-center'></td>-->
 								</tr>
 								<tr>
 									<td>Sleep</td>
 									<td id='txtMostRecentSleep' class='text-center'></td>
-									<td id='txtNextSleep' class='text-center'></td>
+									<!--<td id='txtNextSleep' class='text-center'></td>-->
 								</tr>
 								<tr>
 									<td>Pee</td>
 									<td id='txtMostRecentPee' class='text-center'></td>
-									<td id='txtNextPee' class='text-center'></td>
+									<!--<td id='txtNextPee' class='text-center'></td>-->
 								</tr>
 								<tr>
 									<td>Poo</td>
 									<td id='txtMostRecentPoo' class='text-center'></td>
-									<td id='txtNextPoo' class='text-center'></td>
+									<!--<td id='txtNextPoo' class='text-center'></td>-->
 								</tr>
 							</tbody>
 						</table>
@@ -109,18 +109,6 @@
 
 		var page = new APP.Dashboard();
 		page.init();
-
-		var txtNextFeed = document.getElementById('txtNextFeed');
-		page.setNextExpectedFeedData(txtNextFeed);
-
-		var txtNextSleep = document.getElementById('txtNextSleep');
-		page.setNextExpectedSleepData(txtNextSleep);
-
-		var txtNextPee = document.getElementById('txtNextPee');
-		page.setNextExpectedPeeData(txtNextPee);
-
-		var txtNextPoo = document.getElementById('txtNextPoo');
-		page.setNextExpectedPooData(txtNextPoo);
 
 		var txtMostRecentFeed = document.getElementById('txtMostRecentFeed');
 		page.setMostRecentFeedData(txtMostRecentFeed);

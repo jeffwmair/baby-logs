@@ -11,12 +11,28 @@ DATETIME.datesToSimpleDisplay = function(dates) {
 DATETIME.getFormattedTime = function(hr, min) {
 	var hr = UTILS.get2DigitFormat(hr); 
 	var min = UTILS.get2DigitFormat(min);
-	return hr + ':' + min;
+	var timestring = hr + ':' + min;
+	return DATETIME.getTimeInAmPm(timestring);
+}
+
+DATETIME.getTimeInAmPm = function(timestring) {
+	var components = timestring.split(':');
+	var hr = components[0];
+	var hrAp = hr;
+	var ap = 'am';
+	if (hr > 12) {
+		hrAp = hr % 12;
+		ap = 'pm';
+	}
+	else if (hr == 0) {
+		hrAp = 12;
+	}
+	return hrAp + ':' + components[1] + ap;
 }
 
 DATETIME.getTimeFromRange = function(houlyDivisions, position) {
 	var hr = Math.floor(position / houlyDivisions);
-	var min = (position % houlyDivisions) * (60/houlyDivisions);
+	var min = (position % houlyDivisions) * (60 / houlyDivisions);
 	var timeField = DATETIME.getFormattedTime(hr, min);
 	return timeField;
 }

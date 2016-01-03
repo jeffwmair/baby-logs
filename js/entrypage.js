@@ -7,9 +7,6 @@ APP.EntryPage = function() {
 
 	var API = "src/web/BabyApi.php";
 
-	var COLOR_CURRENT_TIME_ROW = "#FAFAA9";
-	var COLOR_CURRENT_TIME_ROW_NIGHT = "blue";
-
 	var buttonList = [];
 	var that = this;
 
@@ -108,30 +105,11 @@ APP.EntryPage = function() {
 		}
 	}
 
-	var setPageDayNightColor = function() {
-		//currently disabled
-		return;
-
-		var hr = (new Date()).getHours();
-		var isNight = hr > 20 || hr < 7;
-		var pageBody = document.getElementsByTagName('body')[0];
-		if (isNight) {
-			pageBody.setAttribute('style', 'color:white;background-color:black');
-		}
-		else {
-			pageBody.setAttribute('style', 'color:black;background-color:white');
-		}
-
-		var color = isNight ? COLOR_CURRENT_TIME_ROW_NIGHT : COLOR_CURRENT_TIME_ROW;
-		highlightMostRecentTimeBlockRow(color);
-	}
-
 	var scrollToCurrentTime = function() {
 		var time = getMostRecentTimeBlock();
 		var timeElement = document.getElementById('td_'+time);
 		timeElement.scrollIntoView({behavior:"smooth", block:"start"});
 	}
-
 
 	/**
 	* Init the page
@@ -185,7 +163,6 @@ APP.EntryPage = function() {
 				specialClass = 'feed_'+timeval;
 				break;
 		}
-		//button.setAttribute('class', specialClass + ' btn-default');
 		button.setAttribute('class', specialClass);
 	}
 
@@ -210,7 +187,6 @@ APP.EntryPage = function() {
 			return options;
 		}
 
-		//var table = document.createElement('table');
 		var buttonText = ['sleep', 'pee', 'poo'];
 		var rowCount = 24*UTILS.HOURLY_DIVISIONS;
 		var nonButtonColumns = 2;
@@ -244,7 +220,6 @@ APP.EntryPage = function() {
 				}
 			}
 		}
-		//container.appendChild(table);
 	};
 
 	this.handleDataLoad = function(scrollToTime, date, json) {
@@ -254,12 +229,7 @@ APP.EntryPage = function() {
 		}
 		var setActiveButtonStyle = function(button) {
 			button.setAttribute('style', 'background-color:#50c050');
-			//button.setAttribute('class', 'btn-success');
 		}
-
-
-		//highlight current time row
-		setPageDayNightColor();
 
 		var datasets = CONVERTER.getNewDatasetsForJsonData(json);
 		var ds = datasets[0];
