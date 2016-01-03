@@ -12,7 +12,7 @@ APP.EntryPage = function() {
 
 	var feedClickHandler = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
-		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
+		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
 		var amt = e.target.value;
 		UTILS.ajaxGetJson(API + "?action=feed&amount="+amt+"&time="+formatteddate, function(json) {
 			that.handleDataLoad(false, null, json);
@@ -22,8 +22,8 @@ APP.EntryPage = function() {
 	var sleepClickHandlerNotSleeping = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var myendate = new Date(mystartdate.getTime() + (15*60000));
-		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
-		var formattedEndDate = DATETIME.getYyyymmddFormat(myendate) + ' ' + DATETIME.getFormattedTime(myendate.getHours(), myendate.getMinutes());
+		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
+		var formattedEndDate = DATETIME.getYyyymmddFormat(myendate) + ' ' + DATETIME.getFormattedTime(myendate.getHours(), myendate.getMinutes(), true);
 		UTILS.ajaxGetJson(API + "?action=sleep&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
@@ -31,8 +31,7 @@ APP.EntryPage = function() {
 
 	var sleepClickHandlerIsSleeping = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
-		var use24hrFmt = true;
-		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), use24hrFmt);
+		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
 		UTILS.ajaxGetJson(API + "?action=removesleep&sleepstart="+formatteddate, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
@@ -40,28 +39,28 @@ APP.EntryPage = function() {
 
 	var peeHandlerClickAddPee = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
-		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
+		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
 		UTILS.ajaxGetJson(API + "?action=addvalue&type=diaper&value=1&time="+formatteddate, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
 	var peeHandlerClickRemovePee = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
-		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
+		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
 		UTILS.ajaxGetJson(API + "?action=removevalue&type=diaper&value=1&time="+formatteddate, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
 	var pooHandlerClickAddPoo = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
-		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
+		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
 		UTILS.ajaxGetJson(API + "?action=addvalue&type=diaper&value=2&time="+formatteddate, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
 	var pooHandlerClickRemovePoo = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
-		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
+		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
 		UTILS.ajaxGetJson(API + "?action=removevalue&type=diaper&value=2&time="+formatteddate, function(json) {
 			that.handleDataLoad(false, null, json);
 		});

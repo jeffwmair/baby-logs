@@ -33,6 +33,10 @@ DATETIME.getTimeInAmPm = function(timestring) {
 	else if (hr == 0) {
 		hrAp = 12;
 	}
+	else if (hr == 12) {
+		hrAp = 12;
+		ap = 'pm';
+	}
 	return hrAp + ':' + components[1] + ap;
 }
 
