@@ -8,11 +8,17 @@ DATETIME.datesToSimpleDisplay = function(dates) {
 	return simpleDays;
 }
 
-DATETIME.getFormattedTime = function(hr, min) {
+DATETIME.getFormattedTime = function(hr, min, use24hr) {
 	var hr = UTILS.get2DigitFormat(hr); 
 	var min = UTILS.get2DigitFormat(min);
 	var timestring = hr + ':' + min;
-	return DATETIME.getTimeInAmPm(timestring);
+
+	if (use24hr) {
+		return timestring;
+	}
+	else {
+		return DATETIME.getTimeInAmPm(timestring);
+	}
 }
 
 DATETIME.getTimeInAmPm = function(timestring) {
@@ -92,6 +98,22 @@ DATETIME.getNextQuarterHourTime = function(date) {
 	var qtrHourDiff = newDate.getMinutes() % 15;
 	newDate.setMinutes(newDate.getMinutes() + (15 - qtrHourDiff));
 	return newDate;
+}
+
+DATETIME.parseAmPmTime = function(time) {
+	var split = time.split(':');
+	var hr = parseInt(split[0]);
+	if (split[0] == '12' && split[1].endsWith('am')) {
+		hr = 0;
+	}
+	else if (split[0] != '12' && split[1].endsWith('pm')) {
+		hr += 12;
+	}
+
+	var minutes = parseInt(split[1].substring(0,2));
+	var dummyDate = new Date(2000, 01, 01, hr, minutes);
+	return dummyDate;
+	
 }
 
 DATETIME.parse24HrTime = function(time) {

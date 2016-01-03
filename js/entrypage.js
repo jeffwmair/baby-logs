@@ -31,7 +31,8 @@ APP.EntryPage = function() {
 
 	var sleepClickHandlerIsSleeping = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
-		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes());
+		var use24hrFmt = true;
+		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), use24hrFmt);
 		UTILS.ajaxGetJson(API + "?action=removesleep&sleepstart="+formatteddate, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
@@ -69,7 +70,7 @@ APP.EntryPage = function() {
 	var getSleepClickStartDate = function(e) {
 		var mystartdate = new Date(that.pageState.getDate().getTime());
 		var time = e.target.parentElement.parentElement.childNodes[0].innerText;
-		var timeDate = DATETIME.parse24HrTime(time);
+		var timeDate = DATETIME.parseAmPmTime(time);
 		mystartdate.setMinutes(timeDate.getMinutes());
 		mystartdate.setHours(timeDate.getHours());
 		mystartdate.setSeconds(0);
