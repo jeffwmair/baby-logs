@@ -3,8 +3,16 @@
 	<head>
 		<title>Liam Dashboard</title>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-	    <link href="./css/dashboard.css" rel="stylesheet">
-		 <meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="./css/dashboard.css" rel="stylesheet">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<style>
+			.bignum {
+				border:1px solid #888;background-color:#888;
+				border-radius:50%;height:200px;width:200px;
+				margin-left:auto;margin-right:auto;
+				color:white;font-size:4em;padding-top:55px;
+			}
+		</style>
 	</head>
 	<body>
 		<nav class="navbar navbar-inverse navbar-fixed-top">
@@ -70,23 +78,23 @@
 						</table>
 					</div>
 
-					<h2 class="sub-header">Chart Summaries</h2>
+					<h2 class="sub-header">Today's Stats</h2>
 
 					<div class="row placeholders">
 						<div class="col-xs-12 col-sm-4 placeholder">
-							<img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-							<h4>Feedings</h4>
-							<span class="text-muted">Today</span>
+							<div id="bigNumFeedings" class="bignum">?</div>
+							<h4>Bottle</h4>
+							<!--<span class="text-muted">Today</span>-->
 						</div>
 						<div class="col-xs-12 col-sm-4 placeholder">
-							<img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+							<div id="bigNumSleeps" class="bignum">?</div>
 							<h4>Naps</h4>
-							<span class="text-muted">Today</span>
+							<!--<span class="text-muted">Today</span>-->
 						</div>
 						<div class="col-xs-12 col-sm-4 placeholder">
-							<img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-							<h4>Diapers</h4>
-							<span class="text-muted">Today</span>
+							<div id="bigNumPoos" class="bignum">?</div>
+							<h4>Poos</h4>
+							<!--<span class="text-muted">Today</span>-->
 						</div>
 					</div>
 
@@ -99,8 +107,8 @@
 		<!-- Placed at the end of the document so the pages load faster -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 		<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-		<!-- Latest compiled and minified bootstrap JavaScript -->
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+			<!-- Latest compiled and minified bootstrap JavaScript -->
+			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 		</body>
 	</html>
 	<script type='text/javascript' src='js/utils.js'></script>
@@ -109,6 +117,12 @@
 
 		var page = new APP.Dashboard();
 		page.init();
+
+		var txtBigFeeds = document.getElementById('bigNumFeedings');
+		page.setBigNumFeeds(txtBigFeeds);
+
+		var txtBigPoos = document.getElementById('bigNumPoos');
+		page.setBigNumPoos(txtBigPoos);
 
 		var txtMostRecentFeed = document.getElementById('txtMostRecentFeed');
 		page.setMostRecentFeedData(txtMostRecentFeed);

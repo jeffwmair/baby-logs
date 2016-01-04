@@ -17,6 +17,14 @@ APP.Dashboard = function() {
 
 	}
 
+	this.setBigNumFeeds = function(field) {
+		field.innerHTML = this.data.feed.bottleMlToday;
+	}
+
+	this.setBigNumPoos = function(field) {
+		field.innerHTML = this.data.poo.todayCount;
+	}
+
 	this.setMostRecentFeedData = function(field) {
 		field.innerHTML = getIcon(this.data.feed.prev.status) + this.data.feed.prev.time + ' (' + formatMinutesAgo(this.data.feed.prev.minutesAgo) + ')';
 	}
@@ -48,7 +56,7 @@ APP.Dashboard = function() {
 				break;
 		}
 
-		img = '<img src="./images/'+file+'.png" style="width:16px;margin-right:10px" />';
+		img = '<img src="./images/'+file+'.png" style="width:18px;margin-right:10px" />';
 		return img;
 	}
 

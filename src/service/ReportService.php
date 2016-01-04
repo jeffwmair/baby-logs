@@ -14,6 +14,8 @@ class ReportService {
 
 	public function getDashboardData() {
 
+		/** TODO: cleanup this mess */
+
 		$now = (new DateTime())->getTimestamp();
 
 		// get most recent feed, sleep, pee, poo
@@ -77,10 +79,14 @@ class ReportService {
 			$pooStatus = 1;
 		}
 
-
+		$reportDataDaily = $this->getBarChartReport()['daily'];
+		$latestDay = $reportDataDaily[count($reportDataDaily)-1];
+		$bottleMlToday = $latestDay['bottleMl'] . "ml";
+		$poosToday = $latestDay['poos'];
 
 		$data = array(
 			"feed" => array(
+				"bottleMlToday" => $bottleMlToday,
 				"prev" => array("status" => "$feedStatus", "time" => "$feedRecordTimeFmt", "minutesAgo"=>"$feedEndMinutesAgo","amtInMl"=>"170","breast"=>""),
 				"next" => array("minutesUntil"=>"9999")),
 			"sleep" => array(
@@ -90,6 +96,7 @@ class ReportService {
 				"prev" => array("status" => "$peeStatus", "time" => "$peeRecordTimeFmt", "minutesAgo" => "$peeMinutesAgo"),
 				"next" => array("minutesUntil" => "9999")),
 			"poo" => array(
+				"todayCount" => $poosToday,
 				"prev" => array("status" => "$pooStatus", "time" => "$pooRecordTimeFmt", "minutesAgo" => "$pooMinutesAgo"),
 				"next" => array("minutesUntil" => "9999"))
 		);
