@@ -31,7 +31,8 @@ APP.ReportPage = function(container, calHelper) {
 		categoryData = DATETIME.datesToSimpleDisplay(data.dates);
 		sleepData = data.totalSleepHrs;
 		sleepMaxHrsPerNight = data.nightSleepHrs;
-		milkData = data.bottleMl;
+		milkData = data.milkMl;
+		formulaData = data.formulaMl;
 		breastFeedsData = data.breastCount;
 
 		$(chartEl).highcharts({
@@ -109,18 +110,25 @@ APP.ReportPage = function(container, calHelper) {
 				}
 			},
 			{
-				name: 'Feeding - Breast',
+				name: 'Milk - Breast',
 				yAxis : 2,
 				type: 'spline',
 				data: breastFeedsData,
 				tooltip: { valueSuffix: ' feedings' }
 			},
 			{
-				name: 'Feeding - Bottle',
+				name: 'Milk - Bottle',
 				type: 'spline',
 				data: milkData,
 				tooltip: { valueSuffix: ' ml' }
+			},
+			{
+				name: 'Formula - Bottle',
+				type: 'spline',
+				data: formulaData,
+				tooltip: { valueSuffix: ' ml' }
 			}
+
 			]
 		});
 	}

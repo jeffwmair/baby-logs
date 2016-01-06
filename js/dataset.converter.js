@@ -61,7 +61,8 @@ CONVERTER.ReportDataConverterForChart = function() {
 		resultObj.dates = [];
 		resultObj.totalSleepHrs = [];
 		resultObj.nightSleepHrs = [];
-		resultObj.bottleMl = [];
+		resultObj.milkMl = [];
+		resultObj.formulaMl = [];
 		resultObj.breastCount = [];
 		resultObj.poos = [];
 
@@ -69,7 +70,8 @@ CONVERTER.ReportDataConverterForChart = function() {
 			resultObj.dates.push( new Date(summary.day) );
 			resultObj.totalSleepHrs.push( summary.totalSleepHrs );
 			resultObj.nightSleepHrs.push( summary.nightSleepHrs );
-			resultObj.bottleMl.push( summary.bottleMl );
+			resultObj.milkMl.push( summary.milkMl );
+			resultObj.formulaMl.push( summary.formulaMl );
 			resultObj.breastCount.push( summary.breastCount );
 			resultObj.poos.push( summary.poos );
 		});

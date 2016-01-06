@@ -18,7 +18,7 @@ APP.Dashboard = function() {
 	}
 
 	this.setBigNumFeeds = function(field) {
-		field.innerHTML = this.data.milk.bottleMlToday;
+		field.innerHTML = this.data.feed.milkMlToday + ' milk<br>' + this.data.feed.breastCountToday + ' breast<br>' + this.data.feed.formulaMlToday + ' formula<br>';
 	}
 
 	this.setBigNumPoos = function(field) {
@@ -26,7 +26,7 @@ APP.Dashboard = function() {
 	}
 
 	this.setMostRecentFeedData = function(field) {
-		field.innerHTML = getIcon(this.data.milk.prev.status) + this.data.milk.prev.time + ' (' + formatMinutesAgo(this.data.milk.prev.minutesAgo) + ')';
+		field.innerHTML = getIcon(this.data.feed.prev.status) + this.data.feed.prev.time + ' (' + formatMinutesAgo(this.data.feed.prev.minutesAgo) + ')';
 	}
 
 	this.setMostRecentSleepData = function(field) {

@@ -97,7 +97,7 @@ class Day {
 	/**
 	 * How many millilitres of bottle-fed milk in the day
 	 */
-	public function getBottleMlAmount() {
+	public function getMilkMlAmount() {
 		$ml = 0;
 		foreach($this->milkfeeds as $feed) {
 			if (is_numeric($feed->value)) {

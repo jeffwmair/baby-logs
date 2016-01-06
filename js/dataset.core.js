@@ -18,11 +18,12 @@ DATA.DatasetWeekGroup = function(weekDate) {
 	}
 	this.getAggregatedSummary = function() {
 		var aggSum = new DATA.DatasetSummary(new Date(this.week.getTime()));
-		var totSleep = 0, nightSleep = 0, milkBott = 0, milkBreast = 0, diapers = 0;
+		var totSleep = 0, nightSleep = 0, fmlaBott = 0, milkBott = 0, milkBreast = 0, diapers = 0;
 		var i = 0;
 		this.summaries.forEach(function(s) {
 			totSleep += s.totalSleepHrs;
 			nightSleep += s.nightSleepHrs;
+			fmlaBott += s.formulaBottleMl;
 			milkBott += s.milkBottleMl;
 			milkBreast += s.milkBreastCount;
 			diapers += s.diaperCount;
@@ -32,6 +33,7 @@ DATA.DatasetWeekGroup = function(weekDate) {
 		aggSum.totalSleepHrs = round(1.0 * totSleep / i);
 		aggSum.nightSleepHrs = round(1.0 * nightSleep / i);
 		aggSum.milkBottleMl = round(1.0 * milkBott / i);
+		aggSum.formulaBottleMl = round(1.0 * fmlaBott / i);
 		aggSum.milkBreastCount = round(1.0 * milkBreast / i);
 		aggSum.diaperCount = round(1.0 * diapers / i);
 
@@ -154,10 +156,16 @@ DATA.Dataset = function(pDate, pSleeps, pFeeds, pDiapers) {
 		return diaper;
 	}
 
-	this.getFeedAtTime = function(time) {
+	this.getFeedAtTime = function(feedType, time) {
 		var feed;
 		for(var i = 0, len = feeds.length; i < len; i++) {
-			var thisFeedTime = DATETIME.getTime(feeds[i].time);
+			var thisFeed = feeds[i];
+
+			if (thisFeed.type !== feedType) {
+				continue;
+			}
+
+			var thisFeedTime = DATETIME.getTime(thisFeed.time);
 			if (thisFeedTime == time) {
 				feed = feeds[i];
 				break;

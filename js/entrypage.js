@@ -171,6 +171,9 @@ APP.EntryPage = function() {
 			case 4:
 				specialClass = 'milk_'+timeval;
 				break;
+			case 5:
+				specialClass = 'formula_'+timeval;
+				break;
 		}
 		button.setAttribute('class', specialClass);
 	}
@@ -180,16 +183,23 @@ APP.EntryPage = function() {
 	*/
 	var generateTable = function(times, tableEl) {
 
-		var putFeedOptionsInSelect = function(selectEl, milkOptions) {
-			milkOptions.forEach(function(milkVal) {
+		var putFeedOptionsInSelect = function(selectEl, options) {
+			options.forEach(function(val) {
 				var opt = document.createElement('option');
-				opt.setAttribute('value', milkVal);
-				opt.innerHTML = milkVal;
+				opt.setAttribute('value', val);
+				opt.innerHTML = val;
 				selectEl.appendChild(opt);
 			});
 		}
 
-		var generateFeedOptions = function() {
+		var generateFormulaOptions = function() {
+			var options = ['none'];
+			for(var i = 50; i <= 90; i+=10) options.push(i);
+			for(var i = 95; i <= 200; i+=5) options.push(i);
+			return options;
+		}
+
+		var generateMilkOptions = function() {
 			var options = ['none', 'BL', 'BR'];
 			for(var i = 50; i <= 90; i+=10) options.push(i);
 			for(var i = 95; i <= 200; i+=5) options.push(i);
@@ -198,9 +208,10 @@ APP.EntryPage = function() {
 
 		var buttonText = ['sleep', 'pee', 'poo'];
 		var rowCount = 24*UTILS.HOURLY_DIVISIONS;
-		var nonButtonColumns = 2;
+		var nonButtonColumns = 3;
 		var colCount = buttonText.length + nonButtonColumns;
-		var milkOptions = generateFeedOptions();
+		var milkOptions = generateMilkOptions();
+		var fmlaOptions = generateFormulaOptions();
 
 		for(var i = 0; i < rowCount; i++) {
 			var timeField = times[i];
@@ -220,12 +231,19 @@ APP.EntryPage = function() {
 					button.innerHTML = buttonText[j-1];
 					td.appendChild(button);
 				}
-				else {
+				else if (j == 4) {
 					var milkBox = document.createElement('select');
 					assignButtonClass(j, milkBox, timeField);
 					buttonList.push(milkBox);
 					putFeedOptionsInSelect(milkBox, milkOptions);
 					td.appendChild(milkBox);
+				}
+				else if (j == 5) {
+					var fmlaBox = document.createElement('select');
+					assignButtonClass(j, fmlaBox, timeField);
+					buttonList.push(fmlaBox);
+					putFeedOptionsInSelect(fmlaBox, fmlaOptions);
+					td.appendChild(fmlaBox);
 				}
 			}
 		}
@@ -278,9 +296,9 @@ APP.EntryPage = function() {
 					break;
 				case 'milk':
 					btn.onchange = milkClickHandler;
-					if (ds && ds.getFeedAtTime(time)) {
+					if (ds && ds.getFeedAtTime('milk', time)) {
 						setActiveButtonStyle(btn);
-						btn.value = ds.getFeedAtTime(time).value;
+						btn.value = ds.getFeedAtTime('milk', time).value;
 					}
 					else {
 						btn.value = 'none';
@@ -288,9 +306,9 @@ APP.EntryPage = function() {
 					break;
 				case 'formula':
 					btn.onchange = formulaClickHandler;
-					if (ds && ds.getFeedAtTime(time)) {
+					if (ds && ds.getFeedAtTime('formula', time)) {
 						setActiveButtonStyle(btn);
-						btn.value = ds.getFeedAtTime(time).value;
+						btn.value = ds.getFeedAtTime('formula', time).value;
 					}
 					else {
 						btn.value = 'none';

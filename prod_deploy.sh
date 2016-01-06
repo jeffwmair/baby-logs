@@ -10,4 +10,4 @@ ssh $SERVER << _EOF_
 mkdir -p public_html/liamjournal
 _EOF_
 
-rsync -azP * --exclude "scripts/" --exclude "credentials.php" --exclude "database/" --exclude "*.sh" $SERVER:public_html/liamjournal
+rsync -azP * --exclude "*.swp" --exclude "scripts/" --exclude "credentials.php" --exclude "database/" --exclude "*.sh" $SERVER:public_html/liamjournal
