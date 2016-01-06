@@ -53,23 +53,17 @@ class DayTest extends PHPUnit_Framework_TestCase {
 	public function testGetFeedAmounts() {
 
 		$day = new Day( '2015-01-01' );
-		$day->addFeedRecord( new FeedRecord('2015-01-01 08:00', '100') );
-		$day->addFeedRecord( new FeedRecord('2015-01-01 08:10', '100') );
-		$day->addFeedRecord( new FeedRecord('2015-01-01 08:20', 'BR') );
-		$day->addFeedRecord( new FeedRecord('2015-01-01 08:30', 'BL') );
-		$day->addFeedRecord( new FeedRecord('2015-01-01 08:40', 'BR') );
-		$day->addFeedRecord( new FeedRecord('2015-01-01 08:50', '300') );
+		$day->addMilkRecord( new FeedRecord('2015-01-01 08:00', 'milk', '100') );
+		$day->addMilkRecord( new FeedRecord('2015-01-01 08:10', 'milk', '100') );
+		$day->addMilkRecord( new FeedRecord('2015-01-01 08:20', 'milk', 'BR') );
+		$day->addMilkRecord( new FeedRecord('2015-01-01 08:30', 'milk', 'BL') );
+		$day->addMilkRecord( new FeedRecord('2015-01-01 08:40', 'milk', 'BR') );
+		$day->addMilkRecord( new FeedRecord('2015-01-01 08:50', 'milk', '300') );
 		$this->assertEquals( 500, $day->getBottleMlAmount() );
 		$this->assertEquals( 3, $day->getBreastFeedCount() );
 
 
 	}
-
-	public function testGetBreastFeedCount() {
-
-	}
-
-
 
 
 }
