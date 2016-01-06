@@ -8,8 +8,8 @@ class RecordModifyMapper {
 	}
 
 
-	public function saveFeedRecord( $record ) {
-		$this->saveKeyValRecord( $record->time, 'feed', $record->value );
+	public function saveMilkRecord( $record ) {
+		$this->saveKeyValRecord( $record->time, 'milk', $record->value );
 	}
 
 

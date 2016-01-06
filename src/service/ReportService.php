@@ -18,19 +18,19 @@ class ReportService {
 
 		$now = (new DateTime())->getTimestamp();
 
-		// get most recent feed, sleep, pee, poo
-		$feedRecordTime = $this->dataMapper->getLatestFeedRecord()->time;
-		$feedRecordTimeFmt = $feedRecordTime->format("g:ia");
-		$feedEndMinutesAgo = $this->getMinutesAgoFromTime($now, $feedRecordTime->getTimestamp());
-		$feedStatus = 0;
-		if ($feedEndMinutesAgo > (60*3)) {
-			$feedStatus = 3;
+		// get most recent milk, sleep, pee, poo
+		$milkRecordTime = $this->dataMapper->getLatestFeedRecord('milk')->time;
+		$milkRecordTimeFmt = $milkRecordTime->format("g:ia");
+		$milkEndMinutesAgo = $this->getMinutesAgoFromTime($now, $milkRecordTime->getTimestamp());
+		$milkStatus = 0;
+		if ($milkEndMinutesAgo > (60*3)) {
+			$milkStatus = 3;
 		}
-		else if ($feedEndMinutesAgo > (60*2)) {
-			$feedStatus = 2;
+		else if ($milkEndMinutesAgo > (60*2)) {
+			$milkStatus = 2;
 		}
 		else {
-			$feedStatus = 1;
+			$milkStatus = 1;
 		}
 		
 		$sleepRecordTime = $this->dataMapper->getLatestSleepRecord()->getEndTime();
@@ -85,9 +85,9 @@ class ReportService {
 		$poosToday = $latestDay['poos'];
 
 		$data = array(
-			"feed" => array(
+			"milk" => array(
 				"bottleMlToday" => $bottleMlToday,
-				"prev" => array("status" => "$feedStatus", "time" => "$feedRecordTimeFmt", "minutesAgo"=>"$feedEndMinutesAgo","amtInMl"=>"170","breast"=>""),
+				"prev" => array("status" => "$milkStatus", "time" => "$milkRecordTimeFmt", "minutesAgo"=>"$milkEndMinutesAgo","amtInMl"=>"170","breast"=>""),
 				"next" => array("minutesUntil"=>"9999")),
 			"sleep" => array(
 				"prev" => array("status" => "$sleepStatus", "time" => "$sleepRecordTimeFmt", "minutesAgo" => "$sleepEndMinutesAgo"),

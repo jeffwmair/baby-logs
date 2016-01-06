@@ -38,7 +38,7 @@ try {
 		removeSleep(get('sleepstart'));
 		break;
 	case 'feed':
-		feed(get('time'), get('amount'));
+		feed(get('time'), get('feedtype'), get('amount'));
 		break;
 	case 'loaddata':
 		$optionalDay = get('day');
@@ -88,11 +88,13 @@ function loadData($day) {
 	}
 	$sql_sleeps = "select * from baby_sleep $sleepWhere order by start";
 	$sleeps = convertSqlRowsToArray(getSqlResult($sql_sleeps));
-	$feeds = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'feed' $valWhere order by time"));
+	$milkFeeds = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'milk' $valWhere order by time"));
+	$fmlaFeeds = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'formula' $valWhere order by time"));
 	$diapers = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'diaper' $valWhere order by time"));
 	$jsonArr = array();
 	$jsonArr["sleeps"] = $sleeps;
-	$jsonArr["feeds"] = $feeds;
+	$jsonArr["milkfeeds"] = $milkFeeds;
+	$jsonArr["fmlafeeds"] = $fmlaFeeds;
 	$jsonArr["diapers"] = $diapers;
 	returnJson(json_encode($jsonArr));
 }
@@ -111,15 +113,15 @@ function removeValueItem($type, $value, $time) {
 }
 
 
-function feed($time, $amount) {
+function feed($time, $feedtype, $amount) {
+
+	getSqlResult("delete from baby_keyval where entry_type = '$feedtype' and time = '$time';");
 	if ($amount == 'none') {
-		getSqlResult("delete from baby_keyval where entry_type = 'feed' and time = '$time';");
 		loadData(getDayFromTimeStr($time));
 		return;
 	}
 
-	getSqlResult("delete from baby_keyval where time = '$time' and entry_type = 'feed';");
-	getSqlResult("insert into baby_keyval (time, entry_type, entry_value) values('$time', 'feed', '$amount');");
+	getSqlResult("insert into baby_keyval (time, entry_type, entry_value) values('$time', '$feedtype', '$amount');");
 	loadData(getDayFromTimeStr($time));
 }
 

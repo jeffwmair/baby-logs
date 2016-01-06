@@ -54,8 +54,11 @@ class RecordQueryMapper {
 		while ($row = @ mysql_fetch_array($rows, MYSQL_ASSOC))  {
 			$day = $this->createDayIfNotExists($days, $row['day']);
 			switch ($row['entry_type']) {
-				case "feed":
-					$day->addFeedRecord( new FeedRecord( $row['time'], $row['entry_value'] ) );
+				case "milk":
+					$day->addMilkRecord( new FeedRecord( $row['time'], 'milk', $row['entry_value'] ) );
+					break;
+				case "formula":
+					$day->addFormulaRecord( new FeedRecord( $row['time'], 'formula', $row['entry_value'] ) );
 					break;
 				case "diaper":
 					$day->addDiaperRecord( new DiaperRecord( $row['time'], $row['entry_value'] ) );
@@ -84,11 +87,11 @@ class RecordQueryMapper {
 		return $record;
 	}
 
-	public function getLatestFeedRecord() {
-		$sql = "select time, entry_value from baby_keyval where entry_type = 'feed' and time <= CURRENT_TIMESTAMP() order by time DESC limit 1";
+	public function getLatestFeedRecord($feedType) {
+		$sql = "select time, entry_value from baby_keyval where entry_type = '$feedType' and time <= CURRENT_TIMESTAMP() order by time DESC limit 1";
 		$rows  = getSqlResult($sql);
 		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
-		$record = new FeedRecord( new DateTime( $row['time'] ), $row['entry_value'] );
+		$record = new FeedRecord( new DateTime( $row['time'] ), $feedType, $row['entry_value'] );
 		return $record;
 	}
 

@@ -11,7 +11,8 @@ class Day {
 	private $sleeps;
 	private $sleepsPastMidnight;
 	private $diapers;
-	private $feeds;
+	private $milkfeeds;
+	private $fmlafeeds;
 	private $summarizedSleeps;
 
 
@@ -25,7 +26,8 @@ class Day {
 		$this->sleeps = array();
 		$this->sleepsPastMidnight = array();
 		$this->diapers = array();
-		$this->feeds = array();
+		$this->milkfeeds = array();
+		$this->fmlafeeds = array();
 
 	}
 
@@ -49,8 +51,12 @@ class Day {
 	}
 
 
-	public function addFeedRecord($record) {
-		array_push($this->feeds, $record);
+	public function addMilkRecord($record) {
+		array_push($this->milkfeeds, $record);
+	}
+
+	public function addFormulaRecord($record) {
+		array_push($this->fmlafeeds, $record);
 	}
 
 
@@ -77,11 +83,23 @@ class Day {
 
 
 	/**
+	 * How many millilitres of formula in the day
+	 */
+	public function getFormulaMlAmount() {
+		$ml = 0;
+		foreach($this->fmlafeeds as $feed) {
+			$ml += floatval($feed->value);
+		}
+		return $ml;
+	}
+
+
+	/**
 	 * How many millilitres of bottle-fed milk in the day
 	 */
 	public function getBottleMlAmount() {
 		$ml = 0;
-		foreach($this->feeds as $feed) {
+		foreach($this->milkfeeds as $feed) {
 			if (is_numeric($feed->value)) {
 				$ml += floatval($feed->value);
 			}
@@ -95,7 +113,7 @@ class Day {
 	 */
 	public function getBreastFeedCount() {
 		$num = 0;
-		foreach($this->feeds as $feed) {
+		foreach($this->milkfeeds as $feed) {
 			if ( $feed->value == 'BR' || $feed->value == 'BL' ) {
 				$num++;
 			}

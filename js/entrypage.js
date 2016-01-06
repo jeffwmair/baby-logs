@@ -10,11 +10,20 @@ APP.EntryPage = function() {
 	var buttonList = [];
 	var that = this;
 
-	var feedClickHandler = function(e) {
+	var milkClickHandler = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
 		var amt = e.target.value;
-		UTILS.ajaxGetJson(API + "?action=feed&amount="+amt+"&time="+formatteddate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=feed&feedtype=milk&amount="+amt+"&time="+formatteddate, function(json) {
+			that.handleDataLoad(false, null, json);
+		});
+	}
+
+	var formulaClickHandler = function(e) {
+		var mystartdate = getSleepClickStartDate(e);
+		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
+		var amt = e.target.value;
+		UTILS.ajaxGetJson(API + "?action=feed&feedtype=formula&amount="+amt+"&time="+formatteddate, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
@@ -160,7 +169,7 @@ APP.EntryPage = function() {
 				specialClass = 'poo_'+timeval + ' ' + 'pee_' + timeval;
 				break;
 			case 4:
-				specialClass = 'feed_'+timeval;
+				specialClass = 'milk_'+timeval;
 				break;
 		}
 		button.setAttribute('class', specialClass);
@@ -171,11 +180,11 @@ APP.EntryPage = function() {
 	*/
 	var generateTable = function(times, tableEl) {
 
-		var putFeedOptionsInSelect = function(selectEl, feedOptions) {
-			feedOptions.forEach(function(feedVal) {
+		var putFeedOptionsInSelect = function(selectEl, milkOptions) {
+			milkOptions.forEach(function(milkVal) {
 				var opt = document.createElement('option');
-				opt.setAttribute('value', feedVal);
-				opt.innerHTML = feedVal;
+				opt.setAttribute('value', milkVal);
+				opt.innerHTML = milkVal;
 				selectEl.appendChild(opt);
 			});
 		}
@@ -191,7 +200,7 @@ APP.EntryPage = function() {
 		var rowCount = 24*UTILS.HOURLY_DIVISIONS;
 		var nonButtonColumns = 2;
 		var colCount = buttonText.length + nonButtonColumns;
-		var feedOptions = generateFeedOptions();
+		var milkOptions = generateFeedOptions();
 
 		for(var i = 0; i < rowCount; i++) {
 			var timeField = times[i];
@@ -212,11 +221,11 @@ APP.EntryPage = function() {
 					td.appendChild(button);
 				}
 				else {
-					var feedBox = document.createElement('select');
-					assignButtonClass(j, feedBox, timeField);
-					buttonList.push(feedBox);
-					putFeedOptionsInSelect(feedBox, feedOptions);
-					td.appendChild(feedBox);
+					var milkBox = document.createElement('select');
+					assignButtonClass(j, milkBox, timeField);
+					buttonList.push(milkBox);
+					putFeedOptionsInSelect(milkBox, milkOptions);
+					td.appendChild(milkBox);
 				}
 			}
 		}
@@ -267,8 +276,8 @@ APP.EntryPage = function() {
 						btn.onclick = pooHandlerClickAddPoo;
 					}
 					break;
-				case 'feed':
-					btn.onchange = feedClickHandler;
+				case 'milk':
+					btn.onchange = milkClickHandler;
 					if (ds && ds.getFeedAtTime(time)) {
 						setActiveButtonStyle(btn);
 						btn.value = ds.getFeedAtTime(time).value;
@@ -276,6 +285,17 @@ APP.EntryPage = function() {
 					else {
 						btn.value = 'none';
 					}
+					break;
+				case 'formula':
+					btn.onchange = formulaClickHandler;
+					if (ds && ds.getFeedAtTime(time)) {
+						setActiveButtonStyle(btn);
+						btn.value = ds.getFeedAtTime(time).value;
+					}
+					else {
+						btn.value = 'none';
+					}
+
 					break;
 			}
 		}

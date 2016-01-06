@@ -8,9 +8,13 @@ CONVERTER.populateDatasetsFromJsonData = function(datasets, json) {
 		var sleepEnd = sleep.end == null ? undefined : new Date(sleep.end);
 		ds.addSleep(new DATA.Dataset.Sleep(new Date(sleep.start), sleepEnd));
 	});
-	json.feeds.forEach(function(feed) {
-		var ds = CONVERTER.getDatasetForDate(datasets, new Date(feed.time));
-		ds.addFeed(new DATA.Dataset.Feed(new Date(feed.time), feed.entry_value));
+	json.milkfeeds.forEach(function(milk) {
+		var ds = CONVERTER.getDatasetForDate(datasets, new Date(milk.time));
+		ds.addFeed(new DATA.Dataset.Feed(new Date(milk.time), 'milk', milk.entry_value));
+	});
+	json.fmlafeeds.forEach(function(fmla) {
+		var ds = CONVERTER.getDatasetForDate(datasets, new Date(fmla.time));
+		ds.addFeed(new DATA.Dataset.Feed(new Date(fmla.time), 'formula', fmla.entry_value));
 	});
 	json.diapers.forEach(function(diaper) {
 		var ds = CONVERTER.getDatasetForDate(datasets, new Date(diaper.time));
@@ -26,7 +30,13 @@ CONVERTER.getNewDatasetsForJsonData = function(json) {
 			datasets.push(new DATA.Dataset(item.start));
 		}
 	});
-	json.feeds.forEach(function(feed) {
+	json.milkfeeds.forEach(function(feed) {
+		var feedTime = feed.time;
+		if (!CONVERTER.getDatasetForDate(datasets, new Date(feedTime))) {
+			datasets.push(new DATA.Dataset(feedTime));
+		}
+	});
+	json.fmlafeeds.forEach(function(feed) {
 		var feedTime = feed.time;
 		if (!CONVERTER.getDatasetForDate(datasets, new Date(feedTime))) {
 			datasets.push(new DATA.Dataset(feedTime));

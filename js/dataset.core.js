@@ -236,10 +236,10 @@ DATA.Dataset.Diaper = function(pTime, value) {
 	}
 }
 
-DATA.Dataset.Feed = function(pTime, value) {
+DATA.Dataset.Feed = function(pTime, feedType, value) {
 	this.value = value;
 	this.time = pTime;
-	this.type = "feed";
+	this.type = feedType;
 	this.getTimeBlock = function() {
 		return DATETIME.getTimeBlockFromDate(this.time);
 	}
