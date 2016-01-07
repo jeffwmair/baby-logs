@@ -7,6 +7,22 @@ class RecordModifyMapper {
 		$this->con = $con;
 	}
 
+	public function deleteSleepRecord($record) {
+		$starttime = $record->getStartTime()->format('Y-m-d G:i:s');
+		$sql = "delete from baby_sleep where start = TIMESTAMP('$starttime')";
+		$this->executeSql($sql);
+	}
+
+	public function deleteValueItem($record) {
+		/*
+		$type = $record->type;
+		$time = $record->time->format('Y-m-d G:i:s');
+		$sql = "delete from baby_keyval where entry_type = '$type' and time = TIMESTAMP('$time')";
+		var_dump($sql);
+		$this->executeSql($sql);
+		 */
+		throw new Exception("not implemented");
+	}
 
 	public function saveMilkRecord( $record ) {
 		$this->saveKeyValRecord( $record->time, 'milk', $record->value );
@@ -48,7 +64,6 @@ class RecordModifyMapper {
 		if ( $date->getTimestamp() < $threeDaysAgo ) {
 			throw new Exception("The date is more than 3 days old, you cannot change the data now");
 		}
-		
 	}
 
 }

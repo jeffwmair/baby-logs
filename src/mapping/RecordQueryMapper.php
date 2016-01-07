@@ -96,6 +96,29 @@ class RecordQueryMapper {
 	}
 
 
+	public function getSleepRecord($time) {
+		$sql = "select id, start, end from baby_sleep where start = TIMESTAMP('$time')";
+		$rows  = getSqlResult($sql);
+		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
+		$record = new SleepRecord( new DateTime( $row['start'] ), new DateTime( $row['end'] ));
+		return $record;
+	}
+
+
+	public function getValueItem($time, $type) {
+		$sql = "select time, entry_value from baby_keyval where entry_type = '$type' and time = TIMESTAMP('$time')";	
+		$rows  = getSqlResult($sql);
+		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
+		$record = null;
+		if ($type == 'diaper') {
+			$record = new DiaperRecord( $row['time'], $row['entry_value'] );
+		}
+		else if ($type == 'milk' || $type == 'formula') {
+			$record = new FeedRecord( $row['time'], $type, $row['entry_value'] );
+		}
+		return $record;
+	}
+
 	/* helper to execute sql and deal with errors */
 	private function getSqlResult($sql) {
 		$res = mysql_query($sql, $this->connection);

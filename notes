@@ -15,6 +15,10 @@ daily and weekly data:
 	weight
 
 other:
+	error dialog
+		entry page
+		dashboard
+		report page
 	fix timezone mistake
 	move all the sql out of BabyApi
 	authentication

@@ -8,10 +8,14 @@ APP.ReportPage = function(container, calHelper) {
 		return msDiff / (60000.0 * 60);
 	}
 
+	var errorHandler = function(errorMessage) {
+		console.err(errorMessage);
+	}
+
 	this.init = function( container, calHelper ) {
 		var that = this;
 
-		UTILS.ajaxGetJson(API+"?action=loadreportdata", function(json) {
+		UTILS.ajaxGetJson(API+"?action=loadreportdata", errorHandler, function(json) {
 
 			var converter = new CONVERTER.ReportDataConverterForChart();
 			var chartDataDaily = converter.getChartData(json.daily);

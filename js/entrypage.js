@@ -9,12 +9,19 @@ APP.EntryPage = function() {
 
 	var buttonList = [];
 	var that = this;
+	
+	var errorHandler = function(errMsg) {
+		var errDiv = that.pageState.getErrorDiv();
+		errDiv.style.display = 'block';
+		var errTextEl = that.pageState.getErrorText();	
+		errTextEl.innerHTML = errMsg;
+	}
 
 	var milkClickHandler = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
 		var amt = e.target.value;
-		UTILS.ajaxGetJson(API + "?action=feed&feedtype=milk&amount="+amt+"&time="+formatteddate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=feed&feedtype=milk&amount="+amt+"&time="+formatteddate, errorHandler, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
@@ -23,7 +30,7 @@ APP.EntryPage = function() {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
 		var amt = e.target.value;
-		UTILS.ajaxGetJson(API + "?action=feed&feedtype=formula&amount="+amt+"&time="+formatteddate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=feed&feedtype=formula&amount="+amt+"&time="+formatteddate, errorHandler, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
@@ -33,7 +40,7 @@ APP.EntryPage = function() {
 		var myendate = new Date(mystartdate.getTime() + (15*60000));
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
 		var formattedEndDate = DATETIME.getYyyymmddFormat(myendate) + ' ' + DATETIME.getFormattedTime(myendate.getHours(), myendate.getMinutes(), true);
-		UTILS.ajaxGetJson(API + "?action=sleep&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=sleep&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, errorHandler, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
@@ -41,7 +48,7 @@ APP.EntryPage = function() {
 	var sleepClickHandlerIsSleeping = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
-		UTILS.ajaxGetJson(API + "?action=removesleep&sleepstart="+formatteddate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=removesleep&sleepstart="+formatteddate, errorHandler, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
@@ -49,28 +56,28 @@ APP.EntryPage = function() {
 	var peeHandlerClickAddPee = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
-		UTILS.ajaxGetJson(API + "?action=addvalue&type=diaper&value=1&time="+formatteddate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=addvalue&type=diaper&value=1&time="+formatteddate, errorHandler, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
 	var peeHandlerClickRemovePee = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
-		UTILS.ajaxGetJson(API + "?action=removevalue&type=diaper&value=1&time="+formatteddate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=removevalue&type=diaper&value=1&time="+formatteddate, errorHandler, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
 	var pooHandlerClickAddPoo = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
-		UTILS.ajaxGetJson(API + "?action=addvalue&type=diaper&value=2&time="+formatteddate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=addvalue&type=diaper&value=2&time="+formatteddate, errorHandler, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
 	var pooHandlerClickRemovePoo = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
-		UTILS.ajaxGetJson(API + "?action=removevalue&type=diaper&value=2&time="+formatteddate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=removevalue&type=diaper&value=2&time="+formatteddate, errorHandler, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
@@ -123,12 +130,13 @@ APP.EntryPage = function() {
 	/**
 	* Init the page
 	*/
-	this.init = function(date, tableEl, btnBack, btnFwd, dateEl) {
+	this.init = function(date, tableEl, btnBack, btnFwd, dateEl, errorDiv, errorText) {
 		var pageState = new this.PageState();
 		this.pageState = pageState;
 		this.pageState.setDateEl(dateEl);
 		this.pageState.setTableEl(tableEl);
 		this.pageState.setDate(date);
+		this.pageState.setErrorEl(errorDiv, errorText);
 		document.onkeydown = function(e) {
 			// handle keypresses
 			switch(e.keyIdentifier) {
@@ -330,7 +338,7 @@ APP.EntryPage = function() {
 
 		var date = this.pageState.getDate();
 		var formatteddate = DATETIME.getYyyymmddFormat(date);
-		UTILS.ajaxGetJson(API + "?action=loaddata&day="+formatteddate, function(json) {
+		UTILS.ajaxGetJson(API + "?action=loaddata&day="+formatteddate, errorHandler, function(json) {
 			that.handleDataLoad(scrollToTime, date, json);
 		});
 
@@ -364,6 +372,16 @@ APP.EntryPage = function() {
 		}	
 		this.getTableEl = function() {
 			return this.tableEl;
+		}
+		this.setErrorEl = function(divEl, textEl) {
+			this.errorDiv = divEl;
+			this.errorText = textEl;
+		}
+		this.getErrorDiv = function() { 
+			return this.errorDiv;
+		}
+		this.getErrorText = function() { 
+			return this.errorText;
 		}
 	}
 

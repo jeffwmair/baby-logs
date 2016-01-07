@@ -5,13 +5,17 @@ APP.Dashboard = function() {
 	var API = "src/web/BabyApi.php";
 	var SUFFIX_AGO = ' ago';
 
+	var errorHandler = function(errorMessage) {
+		console.err(errorMessage);
+	}
+
 	this.data = null;
 
 	this.init = function() {
 
 		var that = this;
 		var doAsync = false;
-		UTILS.ajaxGetJson(API + "?action=loadDashboard", function(json) {
+		UTILS.ajaxGetJson(API + "?action=loadDashboard", errorHandler, function(json) {
 			that.data = json;
 		}, doAsync);
 

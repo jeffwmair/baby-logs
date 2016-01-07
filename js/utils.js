@@ -4,7 +4,7 @@ UTILS.get2DigitFormat = function(val) {
 	return (val < 10) ? '0' + val : val;
 }
 
-UTILS.ajaxGetJson = function(url, callback, doAsync) {
+UTILS.ajaxGetJson = function(url, errorHandler, callback, doAsync) {
 	// load data from server via ajax
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
@@ -16,15 +16,16 @@ UTILS.ajaxGetJson = function(url, callback, doAsync) {
 					json = JSON.parse(xmlhttp.responseText);
 				} 
 				catch (e) {
-					console.warn(e);
+					if (errorHandler) {
+						errorHandler(e + '<br>' + xmlhttp.responseText);
+					}
 				}
 				callback(json);
 			}
-			else if(xmlhttp.status == 400) {
-				alert('There was an error 400')
-			}
 			else {
-				alert(xmlhttp.response)
+				if (errorHandler) {
+					errorHandler(xmlhttp.response);
+				}
 			}
 		}
 	}
