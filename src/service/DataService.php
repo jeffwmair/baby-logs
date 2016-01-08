@@ -14,8 +14,13 @@ class DataService {
 		$this->modMapper->saveKeyValRecord($record);
 	}
 
-	public function deleteValueItem($time, $type) {
-		$record = $this->queryMapper->getValueItem($time, $type);
+	public function deleteValueItem($time, $type, $val) {
+		$record = $this->queryMapper->getValueItem($time, $type, $val);
+		$this->modMapper->deleteValueItem($record);
+	}
+
+	public function deleteValueItemByType($time, $type) {
+		$record = $this->queryMapper->getValueItem($time, $type, null);
 		$this->modMapper->deleteValueItem($record);
 	}
 

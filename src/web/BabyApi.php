@@ -32,9 +32,7 @@ try {
 		removeValueItem($dataservice, $mapper);
 		break;
 	case 'sleep':
-		$sleepstart = get('sleepstart');
-		$dataservice->addSleep($sleepstart, get('sleepend'));
-		loadEntryData($dataservice, getDayFromTimeStr($sleepstart));
+		doSleep($dataservice);
 		break;
 	case 'removesleep':
 		removeSleep($dataservice);
@@ -90,19 +88,29 @@ function addValueItem($dataservice) {
 	$type = get('type');
 	$val = get('value');
 	$time = get('time');
-	if (($type == 'milk' || $type == 'formula') && $val == 'none') {
-		// delete
-		$dataservice->deleteValueItem($time, $type);
+	if ($type == 'milk' || $type == 'formula') {
+		$dataservice->deleteValueItemByType($time, $type);
+		if ($val != 'none') {
+			$dataservice->addValueItem($type, $val, $time);
+		}
 	}	
 	else {
+		$dataservice->deleteValueItem($time, $type, $val);
 		$dataservice->addValueItem($type, $val, $time);
 	}
 	loadEntryData($dataservice, getDayFromTimeStr($time));
 }
 
+function doSleep($dataservice) {
+	$sleepstart = get('sleepstart');
+	$dataservice->addSleep($sleepstart, get('sleepend'));
+	loadEntryData($dataservice, getDayFromTimeStr($sleepstart));
+}
+
 
 function removeValueItem($dataservice, $mapper) {
-	$dataservice->deleteValueItem(get('time'), get('type'));
+	$optionalValue = get('value');
+	$dataservice->deleteValueItem(get('time'), get('type'), $optionalValue);
 	loadEntryData($dataservice, getDayFromTimeStr(get('time')));
 }
 

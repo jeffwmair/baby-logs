@@ -8,15 +8,18 @@ class RecordModifyMapper {
 	}
 
 	public function deleteSleepRecord($record) {
+		$this->validateRecordCanBeEditedBasedOnDate( $record->getStartTime() );
 		$starttime = $record->getStartTime()->format('Y-m-d G:i:s');
 		$sql = "delete from baby_sleep where start = TIMESTAMP('$starttime')";
 		$this->executeSql($sql);
 	}
 
 	public function deleteValueItem($record) {
+		$this->validateRecordCanBeEditedBasedOnDate( $record->time );
 		$type = $record->type;
+		$val = $record->value;
 		$time = $record->time->format('Y-m-d G:i:s');
-		$sql = "delete from baby_keyval where entry_type = '$type' and time = TIMESTAMP('$time')";
+		$sql = "delete from baby_keyval where entry_type = '$type' and time = TIMESTAMP('$time') and entry_value = '$val'";
 		$this->executeSql($sql);
 	}
 
@@ -50,10 +53,11 @@ class RecordModifyMapper {
 	}
 
 	private function validateRecordCanBeEditedBasedOnDate( $date ) {
-		// if the date is older than 3 days, don't allow editing
-		$threeDaysAgo = (new DateTime())->getTimestamp() - (3 * 24 * 60 * 60);
-		if ( $date->getTimestamp() < $threeDaysAgo ) {
-			throw new Exception("The date is more than 3 days old, you cannot change the data now");
+		$maxDays = 2;
+		// if the date is older than 2 days, don't allow editing
+		$daysAgo = (new DateTime())->getTimestamp() - ($maxDays * 24 * 60 * 60);
+		if ( $date->getTimestamp() < $daysAgo ) {
+			throw new Exception("The date is more than $maxDays days old, you cannot change the data now");
 		}
 	}
 

@@ -94,8 +94,12 @@ class RecordQueryMapper {
 	}
 
 
-	public function getValueItem($time, $type) {
-		$sql = "select time, entry_type, entry_value from baby_keyval where entry_type = '$type' and time = TIMESTAMP('$time')";	
+	public function getValueItem($time, $type, $optionalValue) {
+		$sqlOptional = '';
+		if (isset($optionalValue)) {
+			$sqlOptional = " and entry_value = '$optionalValue'";
+		}
+		$sql = "select time, entry_type, entry_value from baby_keyval where entry_type = '$type' and time = TIMESTAMP('$time') $sqlOptional";	
 		$rows  = getSqlResult($sql);
 		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
 		$record = new KeyValueRecord($row['time'], $row['entry_type'], $row['entry_value']);
