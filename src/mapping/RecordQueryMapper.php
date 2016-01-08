@@ -1,8 +1,7 @@
 <?php
 
 require_once(__DIR__.'/../domain/SleepRecord.php');
-require_once(__DIR__.'/../domain/DiaperRecord.php');
-require_once(__DIR__.'/../domain/FeedRecord.php');
+require_once(__DIR__.'/../domain/KeyValueRecord.php');
 require_once(__DIR__.'/../domain/Day.php');
 
 class RecordQueryMapper {
@@ -53,17 +52,7 @@ class RecordQueryMapper {
 
 		while ($row = @ mysql_fetch_array($rows, MYSQL_ASSOC))  {
 			$day = $this->createDayIfNotExists($days, $row['day']);
-			switch ($row['entry_type']) {
-				case "milk":
-					$day->addMilkRecord( new FeedRecord( $row['time'], 'milk', $row['entry_value'] ) );
-					break;
-				case "formula":
-					$day->addFormulaRecord( new FeedRecord( $row['time'], 'formula', $row['entry_value'] ) );
-					break;
-				case "diaper":
-					$day->addDiaperRecord( new DiaperRecord( $row['time'], $row['entry_value'] ) );
-					break;
-			}
+			$day->addRecord(new KeyValueRecord($row['time'], $row['entry_type'], $row['entry_value']));
 		}
 
 		return $days;
@@ -71,10 +60,10 @@ class RecordQueryMapper {
 	}
 
 	public function getLatestDiaperRecord($diapertype) {
-		$sql = "select time, entry_value from baby_keyval where entry_type = 'diaper' and entry_value = '$diapertype' and time <= CURRENT_TIMESTAMP() order by time DESC limit 1";
+		$sql = "select time, entry_value, entry_type from baby_keyval where entry_type = 'diaper' and entry_value = '$diapertype' and time <= CURRENT_TIMESTAMP() order by time DESC limit 1";
 		$rows  = getSqlResult($sql);
 		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
-		$record = new DiaperRecord( $row['time'], $row['entry_value'] );
+		$record = new KeyValueRecord( $row['time'], $row['entry_type'], $row['entry_value'] );
 		return $record;
 	}
 
@@ -91,7 +80,7 @@ class RecordQueryMapper {
 		$sql = "select time, entry_value from baby_keyval where entry_type = '$feedType' and time <= CURRENT_TIMESTAMP() order by time DESC limit 1";
 		$rows  = getSqlResult($sql);
 		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
-		$record = new FeedRecord( new DateTime( $row['time'] ), $feedType, $row['entry_value'] );
+		$record = new KeyValueRecord( $row['time'], $feedType, $row['entry_value'] );
 		return $record;
 	}
 
@@ -109,13 +98,7 @@ class RecordQueryMapper {
 		$sql = "select time, entry_value from baby_keyval where entry_type = '$type' and time = TIMESTAMP('$time')";	
 		$rows  = getSqlResult($sql);
 		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
-		$record = null;
-		if ($type == 'diaper') {
-			$record = new DiaperRecord( $row['time'], $row['entry_value'] );
-		}
-		else if ($type == 'milk' || $type == 'formula') {
-			$record = new FeedRecord( $row['time'], $type, $row['entry_value'] );
-		}
+		$record = new KeyValueRecord($row['time'], $row['entry_type'], $row['entry_value']);
 		return $record;
 	}
 

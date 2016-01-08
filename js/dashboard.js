@@ -6,7 +6,7 @@ APP.Dashboard = function() {
 	var SUFFIX_AGO = ' ago';
 
 	var errorHandler = function(errorMessage) {
-		console.err(errorMessage);
+		console.error(errorMessage);
 	}
 
 	this.data = null;

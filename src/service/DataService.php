@@ -11,17 +11,8 @@ class DataService {
 	
 	public function addValueItem($type, $value, $time) {
 
-		//TODO: split this into two methods
-		$record = null;
-		if ($type == 'diaper') {
-			$record = new DiaperRecord($time, $value);	
-			$this->modMapper->saveDiaperRecord( $record );
-
-		}
-		else {
-			$record = new FeedRecord($time, $value);	
-			$this->modMapper->saveFeedRecord( $record );
-		}
+		$record = new KeyValueRecord($time, $type, $value);	
+		$this->modMapper->saveKeyValRecord($record);
 
 	}
 

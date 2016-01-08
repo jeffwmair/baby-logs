@@ -24,15 +24,6 @@ class RecordModifyMapper {
 		throw new Exception("not implemented");
 	}
 
-	public function saveMilkRecord( $record ) {
-		$this->saveKeyValRecord( $record->time, 'milk', $record->value );
-	}
-
-
-	public function saveDiaperRecord( $record ) {
-		$this->saveKeyValRecord( $record->time, 'diaper', $record->type );
-	}
-
 
 	public function saveSleepRecord( $record ) {
 		$this->validateRecordCanBeEditedBasedOnDate( $record->getStartTime() );
@@ -43,9 +34,11 @@ class RecordModifyMapper {
 	}
 
 
-	private function saveKeyValRecord( $time, $type, $val ) {
-		$this->validateRecordCanBeEditedBasedOnDate( $time );
-		$formattedTime = $time->format('Y-m-d G:i:s');
+	public function saveKeyValRecord( $record ) {
+		$this->validateRecordCanBeEditedBasedOnDate( $record->time );
+		$formattedTime = $record->time->format('Y-m-d G:i:s');
+		$type = $record->type;
+		$val = $record->value;
 		$sql = "insert into baby_keyval(time, entry_type, entry_value) values('$formattedTime', '$type', '$val');";
 		$this->executeSql($sql);
 	}

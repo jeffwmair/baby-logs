@@ -45,18 +45,18 @@ class Day {
 		array_push( $this->sleepsPastMidnight, $sleepRecord );
 	}
 
-
-	public function addDiaperRecord($record) {
-		array_push($this->diapers, $record);
-	}
-
-
-	public function addMilkRecord($record) {
-		array_push($this->milkfeeds, $record);
-	}
-
-	public function addFormulaRecord($record) {
-		array_push($this->fmlafeeds, $record);
+	public function addRecord($record) {
+		switch($record->type) {
+		case 'diaper':
+			array_push($this->diapers, $record);
+			break;
+		case 'milk':
+			array_push($this->milkfeeds, $record);
+			break;
+		case 'formula':
+			array_push($this->fmlafeeds, $record);
+			break;
+		}
 	}
 
 
@@ -74,7 +74,7 @@ class Day {
 	public function getPooCount() {
 		$count = 0;
 		foreach($this->diapers as $diaper) {
-			if ($diaper->type == 2 || $diaper->type == 3) {
+			if ($diaper->value == 2 || $diaper->value == 3) {
 				$count++;
 			}
 		}

@@ -9,7 +9,7 @@ APP.ReportPage = function(container, calHelper) {
 	}
 
 	var errorHandler = function(errorMessage) {
-		console.err(errorMessage);
+		console.error(errorMessage);
 	}
 
 	this.init = function( container, calHelper ) {
