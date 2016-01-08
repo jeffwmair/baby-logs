@@ -95,11 +95,25 @@ class RecordQueryMapper {
 
 
 	public function getValueItem($time, $type) {
-		$sql = "select time, entry_value from baby_keyval where entry_type = '$type' and time = TIMESTAMP('$time')";	
+		$sql = "select time, entry_type, entry_value from baby_keyval where entry_type = '$type' and time = TIMESTAMP('$time')";	
 		$rows  = getSqlResult($sql);
 		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
 		$record = new KeyValueRecord($row['time'], $row['entry_type'], $row['entry_value']);
 		return $record;
+	}
+
+	public function getValueItemsForDayJson($day, $type) {
+		$sql = "select time, entry_value, entry_type from baby_keyval where entry_type = '$type' and time between '$day' and '$day 23:59:59'";
+		$rows = getSqlResult($sql);
+		$items = convertSqlRowsToArray($rows);
+		return $items;
+	}
+
+	public function getSleepsForDayJson($day) {
+		$sql = "select * from baby_sleep where start >= '$day' and start <= '$day 23:59:59' order by start";
+		$rows = getSqlResult($sql);
+		$items = convertSqlRowsToArray($rows);
+		return $items;
 	}
 
 	/* helper to execute sql and deal with errors */

@@ -10,59 +10,54 @@ require_once(__DIR__."/../mapping/RecordModifyMapper.php");
 $method = get('action');
 
 // services and what-not
+$dailyRptDays = 10;
+
 $con = connect();
 $mapper = new RecordQueryMapper( $con );
 $modifyMapper = new RecordModifyMapper( $con );
 $dataservice = new DataService( $modifyMapper, $mapper );
+$dateservice = new DateService();
+$reportservice = new ReportService($dailyRptDays, $mapper, $dateservice);
 
 // TODO: would be ideal to clean this up into some kind of separate object
 try {
 	switch($method) {
 	case 'loadDashboard':
-		loadDashboardData($con, $mapper);
+		loadDashboardData($reportservice);
 		break;
 	case 'addvalue':
-		$time = get('time');
-		$dataservice->addValueItem(get('type'), get('value'), $time);
-		loadData(getDayFromTimeStr($time));
+		addValueItem($dataservice);
 		break;
 	case 'removevalue':
-		removeValueItem(get('type'), get('value'), get('time'));
+		removeValueItem($dataservice, $mapper);
 		break;
 	case 'sleep':
 		$sleepstart = get('sleepstart');
 		$dataservice->addSleep($sleepstart, get('sleepend'));
-		loadData(getDayFromTimeStr($sleepstart));
+		loadEntryData($dataservice, getDayFromTimeStr($sleepstart));
 		break;
 	case 'removesleep':
-		removeSleep($dataservice, get('sleepstart'));
+		removeSleep($dataservice);
 		break;
-	case 'feed':
-		feed(get('time'), get('feedtype'), get('amount'));
-		break;
-	case 'loaddata':
-		$optionalDay = get('day');
-		loadData($optionalDay);
+	case 'loadentrydata':
+		loadEntryData($dataservice, get('day'));
 		break;
 	case 'loadreportdata':
-		loadReportData( $con, $mapper );
+		loadReportData( $reportservice );
 		break;
 	default:
-		echo "Unknown action:'$method'";
+		throw new Exception("Unknown action:'$method'");
 	}
 }
 catch (Exception $e) {
 	// return error header and echo the error message
 	header('HTTP/1.1 500 Internal Server Error');
 	$msg = $e->getMessage();
-	echo "$msg";
+	echo "<h1>Error:$msg</h1>";
 }
 
 
-function loadDashboardData($con, $mapper) {
-	$dateService = new DateService();
-	$dailyRptDays = 10;
-	$svc = new ReportService($dailyRptDays, $mapper, $dateService);
+function loadDashboardData($svc) {
 	$report = $svc->getDashboardData();
 	$json = json_encode($report);
 	header('Content-Type: application/json');
@@ -70,35 +65,18 @@ function loadDashboardData($con, $mapper) {
 }
 
 
-function loadReportData( $con, $mapper ) {
-	$dateService = new DateService();
-	$dailyRptDays = 10;
-	$svc = new ReportService($dailyRptDays, $mapper, $dateService);
+function loadReportData( $svc ) {
 	$report = $svc->getBarChartReport();
 	$json = json_encode($report);
 	header('Content-Type: application/json');
 	echo $json;
 }
 
+function loadEntryData($dataservice, $day) {
 
-function loadData($day) {
-	$sleepWhere = "";
-	$valWhere = "";
-	if ($day != NULL) {
-		$sleepWhere = " where start >= '$day' and start <= '$day 23:59:59' ";
-		$valWhere = " and time between '$day' and '$day 23:59:59' ";
-	}
-	$sql_sleeps = "select * from baby_sleep $sleepWhere order by start";
-	$sleeps = convertSqlRowsToArray(getSqlResult($sql_sleeps));
-	$milkFeeds = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'milk' $valWhere order by time"));
-	$fmlaFeeds = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'formula' $valWhere order by time"));
-	$diapers = convertSqlRowsToArray(getSqlResult("select * from baby_keyval where entry_type = 'diaper' $valWhere order by time"));
-	$jsonArr = array();
-	$jsonArr["sleeps"] = $sleeps;
-	$jsonArr["milkfeeds"] = $milkFeeds;
-	$jsonArr["fmlafeeds"] = $fmlaFeeds;
-	$jsonArr["diapers"] = $diapers;
-	returnJson(json_encode($jsonArr));
+	$entries = $dataservice->getEntryData($day);
+	$jsonArr = json_encode($entries);
+	returnJson($jsonArr);
 }
 
 
@@ -108,29 +86,31 @@ function returnJson($data) {
 }
 
 
-function removeValueItem($type, $value, $time) {
-	$sql = "delete from baby_keyval where entry_type = '$type' and time = '$time' and entry_value = '$value';";
-	getSqlResult($sql);
-	loadData(getDayFromTimeStr($time));
-}
-
-
-function feed($time, $feedtype, $amount) {
-
-	getSqlResult("delete from baby_keyval where entry_type = '$feedtype' and time = '$time';");
-	if ($amount == 'none') {
-		loadData(getDayFromTimeStr($time));
-		return;
+function addValueItem($dataservice) {
+	$type = get('type');
+	$val = get('value');
+	$time = get('time');
+	if (($type == 'milk' || $type == 'formula') && $val == 'none') {
+		// delete
+		$dataservice->deleteValueItem($time, $type);
+	}	
+	else {
+		$dataservice->addValueItem($type, $val, $time);
 	}
-
-	getSqlResult("insert into baby_keyval (time, entry_type, entry_value) values('$time', '$feedtype', '$amount');");
-	loadData(getDayFromTimeStr($time));
+	loadEntryData($dataservice, getDayFromTimeStr($time));
 }
 
 
-function removeSleep($dataservice, $sleepstart) {
+function removeValueItem($dataservice, $mapper) {
+	$dataservice->deleteValueItem(get('time'), get('type'));
+	loadEntryData($dataservice, getDayFromTimeStr(get('time')));
+}
+
+
+function removeSleep($dataservice) {
+	$sleepstart = get('sleepstart');
 	$dataservice->deleteSleep($sleepstart);
-	loadData(getDayFromTimeStr($sleepstart));
+	loadEntryData($dataservice, getDayFromTimeStr($sleepstart));
 }
 
 

@@ -21,7 +21,7 @@ APP.EntryPage = function() {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
 		var amt = e.target.value;
-		UTILS.ajaxGetJson(API + "?action=feed&feedtype=milk&amount="+amt+"&time="+formatteddate, errorHandler, function(json) {
+		UTILS.ajaxGetJson(API + "?action=addvalue&type=milk&value="+amt+"&time="+formatteddate, errorHandler, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
@@ -30,7 +30,7 @@ APP.EntryPage = function() {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
 		var amt = e.target.value;
-		UTILS.ajaxGetJson(API + "?action=feed&feedtype=formula&amount="+amt+"&time="+formatteddate, errorHandler, function(json) {
+		UTILS.ajaxGetJson(API + "?action=addvalue&type=formula&value="+amt+"&time="+formatteddate, errorHandler, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
@@ -338,7 +338,7 @@ APP.EntryPage = function() {
 
 		var date = this.pageState.getDate();
 		var formatteddate = DATETIME.getYyyymmddFormat(date);
-		UTILS.ajaxGetJson(API + "?action=loaddata&day="+formatteddate, errorHandler, function(json) {
+		UTILS.ajaxGetJson(API + "?action=loadentrydata&day="+formatteddate, errorHandler, function(json) {
 			that.handleDataLoad(scrollToTime, date, json);
 		});
 

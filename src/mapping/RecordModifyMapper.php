@@ -14,14 +14,10 @@ class RecordModifyMapper {
 	}
 
 	public function deleteValueItem($record) {
-		/*
 		$type = $record->type;
 		$time = $record->time->format('Y-m-d G:i:s');
 		$sql = "delete from baby_keyval where entry_type = '$type' and time = TIMESTAMP('$time')";
-		var_dump($sql);
 		$this->executeSql($sql);
-		 */
-		throw new Exception("not implemented");
 	}
 
 
@@ -36,6 +32,8 @@ class RecordModifyMapper {
 
 	public function saveKeyValRecord( $record ) {
 		$this->validateRecordCanBeEditedBasedOnDate( $record->time );
+		// delete first just in case
+		$this->deleteValueItem($record);
 		$formattedTime = $record->time->format('Y-m-d G:i:s');
 		$type = $record->type;
 		$val = $record->value;
