@@ -1,7 +1,7 @@
 <?php
 
-require_once(__DIR__.'/../domain/SleepRecord.php');
-require_once(__DIR__.'/../domain/KeyValueRecord.php');
+require_once(__DIR__.'/../mapping/SleepRecord.php');
+require_once(__DIR__.'/../mapping/KeyValueRecord.php');
 require_once(__DIR__.'/../domain/Day.php');
 
 class RecordQueryMapper {

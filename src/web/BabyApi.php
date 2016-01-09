@@ -72,7 +72,7 @@ function loadReportData( $svc ) {
 
 function loadEntryData($dataservice, $day) {
 
-	$entries = $dataservice->getEntryData($day);
+	$entries = $dataservice->getEntryDataJson($day);
 	$jsonArr = json_encode($entries);
 	returnJson($jsonArr);
 }

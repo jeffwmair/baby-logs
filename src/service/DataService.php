@@ -34,7 +34,7 @@ class DataService {
 		$this->modMapper->saveSleepRecord($record);
 	}
 
-	public function getEntryData($day) {
+	public function getEntryDataJson($day) {
 		$sleeps = $this->queryMapper->getSleepsForDayJson($day);
 		$milkFeeds = $this->queryMapper->getValueItemsForDayJson($day, 'milk');
 		$fmlaFeeds = $this->queryMapper->getValueItemsForDayJson($day, 'formula');

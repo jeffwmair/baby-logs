@@ -20,7 +20,6 @@ other:
 		dashboard
 		report page
 	fix timezone mistake
-	move all the sql out of BabyApi
 	authentication
 		openid
 	admin page
