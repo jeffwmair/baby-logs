@@ -122,15 +122,30 @@ class Day {
 	}
 
 
+	public function getDaytimeSleeps() {
+		$allSleeps = $this->getSummarizedSleeps();
+		$daySleeps = array();
+		foreach($allSleeps as $s) {
+			$hr = $s->getStartTime()->format('H');
+			if ($hr >= 9 && $hr <= 18) {
+				array_push($daySleeps, $s);
+			}	
+		}
+		return $daySleeps;
+	}
+
+
 	public function getUninterruptedNightSleepTimeHrs() {
 
+		// these aren't really eveningSleeps yet
 		$eveningSleeps = $this->getSummarizedSleeps();
 		$afterMidnightSleeps = $this->summarizeSleeps($this->sleepsPastMidnight);
 
 		$nightSleeps = array();
 		foreach($eveningSleeps as $s) {
 			$hr = $s->getStartTime()->format('H');
-			if ( $hr >= 20 ) {
+			// TODO: un-hardcode this sleep start hour
+			if ( $hr >= 19 ) {
 				array_push( $nightSleeps, $s );
 			}
 		}

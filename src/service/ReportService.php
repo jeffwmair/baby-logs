@@ -16,7 +16,15 @@ class ReportService {
 
 		/** TODO: cleanup this mess */
 
-		$now = (new DateTime())->getTimestamp();
+		$dayToday = new DateTime();
+		$now = $dayToday->getTimestamp();
+		$startToday = $dayToday->format('Y-m-d 00:00:00');
+		$endToday = $dayToday->format('Y-m-d 23:59:59');
+
+		// today's data object
+		$dayArr = $this->dataMapper->getDays($startToday, $endToday);
+		$todayDateFormat = $dayToday->format('Y-m-d');
+		$day = $dayArr["$todayDateFormat"];
 
 		// get most recent milk, sleep, pee, poo
 		$milkRecordTime = $this->dataMapper->getLatestFeedRecord('milk')->time;
@@ -29,7 +37,7 @@ class ReportService {
 		$feedEndMinutesAgo = $milkEndMinutesAgo;
 		$feedRecordTimeFmt = $milkRecordTimeFmt;
 
-		// take whichever is newer
+		// take whichever feed type is newer; that's the most recent feeding
 		if ($fmlaEndMinutesAgo < $feedEndMinutesAgo) {
 			$feedEndMinutesAgo = $fmlaEndMinutesAgo;
 			$feedRecordTimeFmt = $fmlaRecordTimeFmt;
@@ -92,6 +100,9 @@ class ReportService {
 			$pooStatus = 1;
 		}
 
+		// naps
+		$napCount = count($day->getDaytimeSleeps());
+
 		$reportDataDaily = $this->getBarChartReport()['daily'];
 		$latestDay = $reportDataDaily[count($reportDataDaily)-1];
 		$bottleMlToday = $latestDay['milkMl'] . "ml";
@@ -104,18 +115,15 @@ class ReportService {
 				"milkMlToday" => $bottleMlToday,
 				"formulaMlToday" => $formulaMlToday,
 				"breastCountToday" => $breastCountToday,
-				"prev" => array("status" => "$feedStatus", "time" => "$feedRecordTimeFmt", "minutesAgo"=>"$feedEndMinutesAgo"),
-				"next" => array("minutesUntil"=>"9999")),
+				"prev" => array("status" => "$feedStatus", "time" => "$feedRecordTimeFmt", "minutesAgo"=>"$feedEndMinutesAgo")),
 			"sleep" => array(
-				"prev" => array("status" => "$sleepStatus", "time" => "$sleepRecordTimeFmt", "minutesAgo" => "$sleepEndMinutesAgo"),
-				"next" => array("minutesUntil" => "9999")),
+				"naps" => array("count" => $napCount),
+				"prev" => array("status" => "$sleepStatus", "time" => "$sleepRecordTimeFmt", "minutesAgo" => "$sleepEndMinutesAgo")),
 			"pee" => array(
-				"prev" => array("status" => "$peeStatus", "time" => "$peeRecordTimeFmt", "minutesAgo" => "$peeMinutesAgo"),
-				"next" => array("minutesUntil" => "9999")),
+				"prev" => array("status" => "$peeStatus", "time" => "$peeRecordTimeFmt", "minutesAgo" => "$peeMinutesAgo")),
 			"poo" => array(
 				"todayCount" => $poosToday,
-				"prev" => array("status" => "$pooStatus", "time" => "$pooRecordTimeFmt", "minutesAgo" => "$pooMinutesAgo"),
-				"next" => array("minutesUntil" => "9999"))
+				"prev" => array("status" => "$pooStatus", "time" => "$pooRecordTimeFmt", "minutesAgo" => "$pooMinutesAgo"))
 		);
 
 		return $data;
@@ -246,8 +254,6 @@ class ReportService {
 
 			$tempDay->setTimestamp( $tempDay->getTimestamp() - (24 * 60 * 60) );
 			if ( $tempDay->format("D") == "Sun" ) {
-				//$foundSecondSunday = $foundFirstSunday;
-				//$foundFirstSunday = true;
 				$foundSecondSunday = true;
 			}	
 

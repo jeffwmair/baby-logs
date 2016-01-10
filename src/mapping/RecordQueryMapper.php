@@ -24,8 +24,20 @@ class RecordQueryMapper {
 	}
 
 	public function getAllDays() {
+		return $this->getDays(null, null);
+	}
 
-		$sql = "select id, start, end, DATE_FORMAT(start, '%Y-%m-%d') as day from baby_sleep where start <= CURRENT_TIMESTAMP() order by start ASC";
+	public function getDays($start, $end) {
+
+		$dateFilter = "";
+		if (isset($start)) {
+			$dateFilter = " and start >= TIMESTAMP('$start') ";
+		}
+		if (isset($end)) {
+			$dateFilter .= " and end <= TIMESTAMP('$end') ";
+
+		}
+		$sql = "select id, start, end, DATE_FORMAT(start, '%Y-%m-%d') as day from baby_sleep where start <= CURRENT_TIMESTAMP() $dateFilter order by start ASC";
 		$sleepRows  = getSqlResult($sql);
 
 		$days = array();

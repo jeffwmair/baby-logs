@@ -62,6 +62,21 @@ class DayTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals( 500, $day->getMilkMlAmount() );
 		$this->assertEquals( 3, $day->getBreastFeedCount() );
 
+	}
+
+	public function testGetNaps() {
+		$day = new Day('2015-01-01');
+		$day->addSleepRecord( new SleepRecord( new DateTime("2015-01-01 00:00:00"), new DateTime("2015-01-01 08:00:00") ) );
+
+		// nap 1 - separate 15 minute records
+		$day->addSleepRecord( new SleepRecord( new DateTime("2015-01-01 9:15:00"), new DateTime("2015-01-01 09:30:00") ) );
+		$day->addSleepRecord( new SleepRecord( new DateTime("2015-01-01 9:30:00"), new DateTime("2015-01-01 9:45:00") ) );
+
+		// nap 2 - single record
+		$day->addSleepRecord( new SleepRecord( new DateTime("2015-01-01 12:00:00"), new DateTime("2015-01-01 14:00:00") ) );
+
+		$this->assertEquals(2, count($day->getDaytimeSleeps()));
+
 
 	}
 

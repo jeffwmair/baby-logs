@@ -21,6 +21,10 @@ APP.Dashboard = function() {
 
 	}
 
+	this.setBigNumNaps = function(field) {
+		field.innerHTML	= this.data.sleep.naps.count;
+	}
+
 	this.setBigNumFeeds = function(field) {
 		field.innerHTML = this.data.feed.milkMlToday + ' milk<br>' + this.data.feed.breastCountToday + ' breast<br>' + this.data.feed.formulaMlToday + ' formula<br>';
 	}
