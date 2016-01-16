@@ -14,14 +14,16 @@ class Day {
 	private $milkfeeds;
 	private $fmlafeeds;
 	private $summarizedSleeps;
+	private $babyid;
 
 
 	/**
 	 * Constructor
 	 */
-	public function __construct($day) {
+	public function __construct($day, $babyid) {
 
 		$this->day = new DateTime($day);
+		$this->babyid = $babyid;
 		$this->dayEnd = new DateTime("$day 23:59:59");
 		$this->sleeps = array();
 		$this->sleepsPastMidnight = array();
@@ -194,7 +196,7 @@ class Day {
 		$sleepRecord = null;
 		foreach($sleeps as $s) {
 			if ($sleepRecord == null) {
-				$sleepRecord = new SleepRecord($s->getStartTime(), $s->getEndTime());
+				$sleepRecord = new SleepRecord($s->getStartTime(), $s->getEndTime(), $this->babyid);
 			}
 			else {
 				if ($s->getStartTime() == $sleepRecord->getEndTime()) {
@@ -203,7 +205,7 @@ class Day {
 				else {
 					// new sleep block, so push the old one
 					array_push($records, $sleepRecord);
-					$sleepRecord = new SleepRecord($s->getStartTime(), $s->getEndTime());
+					$sleepRecord = new SleepRecord($s->getStartTime(), $s->getEndTime(), $this->babyid);
 				}
 			}
 		}

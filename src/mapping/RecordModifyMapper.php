@@ -28,7 +28,8 @@ class RecordModifyMapper {
 		$this->validateRecordCanBeEditedBasedOnDate( $record->getStartTime() );
 		$start = $record->getStartTime()->format('Y-m-d G:i:s');
 		$end = $record->getEndTime()->format('Y-m-d G:i:s');
-		$sql = "insert into baby_sleep(start, end) values (TIMESTAMP('$start'), TIMESTAMP('$end'));";
+		$babyid = $record->getBabyId();
+		$sql = "insert into baby_sleep(babyid, start, end) values ($babyid, TIMESTAMP('$start'), TIMESTAMP('$end'));";
 		$this->executeSql($sql);
 	}
 
@@ -40,7 +41,8 @@ class RecordModifyMapper {
 		$formattedTime = $record->time->format('Y-m-d G:i:s');
 		$type = $record->type;
 		$val = $record->value;
-		$sql = "insert into baby_keyval(time, entry_type, entry_value) values('$formattedTime', '$type', '$val');";
+		$babyid = $record->babyid;
+		$sql = "insert into baby_keyval(babyid, time, entry_type, entry_value) values($babyid, '$formattedTime', '$type', '$val');";
 		$this->executeSql($sql);
 	}
 

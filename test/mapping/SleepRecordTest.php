@@ -8,7 +8,7 @@ class SleepRecordTest extends PHPUnit_Framework_TestCase {
 
 		$startTime = new DateTime("2015-12-01 08:00");
 		$endTime = new DateTime("2015-12-01 08:15");
-		$rec = new SleepRecord($startTime, $endTime);
+		$rec = new SleepRecord($startTime, $endTime, 1);
 		$this->assertEquals($startTime, $rec->getStartTime());
 		$this->assertEquals($endTime, $rec->getEndTime());
 
@@ -18,7 +18,7 @@ class SleepRecordTest extends PHPUnit_Framework_TestCase {
 
 		$startTime = new DateTime("2015-12-01 08:00");
 		$endTime = new DateTime("2015-12-01 08:15");
-		$rec = new SleepRecord($startTime, $endTime);
+		$rec = new SleepRecord($startTime, $endTime, 1);
 		$this->assertEquals(0.25, $rec->getDurationInHrs());
 
 	}

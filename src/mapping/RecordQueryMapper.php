@@ -7,16 +7,18 @@ require_once(__DIR__.'/../domain/Day.php');
 class RecordQueryMapper {
 
 	private $connection;
+	private $babyid;
 
-	function __construct($connection) {
+	function __construct($connection, $babyid) {
 		$this->connection = $connection;
+		$this->babyid = $babyid;
 	}
 
 	private function createDayIfNotExists(&$days, $dayKey) {
 
 		$day = null;
 		if (!array_key_exists($dayKey, $days)) {
-			$day = new Day($dayKey);
+			$day = new Day($dayKey, $this->babyid);
 			$days["$dayKey"] = $day;
 		}
 		return $days["$dayKey"];
@@ -43,7 +45,7 @@ class RecordQueryMapper {
 		$days = array();
 		while ($row = @ mysql_fetch_array($sleepRows, MYSQL_ASSOC))  {
 			$day = $this->createDayIfNotExists($days, $row['day']);
-			$sleepRecord = new SleepRecord(new DateTime($row['start']), new DateTime($row['end']));
+			$sleepRecord = new SleepRecord(new DateTime($row['start']), new DateTime($row['end']), $this->babyid);
 			$day->addSleepRecord($sleepRecord);
 
 			/**
@@ -64,7 +66,7 @@ class RecordQueryMapper {
 
 		while ($row = @ mysql_fetch_array($rows, MYSQL_ASSOC))  {
 			$day = $this->createDayIfNotExists($days, $row['day']);
-			$day->addRecord(new KeyValueRecord($row['time'], $row['entry_type'], $row['entry_value']));
+			$day->addRecord(new KeyValueRecord($row['time'], $row['entry_type'], $row['entry_value'], $this->babyid));
 		}
 
 		return $days;
@@ -75,7 +77,7 @@ class RecordQueryMapper {
 		$sql = "select time, entry_value, entry_type from baby_keyval where entry_type = 'diaper' and entry_value = '$diapertype' and time <= CURRENT_TIMESTAMP() order by time DESC limit 1";
 		$rows  = getSqlResult($sql);
 		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
-		$record = new KeyValueRecord( $row['time'], $row['entry_type'], $row['entry_value'] );
+		$record = new KeyValueRecord( $row['time'], $row['entry_type'], $row['entry_value'], $this->babyid );
 		return $record;
 	}
 
@@ -84,7 +86,7 @@ class RecordQueryMapper {
 		$sql = "select id, start, end from baby_sleep where start <= CURRENT_TIMESTAMP() order by start DESC limit 1";
 		$rows  = getSqlResult($sql);
 		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
-		$record = new SleepRecord( new DateTime( $row['start'] ), new DateTime( $row['end'] ));
+		$record = new SleepRecord( new DateTime( $row['start'] ), new DateTime( $row['end'] ), $this->babyid);
 		return $record;
 	}
 
@@ -92,7 +94,7 @@ class RecordQueryMapper {
 		$sql = "select time, entry_value from baby_keyval where entry_type = '$feedType' and time <= CURRENT_TIMESTAMP() order by time DESC limit 1";
 		$rows  = getSqlResult($sql);
 		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
-		$record = new KeyValueRecord( $row['time'], $feedType, $row['entry_value'] );
+		$record = new KeyValueRecord( $row['time'], $feedType, $row['entry_value'], $this->babyid );
 		return $record;
 	}
 
@@ -101,7 +103,7 @@ class RecordQueryMapper {
 		$sql = "select id, start, end from baby_sleep where start = TIMESTAMP('$time')";
 		$rows  = getSqlResult($sql);
 		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
-		$record = new SleepRecord( new DateTime( $row['start'] ), new DateTime( $row['end'] ));
+		$record = new SleepRecord( new DateTime( $row['start'] ), new DateTime( $row['end'] ), $this->babyid);
 		return $record;
 	}
 
@@ -114,7 +116,7 @@ class RecordQueryMapper {
 		$sql = "select time, entry_type, entry_value from baby_keyval where entry_type = '$type' and time = TIMESTAMP('$time') $sqlOptional";	
 		$rows  = getSqlResult($sql);
 		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
-		$record = new KeyValueRecord($row['time'], $row['entry_type'], $row['entry_value']);
+		$record = new KeyValueRecord($row['time'], $row['entry_type'], $row['entry_value'], $this->babyid);
 		return $record;
 	}
 

@@ -4,10 +4,12 @@ class SleepRecord {
 
 	private $startTime;
 	private $endTime;
+	private $babyid;
 
-	function __construct($startTime, $endTime) {
+	function __construct($startTime, $endTime, $babyid) {
 		$this->startTime = $startTime;
 		$this->endTime = $endTime;
+		$this->babyid = $babyid;
 	}
 
 	public function setStartTime($startTime) {
@@ -24,6 +26,10 @@ class SleepRecord {
 
 	public function getEndTime() {
 		return $this->endTime;
+	}
+
+	public function getBabyId() {
+		return $this->babyid;
 	}
 
 	public function getDurationInHrs() {

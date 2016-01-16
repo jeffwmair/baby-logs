@@ -3,14 +3,16 @@ class DataService {
 
 	private $modMapper = null;
 	private $queryMapper = null;
+	private $babyid;
 
-	public function __construct( $modMapper, $queryMapper ) { 
+	public function __construct( $modMapper, $queryMapper, $babyid ) { 
 		$this->modMapper = $modMapper;
 		$this->queryMapper = $queryMapper;
+		$this->babyid = $babyid;
 	}
 	
 	public function addValueItem($type, $value, $time) {
-		$record = new KeyValueRecord($time, $type, $value);	
+		$record = new KeyValueRecord($time, $type, $value, $this->babyid);	
 		$this->modMapper->saveKeyValRecord($record);
 	}
 
@@ -30,7 +32,7 @@ class DataService {
 	}
 
 	public function addSleep($startTime, $endTime) {
-		$record = new SleepRecord( new DateTime($startTime), new DateTime($endTime) );
+		$record = new SleepRecord( new DateTime($startTime), new DateTime($endTime), $this->babyid );
 		$this->modMapper->saveSleepRecord($record);
 	}
 

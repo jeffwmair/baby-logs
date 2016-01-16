@@ -12,10 +12,13 @@ $method = get('action');
 // services and what-not
 $dailyRptDays = 10;
 
+// TODO: un-hardcode this
+$babyid = 1;
+
 $con = connect();
-$mapper = new RecordQueryMapper( $con );
+$mapper = new RecordQueryMapper( $con, $babyid );
 $modifyMapper = new RecordModifyMapper( $con );
-$dataservice = new DataService( $modifyMapper, $mapper );
+$dataservice = new DataService( $modifyMapper, $mapper, $babyid );
 $dateservice = new DateService();
 $reportservice = new ReportService($dailyRptDays, $mapper, $dateservice);
 
