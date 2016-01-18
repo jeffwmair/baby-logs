@@ -22,7 +22,7 @@ APP.Dashboard = function() {
 	}
 
 	this.setBigNumNaps = function(field) {
-		field.innerHTML	= this.data.sleep.naps.count;
+		field.innerHTML	= this.data.sleep.naps.count + ' naps<br>' + this.data.sleep.naps.duration + ' hrs';
 	}
 
 	this.setBigNumFeeds = function(field) {

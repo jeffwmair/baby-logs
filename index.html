@@ -6,16 +6,21 @@
 		<link href="./css/dashboard.css" rel="stylesheet">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<style>
-			.bignum,.bignumTriple {
+			.bignum,.bignumTriple, .bignumDouble {
 				border:1px solid #888;background-color:#888;
 				border-radius:50%;height:200px;width:200px;
 				margin-left:auto;margin-right:auto;
 				color:white;font-size:5em;padding-top:50px;
 			}
+			.bignumDouble {
+				font-size:2.0em;
+				padding-top:60px;
+			}
 			.bignumTriple {
 				font-size:1.8em;
 				padding-top:50px;
 			}
+
 		</style>
 	</head>
 	<body>
@@ -96,7 +101,7 @@
 							<!--<span class="text-muted">Today</span>-->
 						</div>
 						<div class="col-xs-12 col-sm-4 placeholder">
-							<div id="bigNumSleeps" class="bignum">?</div>
+							<div id="bigNumSleeps" class="bignumDouble">?</div>
 							<h4>Naps</h4>
 							<!--<span class="text-muted">Today</span>-->
 						</div>

@@ -101,7 +101,14 @@ class ReportService {
 		}
 
 		// naps
-		$napCount = count($day->getDaytimeSleeps());
+		$napCount = 0;
+		$napDurationHrs = 0;
+		foreach($day->getDaytimeSleeps() as $daySleep) {
+			$napCount += 1;
+			$napDurationHrs += $daySleep->getDurationInHrs();
+		}
+		
+		count($day->getDaytimeSleeps());
 
 		$reportDataDaily = $this->getBarChartReport()['daily'];
 		$latestDay = $reportDataDaily[count($reportDataDaily)-1];
@@ -117,7 +124,7 @@ class ReportService {
 				"breastCountToday" => $breastCountToday,
 				"prev" => array("status" => "$feedStatus", "time" => "$feedRecordTimeFmt", "minutesAgo"=>"$feedEndMinutesAgo")),
 			"sleep" => array(
-				"naps" => array("count" => $napCount),
+				"naps" => array("count" => $napCount, "duration" => $napDurationHrs),
 				"prev" => array("status" => "$sleepStatus", "time" => "$sleepRecordTimeFmt", "minutesAgo" => "$sleepEndMinutesAgo")),
 			"pee" => array(
 				"prev" => array("status" => "$peeStatus", "time" => "$peeRecordTimeFmt", "minutesAgo" => "$peeMinutesAgo")),

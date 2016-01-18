@@ -129,7 +129,7 @@ class Day {
 		$daySleeps = array();
 		foreach($allSleeps as $s) {
 			$hr = $s->getStartTime()->format('H');
-			if ($hr >= 9 && $hr <= 18) {
+			if ($hr >= 8 && $hr <= 18) {
 				array_push($daySleeps, $s);
 			}	
 		}
