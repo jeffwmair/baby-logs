@@ -2,6 +2,8 @@
 
 require_once(__DIR__.'/../mapping/SleepRecord.php');
 require_once(__DIR__.'/../mapping/KeyValueRecord.php');
+require_once(__DIR__.'/../mapping/BabyRecord.php');
+require_once(__DIR__.'/../mapping/GuardianRecord.php');
 require_once(__DIR__.'/../domain/Day.php');
 
 class RecordQueryMapper {
@@ -13,6 +15,7 @@ class RecordQueryMapper {
 		$this->connection = $connection;
 		$this->babyid = $babyid;
 	}
+
 
 	private function createDayIfNotExists(&$days, $dayKey) {
 
@@ -132,6 +135,21 @@ class RecordQueryMapper {
 		$rows = getSqlResult($sql);
 		$items = convertSqlRowsToArray($rows);
 		return $items;
+	}
+
+
+	/**
+	 * Gets a GuardianRecord from the DB, by email address
+	 **/
+	public function getGuardianByEmailAddress($email) {
+		$sql = "select g.fullname as guardianname, g.email, b.fullname as babyname, b.gender, b.birthdate from guardian g join baby b on g.babyid = b.id where g.email = '$email'";
+		$rows = getSqlResult($sql);
+		$guardian = null;
+		while ($row = @ mysql_fetch_array($rows, MYSQL_ASSOC))  {
+			$baby = new BabyRecord($row['babyname'], $row['gender'], $row['birthdate']);
+			$guardian = new GuardianRecord($row['guardianname'], $row['email'], $baby);
+		}
+		return $guardian;
 	}
 
 	/* helper to execute sql and deal with errors */

@@ -9,6 +9,11 @@ require_once(__DIR__."/../mapping/RecordModifyMapper.php");
 
 $method = get('action');
 
+if (!isset($_COOKIE['babyloggersession'])) {
+	header('Location: http://localhost/baby/signin.html');
+	exit();
+}
+
 // services and what-not
 $dailyRptDays = 10;
 

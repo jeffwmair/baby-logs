@@ -1,3 +1,9 @@
+<?php
+if (!isset($_COOKIE['babyloggersession'])) {
+	header('Location: http://localhost/baby/signin.html');
+	exit();
+}
+?>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -122,7 +128,7 @@
 	</html>
 	<script type='text/javascript' src='js/utils.js'></script>
 	<script src="./js/dashboard.js"></script>
-	<script type='text/javascript'>
+	<script type='text/javascript' defer>
 
 		var page = new APP.Dashboard();
 		page.init();
