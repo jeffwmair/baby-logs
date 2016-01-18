@@ -11,6 +11,7 @@ create table guardian (
 	fullname varchar(250),
 	email varchar(100),
 	constraint guardian_uk UNIQUE (babyid, fullname),
+	constraint guardian_email_uk UNIQUE (email),
 	constraint guardian_baby_id FOREIGN KEY (babyid) REFERENCES baby (id)
 );
 
