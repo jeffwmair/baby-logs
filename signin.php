@@ -32,7 +32,7 @@
 			var profile = googleUser.getBasicProfile();
 			var authInstance = gapi.auth2.getAuthInstance();
 			var token = googleUser.getAuthResponse().id_token;
-			console.log(token);
+			//console.log(token);
 
 			var doAsync = false;
 			var API = "src/web/Authentication.php";
@@ -42,7 +42,6 @@
 			}
 
 			UTILS.ajaxGetJson(API + "?token="+token, errorHandler, function(json) {
-				console.log(json);
 				if (json.authenticated = "1") {
 					window.location.href = "http://localhost/baby/";
 				}

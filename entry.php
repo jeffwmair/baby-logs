@@ -1,3 +1,7 @@
+<?php
+	require_once(__DIR__."/src/service/AuthenticatorService.php");
+	AuthenticatorService::validateSession();
+?>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -21,13 +25,14 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="./index.html">Liam Logs</a>
+				<a class="navbar-brand" href="./index.php">Liam Logs</a>
 			</div>
 			<div id="navbar" class="navbar-collapse collapse">
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="./index.html">Overview</a></li>
-					<li><a href="./entry.html">Entry</a></li>
-					<li><a href="./charts.html">Charts</a></li>
+					<li><a href="./index.php">Overview</a></li>
+					<li><a href="./entry.php">Entry</a></li>
+					<li><a href="./charts.php">Charts</a></li>
+					<li><a href="./signout.php">Sign Out</a></li>
 				</ul>
 			</div>
 		</div>

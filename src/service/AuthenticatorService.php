@@ -1,16 +1,21 @@
 <?php
 
+require_once(__DIR__."/../utils/credentials.php");
+
 class AuthenticatorService {
-	
+
 	private $queryMapper;
 	public function __construct($queryMapper) {
 		$this->queryMapper = $queryMapper;
 	}
-	/*
-	public function isValidSession($sessionToken) {
-		return false;
+
+	public static function validateSession() {
+		if (!isset($_COOKIE['babyloggersession'])) {
+			$urlprefix = getUrlPrefix();
+			header('Location: '.$urlprefix.'signin.php');
+			exit();
+		}
 	}
-	 */
 
 	public function authenticateTokenAgainstGoogle($token) {
 		if ($token == null || $token == "") {
