@@ -12,10 +12,11 @@ $googleToken = $_GET['token'];
 $authService = new AuthenticatorService($mapper);
 $authenticated = false;
 if ($authService->authenticateTokenAgainstGoogle($googleToken)) {
-	setcookie("babyloggersession", "12345", time()+(3600*24*14), "/");
+	setcookie("babyloggersession", "foobar-need-to-generate-token", time()+(3600*24*14), "/");
 	$authenticated = true;
 }
-$result = array("authenticated" => "$authenticated");
+$redirectUrl = getUrlPrefix();
+$result = array("authenticated" => "$authenticated", "redirecturl" => "$redirectUrl");
 $json = json_encode($result);
 header('Content-Type: application/json');
 echo $json;

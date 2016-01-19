@@ -43,7 +43,7 @@
 
 			UTILS.ajaxGetJson(API + "?token="+token, errorHandler, function(json) {
 				if (json.authenticated = "1") {
-					window.location.href = "http://localhost/baby/";
+					window.location.href = json.redirecturl;
 				}
 			}, doAsync);
 
