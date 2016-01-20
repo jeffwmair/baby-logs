@@ -1,3 +1,9 @@
+create table usersession (
+	token INT(12) NOT NULL,
+	expiration TIMESTAMP NOT NULL,
+	constraint usersession_uc UNIQUE (token)
+);
+
 create table baby (
 	id INT(6) AUTO_INCREMENT PRIMARY KEY,
 	fullname varchar(250),

@@ -5,16 +5,19 @@ require_once(__DIR__."/../utils/credentials.php");
 class AuthenticatorService {
 
 	private $queryMapper;
-	public function __construct($queryMapper) {
+	private $modMapper;
+
+	public function __construct($queryMapper, $modMapper) {
 		$this->queryMapper = $queryMapper;
+		$this->modMapper = $modMapper;
 	}
 
-	public static function validateSession() {
-		if (!isset($_COOKIE['babyloggersession'])) {
-			$urlprefix = getUrlPrefix();
-			header('Location: '.$urlprefix.'signin.php');
-			exit();
+	public function isValidSessionToken($token) {
+		if (!isset($token)) {
+			return false;
 		}
+
+		return $this->queryMapper->sessionIsValid($token);
 	}
 
 	public function authenticateTokenAgainstGoogle($token) {
@@ -29,7 +32,23 @@ class AuthenticatorService {
 		$data = curl_exec($ch);
 		$dataDecoded = json_decode($data);
 		curl_close($ch);
-		return $this->authenticateEmail($dataDecoded->email);
+		$isAuthenticated = $this->authenticateEmail($dataDecoded->email);
+		if ($isAuthenticated) {
+			return $this->generateSessionToken();
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * Create a new session token for an authenticated user
+	 */
+	private function generateSessionToken() {
+		$newtoken = uniqid (); //rand(PHP_INT_MIN, PHP_INT_MAX);
+		$this->modMapper->cleanupExpiredTokens();
+		$this->modMapper->saveToken($newtoken);
+		return $newtoken;
 	}
 
 	private function authenticateEmail($emailAddress) {

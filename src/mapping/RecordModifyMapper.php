@@ -7,6 +7,16 @@ class RecordModifyMapper {
 		$this->con = $con;
 	}
 
+	public function saveToken($token) {
+		$sql = "insert into usersession (token, expiration) values ('$token', DATE_ADD(NOW(), INTERVAL 7 DAY))";
+		$this->executeSql($sql);
+	}
+
+	public function cleanupExpiredTokens() {
+		$sql = "delete from usersession where expiration < NOW()";
+		$this->executeSql($sql);
+	}
+
 	public function deleteSleepRecord($record) {
 		$this->validateRecordCanBeEditedBasedOnDate( $record->getStartTime() );
 		$starttime = $record->getStartTime()->format('Y-m-d G:i:s');

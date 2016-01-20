@@ -1,6 +1,6 @@
 <?php
-	require_once(__DIR__."/src/service/AuthenticatorService.php");
-	AuthenticatorService::validateSession();
+	require_once(__DIR__."/src/web/ValidateSession.php");
+	validateSession();
 ?>
 <!DOCTYPE html>
 <html>

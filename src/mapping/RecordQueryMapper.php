@@ -152,6 +152,14 @@ class RecordQueryMapper {
 		return $guardian;
 	}
 
+	public function sessionIsValid($token) {
+		$sql = "select token from usersession where token = '$token' and expiration > now()";
+		$rows = getSqlResult($sql);
+		$row = @ mysql_fetch_array($rows, MYSQL_ASSOC);
+		$result = isset($row) && $row != false;
+		return $result;
+	}
+
 	/* helper to execute sql and deal with errors */
 	private function getSqlResult($sql) {
 		$res = mysql_query($sql, $this->connection);
