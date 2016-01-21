@@ -32,9 +32,9 @@ class AuthenticatorService {
 		$data = curl_exec($ch);
 		$dataDecoded = json_decode($data);
 		curl_close($ch);
-		$isAuthenticated = $this->authenticateEmail($dataDecoded->email);
-		if ($isAuthenticated) {
-			return $this->generateSessionToken();
+		$babyid = $this->authenticateEmailGetBabyId($dataDecoded->email);
+		if (isset($babyid) && $babyid > 0) {
+			return $this->generateSessionToken($babyid);
 		}
 		else {
 			return null;
@@ -44,16 +44,22 @@ class AuthenticatorService {
 	/**
 	 * Create a new session token for an authenticated user
 	 */
-	private function generateSessionToken() {
+	private function generateSessionToken($babyid) {
 		$newtoken = uniqid (); //rand(PHP_INT_MIN, PHP_INT_MAX);
 		$this->modMapper->cleanupExpiredTokens();
-		$this->modMapper->saveToken($newtoken);
+		$this->modMapper->saveToken($newtoken, $babyid);
 		return $newtoken;
 	}
 
-	private function authenticateEmail($emailAddress) {
+	private function authenticateEmailGetBabyId($emailAddress) {
 		// does it exist?
 		$guardian = $this->queryMapper->getGuardianByEmailAddress($emailAddress);
-		return isset($guardian);
+		if (isset($guardian)) {
+			$babyid = $guardian->baby->id;
+			return $babyid;
+		}
+		else {
+			return 0;
+		}
 	}
 }

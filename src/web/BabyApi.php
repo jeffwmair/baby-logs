@@ -4,6 +4,7 @@ require_once(__DIR__."/../utils/utils.php");
 require_once(__DIR__."/../service/ReportService.php");
 require_once(__DIR__."/../service/DateService.php");
 require_once(__DIR__."/../service/DataService.php");
+require_once(__DIR__."/../service/AuthenticatorService.php");
 require_once(__DIR__."/../mapping/RecordQueryMapper.php");
 require_once(__DIR__."/../mapping/RecordModifyMapper.php");
 
@@ -18,6 +19,7 @@ $babyid = 1;
 $con = connect();
 $mapper = new RecordQueryMapper( $con, $babyid );
 $modifyMapper = new RecordModifyMapper( $con );
+$authService = new AuthenticatorService($mapper, $modifyMapper);
 $dataservice = new DataService( $modifyMapper, $mapper, $babyid );
 $dateservice = new DateService();
 $reportservice = new ReportService($dailyRptDays, $mapper, $dateservice);

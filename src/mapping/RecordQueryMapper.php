@@ -142,11 +142,11 @@ class RecordQueryMapper {
 	 * Gets a GuardianRecord from the DB, by email address
 	 **/
 	public function getGuardianByEmailAddress($email) {
-		$sql = "select g.fullname as guardianname, g.email, b.fullname as babyname, b.gender, b.birthdate from guardian g join baby b on g.babyid = b.id where g.email = '$email'";
+		$sql = "select b.id as babyid, g.fullname as guardianname, g.email, b.fullname as babyname, b.gender, b.birthdate from guardian g join baby b on g.babyid = b.id where g.email = '$email'";
 		$rows = getSqlResult($sql);
 		$guardian = null;
 		while ($row = @ mysql_fetch_array($rows, MYSQL_ASSOC))  {
-			$baby = new BabyRecord($row['babyname'], $row['gender'], $row['birthdate']);
+			$baby = new BabyRecord($row['babyid'], $row['babyname'], $row['gender'], $row['birthdate']);
 			$guardian = new GuardianRecord($row['guardianname'], $row['email'], $baby);
 		}
 		return $guardian;

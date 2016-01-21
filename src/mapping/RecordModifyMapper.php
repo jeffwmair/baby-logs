@@ -7,8 +7,8 @@ class RecordModifyMapper {
 		$this->con = $con;
 	}
 
-	public function saveToken($token) {
-		$sql = "insert into usersession (token, expiration) values ('$token', DATE_ADD(NOW(), INTERVAL 7 DAY))";
+	public function saveToken($token, $babyid) {
+		$sql = "insert into usersession (token, babyid, expiration) values ('$token', $babyid, DATE_ADD(NOW(), INTERVAL 7 DAY))";
 		$this->executeSql($sql);
 	}
 
@@ -60,7 +60,7 @@ class RecordModifyMapper {
 		$res = mysql_query($sql, $this->con);
 		$err = mysql_error($this->con);
 		if ($err) {
-			throw new Exception($err);
+			throw new Exception($err . "sql:" . $sql);
 		}
 	}
 
