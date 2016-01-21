@@ -48,7 +48,7 @@ class ReportService {
 		$dayArr = $this->dataMapper->getDays($startToday, $endToday);
 		$todayDateFormat = $dayToday->format('Y-m-d');
 
-		if (in_array($todayDateFormat, $dayArr)) {
+		if (array_key_exists("$todayDateFormat", $dayArr)) {
 
 			$day = $dayArr["$todayDateFormat"];
 
