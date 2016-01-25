@@ -3,3 +3,5 @@ scripts/*
 !scripts/*.c
 *.swp
 *.out
+database/insert_seed_data.sql
+prod_deploy_do.sh

@@ -2,7 +2,7 @@
 
 class DateService {
 
-	private $ONE_DAY_IN_SEC = 24*60*60;
+	private $ONE_DAY_IN_SEC = 86400;
 
 	public function getStartOfWeekForDate( $date ) {
 
