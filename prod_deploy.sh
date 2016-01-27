@@ -7,7 +7,7 @@ fi
 SERVER=$1
 
 ssh $SERVER << _EOF_
-mkdir -p public_html/liamjournal
+mkdir -p /var/www/html/liamjournal
 _EOF_
 
 rsync -azP * \
@@ -22,4 +22,4 @@ rsync -azP * \
 	--exclude "js_tests/" \
 	--exclude "test/" \
 	--exclude "docs/" \
-	$SERVER:public_html/liamjournal
+	$SERVER:/var/www/html/liamjournal
