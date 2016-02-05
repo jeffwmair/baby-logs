@@ -5,3 +5,4 @@ scripts/*
 *.out
 database/insert_seed_data.sql
 prod_deploy_do.sh
+resources/credentials.properties

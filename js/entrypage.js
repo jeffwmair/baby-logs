@@ -200,6 +200,8 @@ APP.EntryPage = function() {
 			});
 		}
 
+		// TODO: bring these ranges in from the database
+		//
 		var generateFormulaOptions = function() {
 			var options = ['none'];
 			for(var i = 50; i <= 90; i+=10) options.push(i);
