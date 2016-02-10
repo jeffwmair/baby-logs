@@ -22,7 +22,7 @@ def charts_page():
 def api():
 	data = None
 
-	credentialsReader = PropertiesReader('../../resources/credentials.properties');
+	credentialsReader = PropertiesReader('../resources/credentials.properties');
 	creds = credentialsReader.read_from_file()
 	mapper = QueryMapper(creds)
 
