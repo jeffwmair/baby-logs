@@ -35,12 +35,14 @@ class RecordQueryMapper {
 	public function getDays($start, $end) {
 
 		$dateFilter = "";
+		$keyValDateFilter = "";
 		if (isset($start)) {
 			$dateFilter = " and start >= TIMESTAMP('$start') ";
+			$keyValDateFilter = " and time >= TIMESTAMP('$start') ";
 		}
 		if (isset($end)) {
 			$dateFilter .= " and end <= TIMESTAMP('$end') ";
-
+			$keyValDateFilter .= " and time <= TIMESTAMP('$end') ";
 		}
 		$sql = "select id, start, end, DATE_FORMAT(start, '%Y-%m-%d') as day from baby_sleep where start <= CURRENT_TIMESTAMP() $dateFilter order by start ASC";
 		$sleepRows  = getSqlResult($sql);
@@ -64,7 +66,7 @@ class RecordQueryMapper {
 			}
 		}
 
-		$sql = "select time, DATE_FORMAT(time, '%Y-%m-%d') as day, entry_type, entry_value from baby_keyval WHERE time <= CURRENT_TIMESTAMP() order by time ASC";
+		$sql = "select time, DATE_FORMAT(time, '%Y-%m-%d') as day, entry_type, entry_value from baby_keyval WHERE time <= CURRENT_TIMESTAMP() $keyValDateFilter order by time ASC";
 		$rows  = getSqlResult($sql);
 
 		while ($row = @ mysql_fetch_array($rows, MYSQL_ASSOC))  {
