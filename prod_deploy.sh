@@ -19,6 +19,8 @@ rsync -azP * \
 	--exclude "credentials.php" \
 	--exclude "scripts/" \
 	--exclude "database/" \
+	--exclude "python/" \
+	--exclude "resources/" \
 	--exclude "js_tests/" \
 	--exclude "test/" \
 	--exclude "docs/" \
