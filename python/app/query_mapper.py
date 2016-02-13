@@ -1,53 +1,47 @@
 import mysql.connector
 from app import app
-from domain import Day
+from domain.day import DayGenerator, Day
 from datetime import date, timedelta
 from db_records import BabyRecord, GuardianRecord, SleepRecord, KeyValueRecord
 
 class QueryMapper:
-	def __init__(self, credentials):
+	def __init__(self, credentials, baby_id):
 		self._creds = credentials
+		self._baby_id = baby_id
 
 	def get_days(self, start, end):
 
-		sql = "select id, start, end, DATE_FORMAT(start, '%Y-%m-%d') as day from baby_sleep where start <= CURRENT_TIMESTAMP() order by start ASC"
+		sleep_date_filter = ''
+		keyval_date_filter = ''
+		if not start == None:
+			start_fmt = start.strftime('%Y-%m-%d %H:%M:%S')
+			sleep_date_filter = ' and start >= TIMESTAMP("%s")' % start_fmt
+			keyval_date_filter = ' and time >= TIMESTAMP("%s")' % start_fmt
+		if not end == None:
+			end_fmt = end.strftime('%Y-%m-%d %H:%M:%S')
+			sleep_date_filter = '%s and end <= TIMESTAMP("%s")' % (sleep_date_filter, end_fmt)
+			keyval_date_filter = '%s and time <= TIMESTAMP("%s")' % (keyval_date_filter, end_fmt)
+
+
+		#print '%s;' % sql
 		con = mysql.connector.connect(user=self._creds['user'], password=self._creds['pass'],host=self._creds['host'], database=self._creds['db'])
 
 		try:
 			cursor = con.cursor()
+			sql = "select id, start, end, DATE_FORMAT(start, '%%Y-%%m-%%d') as day from baby_sleep where start <= CURRENT_TIMESTAMP() %s order by start ASC" % sleep_date_filter
 			cursor.execute(sql)
+			sleep_rows = cursor.fetchall()
 
-			# days
-			days = dict()
-			for row in cursor.fetchall():
+			sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time <= CURRENT_TIMESTAMP() %s order by time ASC' % keyval_date_filter;
+			#print '%s;' % sql
+			cursor = con.cursor()
+			cursor.execute(sql)
+			keyval_rows = cursor.fetchall()
 
-				sleep_baby_id = row[0]
-				sleep_start = row[1]
-				sleep_end = row[2]
-				sleep_day_key = row[3]
-
-				if sleep_day_key not in days:
-					days[sleep_day_key] = Day(sleep_day_key, sleep_baby_id)
-
-				day_record = days[sleep_day_key]
-				sleep_record = SleepRecord(sleep_start, sleep_end)
-				day_record.add_sleep_record(sleep_record)
-
-				# if the sleep start between midnight and {morning}, add as night sleep to previous day
-				startHr = sleep_start.hour
-				if startHr >= 0 and startHr <= 7:
-					# add to the previous day
-					prev_date = day_record.get_date() - timedelta(days=1)
-
-					prev_date_string = prev_date.strftime("%Y-%m-%d %H:%M")
-					if prev_date_string not in days:
-						days[prev_date_string] = Day(prev_date_string, sleep_baby_id)
-
-					day_record_prev = days[prev_date_string]
-					day_record_prev.add_sleep_past_midnight(sleep_record)
+			day_gen = DayGenerator(1, sleep_rows, keyval_rows)
+			days = day_gen.get_days()
 
 			return days
-
 
 		finally:
 			con.close()

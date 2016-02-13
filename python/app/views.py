@@ -1,5 +1,5 @@
 from app import app
-from flask import jsonify
+from flask import jsonify, Response
 from flask import request
 from flask import render_template
 from services import ReportService
@@ -21,10 +21,12 @@ def charts_page():
 @app.route('/BabyApi.php')
 def api():
 	data = None
+	# TODO: fix this
+	babyid = 1;
 
 	credentialsReader = PropertiesReader('../resources/credentials.properties');
 	creds = credentialsReader.read_from_file()
-	mapper = QueryMapper(creds)
+	mapper = QueryMapper(creds, babyid)
 
 	apiMethod = request.args['action']
 	if apiMethod == "loadDashboard":
@@ -33,6 +35,7 @@ def api():
 	else:
 		raise ValueError("method not implemented: %s" % apiMethod)
 
-	print "Request method: %s" % request.method
-	print "Request args: %s" % request.args
+	#print "Request method: %s" % request.method
+	#print "Request args: %s" % request.args
+
 	return jsonify(data)
