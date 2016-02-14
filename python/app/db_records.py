@@ -29,3 +29,7 @@ class SleepRecord:
 	
 	def is_adjacent_to(self, other_record):
 		return self.start == other_record.end or self.end == other_record.start
+
+	def get_duration(self):
+		return (self.end - self.start).seconds / 3600.0
+
