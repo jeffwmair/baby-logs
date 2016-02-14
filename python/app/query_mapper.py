@@ -31,6 +31,11 @@ class QueryMapper:
 			sql = "select id, start, end, DATE_FORMAT(start, '%%Y-%%m-%%d') as day from baby_sleep where start <= CURRENT_TIMESTAMP() %s order by start ASC" % sleep_date_filter
 			cursor.execute(sql)
 			sleep_rows = cursor.fetchall()
+			print '%%%'
+			print sleep_rows[0]
+			print type(sleep_rows[0])
+			print type(sleep_rows)
+			print '%%%'
 
 			sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time <= CURRENT_TIMESTAMP() %s order by time ASC' % keyval_date_filter;
 			#print '%s;' % sql

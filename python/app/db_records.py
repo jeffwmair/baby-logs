@@ -26,4 +26,6 @@ class SleepRecord:
 	def __init__(self, start, end):
 		self.start = start
 		self.end = end
-
+	
+	def is_adjacent_to(self, other_record):
+		return self.start == other_record.end or self.end == other_record.start
