@@ -1,5 +1,8 @@
 class FeedSet:
-	def __init__(self, milk_feeds, fmla_feeds):
+	def __init__(self, feed_records):
+
+		milk_feeds = (x for x in feed_records if x.get_type() == 'milk')
+		fmla_feeds = (x for x in feed_records if x.get_type() == 'formula')
 
 		self._breast_count = 0
 		self._milk_ml = 0

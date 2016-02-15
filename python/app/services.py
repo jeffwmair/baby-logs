@@ -4,22 +4,12 @@ from domain.day import Day
 class ReportService():
 	def __init__(self, datamapper):
 		self._datamapper = datamapper
-		print "initialized"
 
 	def get_dashboard_data(self):
 
-		# same shitty implementation as the original php...
-
-		milkMlToday = 0
-		formulaMlToday = 0
-		breastCountToday = 0
 		feedRecordTimeFmt = ''
 		feedEndMinutesAgo = ''
 
-		poosToday = 0
-
-		napCount = 0
-		napDurationHrs = 0
 		sleepRecordTimeFmt = ''
 		sleepEndMinutesAgo = 0
 
@@ -38,7 +28,6 @@ class ReportService():
 		startTodayDay = datetime.now().date()
 		startToday = datetime(startTodayDay.year, startTodayDay.month, startTodayDay.day, 0, 0, 0)
 		endToday = startToday + timedelta(days=1) - timedelta(seconds=1)
-		#print 'xxxxxxxxxxxxxxx endToday: %s xxxxxxxxxxxxxx' % endToday
 
 		days = self._datamapper.get_days(startToday, endToday)
 		todayKey = startTodayDay.strftime('%Y-%m-%d')
@@ -49,14 +38,17 @@ class ReportService():
 			#TODO
 			babyid = 1
 			dayToday = Day(todayKey, babyid) 
-		print dayToday
+
+		today_sleep = dayToday.get_sleep()
+		today_feed = dayToday.get_feed()
+		today_diaper = dayToday.get_diaper()
 
 		data = { 
 				'feed' : 
 				{ 
-					'milkMlToday' : dayToday.get_milk_ml(),
-					'formulaMlToday' : dayToday.get_fmla_ml(),
-					'breastCountToday' : dayToday.get_breast_count(),
+					'milkMlToday' : today_feed.get_milk_ml(),
+					'formulaMlToday' : today_feed.get_fmla_ml(),
+					'breastCountToday' : today_feed.get_breast_count(),
 					'prev' : {
 						'status' : feedStatus,
 						'time' : feedRecordTimeFmt,
@@ -65,8 +57,8 @@ class ReportService():
 				},
 				'sleep': {
 					'naps' : {
-						'count' : napCount,
-						'duration' : napDurationHrs
+						'count' : today_sleep.get_nap_count(),
+						'duration' : today_sleep.get_nap_hrs()
 						},
 					'prev' : {
 						'status' : sleepStatus,
@@ -82,7 +74,7 @@ class ReportService():
 						}
 					},
 				'poo' : {
-					'todayCount' : poosToday,
+					'todayCount' : today_diaper.get_poo_count(),
 					'prev' : {
 						'status' : pooStatus,
 						'time' : pooRecordTimeFmt,

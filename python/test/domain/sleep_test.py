@@ -26,37 +26,37 @@ class SleepTest(unittest.TestCase):
 		rec1 = SleepRecord(datetime(2016, 1, 1, 19, 0), datetime(2016, 1, 1, 19, 15))
 		records = [ rec1 ]
 		sut = SleepSet(records)
-		sleeps_lastnight = sut.get_last_night_sleeps()
-		sleeps_day = sut.get_daytime_sleeps()
-		sleeps_night = sut.get_night_sleeps()
+		sleeps_lastnight_hrs = sut.get_lastnight_sleep_hrs()
+		sleeps_day_hrs = sut.get_nap_hrs()
+		sleeps_night_hrs = sut.get_night_sleep_hrs()
 
-		self.assertEqual(0, len(sleeps_lastnight))
-		self.assertEqual(0, len(sleeps_day))
-		self.assertEqual(1, len(sleeps_night))
+		self.assertEqual(0, sleeps_lastnight_hrs)
+		self.assertEqual(0, sleeps_day_hrs)
+		self.assertEqual(0.25, sleeps_night_hrs)
 
 	def test_daytime_records(self):
 		rec1 = SleepRecord(datetime(2016, 1, 1, 7, 0), datetime(2016, 1, 1, 9, 0))
 		records = [ rec1 ]
 		sut = SleepSet(records)
-		sleeps_lastnight = sut.get_last_night_sleeps()
-		sleeps_day = sut.get_daytime_sleeps()
-		sleeps_night = sut.get_night_sleeps()
+		sleeps_lastnight = sut.get_lastnight_sleep_hrs()
+		sleeps_day = sut.get_nap_hrs()
+		sleeps_night = sut.get_night_sleep_hrs()
 
-		self.assertEqual(0, len(sleeps_lastnight))
-		self.assertEqual(1, len(sleeps_day))
-		self.assertEqual(0, len(sleeps_night))
+		self.assertEqual(0, sleeps_lastnight)
+		self.assertEqual(2, sleeps_day)
+		self.assertEqual(0, sleeps_night)
 
 	def test_lastnight_records(self):
 		rec1 = SleepRecord(datetime(2016, 1, 1, 0, 0), datetime(2016, 1, 1, 0, 15))
 		records = [ rec1 ]
 		sut = SleepSet(records)
-		sleeps_lastnight = sut.get_last_night_sleeps()
-		sleeps_day = sut.get_daytime_sleeps()
-		sleeps_night = sut.get_night_sleeps()
+		sleeps_lastnight = sut.get_lastnight_sleep_hrs()
+		sleeps_day = sut.get_nap_hrs()
+		sleeps_night = sut.get_night_sleep_hrs()
 
-		self.assertEqual(1, len(sleeps_lastnight))
-		self.assertEqual(0, len(sleeps_day))
-		self.assertEqual(0, len(sleeps_night))
+		self.assertEqual(0.25, sleeps_lastnight)
+		self.assertEqual(0, sleeps_day)
+		self.assertEqual(0, sleeps_night)
 
 	def test_naps(self):
 		rec1 = SleepRecord(datetime(2016, 1, 1, 9, 0), datetime(2016, 1, 1, 9, 15))
