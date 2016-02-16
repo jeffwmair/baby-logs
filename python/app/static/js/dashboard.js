@@ -53,13 +53,13 @@ APP.Dashboard = function() {
 		var img = '';
 		var file = '';
 		switch(status) {
-			case "1":
+			case 1:
 				file = 'Circle_Green';
 				break;
-			case "2":
+			case 2:
 				file = 'Circle_Yellow';
 				break;
-			case "3":
+			case 3:
 				file = 'Circle_Red';
 				break;
 			default:

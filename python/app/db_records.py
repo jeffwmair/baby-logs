@@ -21,6 +21,7 @@ class KeyValueRecord:
 
 	def get_type(self): return self._record_type
 	def get_value(self): return self._value
+	def get_time(self): return self._time
 
 class SleepRecord:
 	def __init__(self, start, end):

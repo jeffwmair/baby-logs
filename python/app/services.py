@@ -7,24 +7,6 @@ class ReportService():
 
 	def get_dashboard_data(self):
 
-		feedRecordTimeFmt = ''
-		feedEndMinutesAgo = ''
-
-		sleepRecordTimeFmt = ''
-		sleepEndMinutesAgo = 0
-
-		feedStatus = "3"
-		sleepStatus = "3"
-		peeStatus = "3"
-		pooStatus = "3"
-
-		peeRecordTimeFmt = ''
-		pooRecordTimeFmt = ''
-
-		peeMinutesAgo = 0
-		pooMinutesAgo = 0
-
-		# TODO: need to get start of day today and end of day today for a filter date range
 		startTodayDay = datetime.now().date()
 		startToday = datetime(startTodayDay.year, startTodayDay.month, startTodayDay.day, 0, 0, 0)
 		endToday = startToday + timedelta(days=1) - timedelta(seconds=1)
@@ -46,13 +28,13 @@ class ReportService():
 		data = { 
 				'feed' : 
 				{ 
-					'milkMlToday' : today_feed.get_milk_ml(),
-					'formulaMlToday' : today_feed.get_fmla_ml(),
+					'milkMlToday' : str(today_feed.get_milk_ml()) + 'ml',
+					'formulaMlToday' : str(today_feed.get_fmla_ml()) + 'ml',
 					'breastCountToday' : today_feed.get_breast_count(),
 					'prev' : {
-						'status' : feedStatus,
-						'time' : feedRecordTimeFmt,
-						'minutesAgo' : feedEndMinutesAgo
+						'status' : today_feed.get_feed_status(),
+						'time' : self.format_date(today_feed.get_last_feed_time()),
+						'minutesAgo' : today_feed.get_minutes_ago()
 						}
 				},
 				'sleep': {
@@ -61,25 +43,28 @@ class ReportService():
 						'duration' : today_sleep.get_nap_hrs()
 						},
 					'prev' : {
-						'status' : sleepStatus,
-						'time' : sleepRecordTimeFmt,
-						'minutesAgo' : sleepEndMinutesAgo
+						'status' : today_sleep.get_sleep_status(),
+						'time' : self.format_date(today_sleep.get_sleep_last_time()),
+						'minutesAgo' : today_sleep.get_sleep_last_minutes_ago()
 						}
 					},
 				'pee' : {
 					'prev' : {
-						'status' : peeStatus,
-						'time' : peeRecordTimeFmt,
-						'minutesAgo' : peeMinutesAgo
+						'status' : today_diaper.get_pee_status(),
+						'time' : self.format_date(today_diaper.get_pee_last_time()),
+						'minutesAgo' : today_diaper.get_pee_minutes_ago()
 						}
 					},
 				'poo' : {
 					'todayCount' : today_diaper.get_poo_count(),
 					'prev' : {
-						'status' : pooStatus,
-						'time' : pooRecordTimeFmt,
-						'minutesAgo' : pooMinutesAgo
+						'status' : today_diaper.get_poo_status(),
+						'time' : self.format_date(today_diaper.get_poo_last_time()),
+						'minutesAgo' : today_diaper.get_poo_minutes_ago()
 						}
 					}
 			}
 		return data
+
+	def format_date(self, date):
+		return date.strftime('%-I:%M%p').lower()

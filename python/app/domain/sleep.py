@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.const.constants import Constants
 
 class SleepSet:
@@ -5,6 +6,14 @@ class SleepSet:
 
 		merged = self._merge_contiguous_sleeps(records)
 		self._organize_records_by_time(merged)
+
+		self._night_hrs = sum(x.get_duration() for x in self._night)
+		self._day_hrs = sum(x.get_duration() for x in self._daytime)
+		self._last_night_hrs = sum(x.get_duration() for x in self._last_night)
+		self._nap_count = len(self._daytime)
+
+		self._sleep_last_time = max(x.start for x in records if x.start <= datetime.now())
+		self._sleep_last_minutes_ago = (datetime.now() - self._sleep_last_time).seconds / 60.0
 
 		# |prev n.|daytime      |night->
 		# |-------|-------------|----|
@@ -23,10 +32,6 @@ class SleepSet:
 			else:
 				self._night.append(rec)
 
-		self._night_hrs = sum(x.get_duration() for x in self._night)
-		self._day_hrs = sum(x.get_duration() for x in self._daytime)
-		self._last_night_hrs = sum(x.get_duration() for x in self._last_night)
-		self._nap_count = len(self._daytime)
 
 	# In the database we will have adjacent sleep records.
 	# Merge them here to make them easier to work with.
@@ -66,3 +71,17 @@ class SleepSet:
 	def get_total_sleep_hrs(self):
 		return self.get_last_night_sleeps() + self.get_nap_hrs() + self.get_night_sleeps()
 
+	def get_sleep_last_time(self):
+		return self._sleep_last_time;
+
+	def get_sleep_last_minutes_ago(self):
+		return self._sleep_last_minutes_ago
+
+	def get_sleep_status(self):
+		min_ago = self.get_sleep_last_minutes_ago()
+		if min_ago > 60*2:
+			return 3
+		elif min_ago > 60*1.5:
+			return 2
+		else:
+			return 1
