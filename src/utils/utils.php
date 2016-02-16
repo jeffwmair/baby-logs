@@ -26,7 +26,7 @@
 		/*
 		* setting the timezone here
 		*/
-		mysql_query("SET time_zone = '-4:00';", $conn);
+		mysql_query("SET time_zone = '-5:00';", $conn);
 
 		return $conn;
 	}
