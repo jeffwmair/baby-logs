@@ -211,7 +211,7 @@ APP.EntryPage = function() {
 
 		var generateMilkOptions = function() {
 			var options = ['none', 'BL', 'BR'];
-			for(var i = 50; i <= 90; i+=10) options.push(i);
+			for(var i = 10; i <= 90; i+=10) options.push(i);
 			for(var i = 95; i <= 280; i+=5) options.push(i);
 			return options;
 		}
