@@ -24,7 +24,7 @@ def api():
 	# TODO: fix this
 	babyid = 1;
 
-	credentialsReader = PropertiesReader('../resources/credentials.properties');
+	credentialsReader = PropertiesReader('credentials.properties');
 	creds = credentialsReader.read_from_file()
 	mapper = QueryMapper(creds, babyid)
 

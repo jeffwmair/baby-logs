@@ -15,10 +15,17 @@ class DiaperSet:
 		self._pee_count = len(pees)
 		self._poo_count = len(poos)
 
-		self._last_poo_time = max(x.get_time() for x in poos)
-		self._last_poo_minutes_ago = (datetime.now() - self._last_poo_time).seconds / 60.0
-		self._last_pee_time = max(x.get_time() for x in pees)
-		self._last_pee_minutes_ago = (datetime.now() - self._last_pee_time).seconds / 60.0
+		try:
+			self._last_poo_time = max(x.get_time() for x in poos)
+			self._last_poo_minutes_ago = (datetime.now() - self._last_poo_time).seconds / 60.0
+		except Exception:
+			pass
+
+		try:
+			self._last_pee_time = max(x.get_time() for x in pees)
+			self._last_pee_minutes_ago = (datetime.now() - self._last_pee_time).seconds / 60.0
+		except Exception:
+			pass
 	
 	def get_pee_count(self):
 		return self._pee_count

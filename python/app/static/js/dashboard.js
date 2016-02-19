@@ -66,7 +66,7 @@ APP.Dashboard = function() {
 				throw "Status value: "+status;
 		}
 
-		img = '<img src="/static/images/'+file+'.png" style="width:18px;margin-right:10px" />';
+		img = '<img src="static/images/'+file+'.png" style="width:18px;margin-right:10px" />';
 		return img;
 	}
 
