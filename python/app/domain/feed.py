@@ -23,11 +23,6 @@ class FeedSet:
 		# sum up forumula feeding amounts
 		self._fmla_ml = sum(int(feed.get_value()) for feed in fmla_feeds)
 
-		self._last_feed_time = max(x.get_time() for x in feed_records)
-
-		# how long ago was the last feeding?
-		self._last_feed_minutes_ago = (datetime.now() - self._last_feed_time).seconds / 60.0
-
 	def get_breast_count(self):
 		return self._breast_count
 
@@ -36,19 +31,3 @@ class FeedSet:
 
 	def get_fmla_ml(self):
 		return self._fmla_ml
-
-	def get_last_feed_time(self):
-		return self._last_feed_time
-
-	def get_minutes_ago(self):
-		return self._last_feed_minutes_ago
-
-	def get_feed_status(self):
-		min_ago = self.get_minutes_ago()
-		if min_ago > 60*3.5:
-			return 3
-		elif min_ago > 60*2.5:
-			return 2
-		else:
-			return 1
-

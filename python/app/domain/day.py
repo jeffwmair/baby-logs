@@ -56,14 +56,14 @@ class DayGenerator:
 			sleeps = SleepSet(day_sleeps.get(key))
 			feeds = FeedSet([x for x in day_keyvals.get(key) if x.get_type() == 'milk' or x.get_type() == 'formula'])
 			diapers = DiaperSet([x for x in day_keyvals.get(key) if x.get_type() == 'diaper'])
-			days[key] = DayNew(key, sleeps, diapers, feeds)
+			days[key] = Day(key, sleeps, diapers, feeds)
 
 		self._days = days
 
 	def get_days(self):
 		return self._days
 
-class DayNew:
+class Day:
 	def __init__(self, date_string, sleep_set, diaper_set, feed_set):
 		self._date_string = date_string
 		self._sleep = sleep_set
@@ -79,50 +79,3 @@ class DayNew:
 	def get_diaper(self):
 		return self._diaper
 	
-
-class Day:
-	def __init__(self, day_string, baby_id, day_sleeps, day_sleeps_after_midnight, keyval_records):
-		self._day = parse(day_string)
-		self._baby_id = baby_id
-		self._sleep_records = day_sleeps
-		self._sleep_past_midnight = day_sleeps_after_midnight
-
-		self._diapers = list()
-		self._milk_feeds = list()
-		self._formula_feeds = list()
-
-		if keyval_records != None:
-			for record in keyval_records:
-				if record.get_type() == 'diaper':
-					self._diapers.append(record)
-				elif record.get_type() == 'milk':
-					self._milk_feeds.append(record)
-				elif record.get_type() == 'formula':
-					self._formula_feeds.append(record)
-				else:
-					raise Exception('unknown record type: %s' % record)
-
-
-	def get_breast_count(self):
-		ct = 0
-		for milk in self._milk_feeds:
-			try:
-				int(milk.get_value())
-			except:
-				ct += 1
-		return ct
-
-	def get_milk_ml(self):
-		ml = 0
-		for milk in self._milk_feeds:
-			val = milk.get_value()
-			try:
-				val = int(milk.get_value())
-				ml += val
-			except:
-				print 'Must have been a BR or BL; no problemo'
-		return ml
-
-	def get_fmla_ml(self):
-		return sum(int(feed.get_value()) for feed in self._formula_feeds)
-

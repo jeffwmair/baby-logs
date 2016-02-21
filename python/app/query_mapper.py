@@ -6,8 +6,42 @@ from db_records import BabyRecord, GuardianRecord, SleepRecord, KeyValueRecord
 
 class QueryMapper:
 	def __init__(self, credentials, baby_id):
-		self._creds = credentials
+		self._credentials = credentials
 		self._baby_id = baby_id
+
+	def get_latest_each_record_type(self):
+		# get the latest sleep, pee, poo, feed (milk or fmla)
+		sql_pee = "select time from baby_keyval where entry_type = 'diaper' and (entry_value = '1' or entry_value = '3') order by time desc limit 1"
+		sql_poo = "select time from baby_keyval where entry_type = 'diaper' and (entry_value = '2' or entry_value = '3') order by time desc limit 1"
+		sql_feed = "select time from baby_keyval where entry_type = 'milk' or entry_type = 'formula' order by time desc limit 1"
+		sql_sleep = "select end from baby_sleep where end <= current_timestamp() order by end desc limit 1"
+
+		con = mysql.connector.connect(user=self._credentials['user'], password=self._credentials['pass'],host=self._credentials['host'], database=self._credentials['db'])
+
+		try:
+			cursor = con.cursor()
+
+			cursor.execute(sql_pee)
+			rows = cursor.fetchall()
+			last_pee = rows[0][0]
+
+			cursor.execute(sql_poo)
+			rows = cursor.fetchall()
+			last_poo = rows[0][0]
+
+			cursor.execute(sql_feed)
+			rows = cursor.fetchall()
+			last_feed = rows[0][0]
+
+			cursor.execute(sql_sleep)
+			rows = cursor.fetchall()
+			last_sleep = rows[0][0]
+
+			return {'last_pee':last_pee, 'last_poo':last_poo, 'last_feed':last_feed, 'last_sleep':last_sleep}
+
+		finally:
+			con.close()
+
 
 	def get_days(self, start, end):
 
@@ -23,22 +57,15 @@ class QueryMapper:
 			keyval_date_filter = '%s and time <= TIMESTAMP("%s")' % (keyval_date_filter, end_fmt)
 
 
-		#print '%s;' % sql
-		con = mysql.connector.connect(user=self._creds['user'], password=self._creds['pass'],host=self._creds['host'], database=self._creds['db'])
+		con = mysql.connector.connect(user=self._credentials['user'], password=self._credentials['pass'],host=self._credentials['host'], database=self._credentials['db'])
 
 		try:
 			cursor = con.cursor()
 			sql = "select id, start, end, DATE_FORMAT(start, '%%Y-%%m-%%d') as day from baby_sleep where start <= CURRENT_TIMESTAMP() %s order by start ASC" % sleep_date_filter
 			cursor.execute(sql)
 			sleep_rows = cursor.fetchall()
-			print '%%%'
-			print sleep_rows[0]
-			print type(sleep_rows[0])
-			print type(sleep_rows)
-			print '%%%'
 
 			sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time <= CURRENT_TIMESTAMP() %s order by time ASC' % keyval_date_filter;
-			#print '%s;' % sql
 			cursor = con.cursor()
 			cursor.execute(sql)
 			keyval_rows = cursor.fetchall()

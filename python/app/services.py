@@ -11,7 +11,14 @@ class ReportService():
 		startToday = datetime(startTodayDay.year, startTodayDay.month, startTodayDay.day, 0, 0, 0)
 		endToday = startToday + timedelta(days=1) - timedelta(seconds=1)
 
+		most_recent_records = self._datamapper.get_latest_each_record_type()
+		last_pee = most_recent_records['last_pee']
+		last_poo = most_recent_records['last_poo']
+		last_feed = most_recent_records['last_feed']
+		last_sleep = most_recent_records['last_sleep']
+
 		days = self._datamapper.get_days(startToday, endToday)
+
 		todayKey = startTodayDay.strftime('%Y-%m-%d')
 		dayToday = None
 		try:
@@ -32,9 +39,9 @@ class ReportService():
 					'formulaMlToday' : str(today_feed.get_fmla_ml()) + 'ml',
 					'breastCountToday' : today_feed.get_breast_count(),
 					'prev' : {
-						'status' : today_feed.get_feed_status(),
-						'time' : self.format_date(today_feed.get_last_feed_time()),
-						'minutesAgo' : today_feed.get_minutes_ago()
+						'status' : self.get_feed_status(last_feed),
+						'time' : self.format_date(last_feed),
+						'minutesAgo' : self.get_time_minutes_ago(last_feed)
 						}
 				},
 				'sleep': {
@@ -43,28 +50,67 @@ class ReportService():
 						'duration' : today_sleep.get_nap_hrs()
 						},
 					'prev' : {
-						'status' : today_sleep.get_sleep_status(),
-						'time' : self.format_date(today_sleep.get_sleep_last_time()),
-						'minutesAgo' : today_sleep.get_sleep_last_minutes_ago()
+						'status' : self.get_sleep_status(last_sleep),
+						'time' : self.format_date(last_sleep),
+						'minutesAgo' : self.get_time_minutes_ago(last_sleep)
 						}
 					},
 				'pee' : {
 					'prev' : {
-						'status' : today_diaper.get_pee_status(),
-						'time' : self.format_date(today_diaper.get_pee_last_time()),
-						'minutesAgo' : today_diaper.get_pee_minutes_ago()
+						'status' : self.get_pee_status(last_pee),
+						'time' : self.format_date(last_pee),
+						'minutesAgo' : self.get_time_minutes_ago(last_pee)
 						}
 					},
 				'poo' : {
 					'todayCount' : today_diaper.get_poo_count(),
 					'prev' : {
-						'status' : today_diaper.get_poo_status(),
-						'time' : self.format_date(today_diaper.get_poo_last_time()),
-						'minutesAgo' : today_diaper.get_poo_minutes_ago()
+						'status' : self.get_poo_status(last_poo),
+						'time' : self.format_date(last_poo),
+						'minutesAgo' : self.get_time_minutes_ago(last_poo)
 						}
 					}
 			}
 		return data
+
+	def get_time_minutes_ago(self, time):
+		return (datetime.now() - time).seconds / 60.0
+
+	def get_pee_status(self, time):
+		min_ago = self.get_time_minutes_ago(time)
+		if min_ago > 60*3.5:
+			return 3
+		elif min_ago > 60*2.75:
+			return 2
+		else:
+			return 1
+
+	def get_poo_status(self, time):
+		min_ago = self.get_time_minutes_ago(time)
+		if min_ago > 60*24:
+			return 3
+		elif min_ago > 60*6:
+			return 2
+		else:
+			return 1
+
+	def get_feed_status(self, time):
+		min_ago = self.get_time_minutes_ago(time)
+		if min_ago > 60*3.5:
+			return 3
+		elif min_ago > 60*2.5:
+			return 2
+		else:
+			return 1
+
+	def get_sleep_status(self, time):
+		min_ago = self.get_time_minutes_ago(time)
+		if min_ago > 60*2:
+			return 3
+		elif min_ago > 60*1.5:
+			return 2
+		else:
+			return 1
 
 	def format_date(self, date):
 		return date.strftime('%-I:%M%p').lower()

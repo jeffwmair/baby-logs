@@ -31,11 +31,11 @@ def api():
 	apiMethod = request.args['action']
 	if apiMethod == "loadDashboard":
 		svc = ReportService(mapper);
-		data = svc.get_dashboard_data()
+		try:
+			data = svc.get_dashboard_data()
+		except Exception as x:
+			print x
 	else:
 		raise ValueError("method not implemented: %s" % apiMethod)
-
-	#print "Request method: %s" % request.method
-	#print "Request args: %s" % request.args
 
 	return jsonify(data)
