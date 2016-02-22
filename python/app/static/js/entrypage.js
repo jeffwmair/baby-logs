@@ -5,7 +5,7 @@ var APP = APP || {};
 */
 APP.EntryPage = function() {
 
-	var API = "src/web/BabyApi.php";
+	var API = "BabyApi";
 
 	var buttonList = [];
 	var that = this;

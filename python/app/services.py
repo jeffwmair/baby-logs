@@ -1,9 +1,32 @@
 from datetime import date, datetime, timedelta
-from domain.day import Day
+import traceback
+from domain.day import Day, SleepSet, FeedSet, DiaperSet
 
 class ReportService():
 	def __init__(self, datamapper):
 		self._datamapper = datamapper
+
+	def get_entry_data(self, date_string):
+
+		#sql_sleeps = "select time, entry_value, entry_type from baby_keyval
+		sleeps = self._datamapper.get_sleeps_for_day(date_string)
+		sleep_json = list()
+		for sleep in sleeps:
+			row_dict = {
+					'id':sleep[0], 
+					'babyid':sleep[1], 
+					'start':sleep[2], 
+					'end':sleep[3]
+				}
+			sleep_json.append(row_dict)
+
+		data = {
+			'sleeps' : sleep_json,
+			'milkfeeds' : [],
+			'fmlafeeds' : [],
+			'diapers' : [] 
+		}
+		return data
 
 	def get_dashboard_data(self):
 
@@ -11,22 +34,24 @@ class ReportService():
 		startToday = datetime(startTodayDay.year, startTodayDay.month, startTodayDay.day, 0, 0, 0)
 		endToday = startToday + timedelta(days=1) - timedelta(seconds=1)
 
+		#TODO: for fun, try loading these two calls in separate threads.  Can we use something like Futures in python?
+		days = self._datamapper.get_days(startToday, endToday)
 		most_recent_records = self._datamapper.get_latest_each_record_type()
+
 		last_pee = most_recent_records['last_pee']
 		last_poo = most_recent_records['last_poo']
 		last_feed = most_recent_records['last_feed']
 		last_sleep = most_recent_records['last_sleep']
 
-		days = self._datamapper.get_days(startToday, endToday)
-
 		todayKey = startTodayDay.strftime('%Y-%m-%d')
 		dayToday = None
 		try:
 			dayToday = days[todayKey]
-		except KeyError:
+		except Exception:
+			print traceback.format_exc()
 			#TODO
 			babyid = 1
-			dayToday = Day(todayKey, babyid) 
+			dayToday = Day(todayKey, SleepSet([]), DiaperSet([]), FeedSet([])) 
 
 		today_sleep = dayToday.get_sleep()
 		today_feed = dayToday.get_feed()

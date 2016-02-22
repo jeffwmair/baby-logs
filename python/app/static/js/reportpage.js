@@ -1,7 +1,7 @@
 var APP = APP || {};
 APP.ReportPage = function(container, calHelper) {
 
-	var API = "src/web/BabyApi.php";
+	var API = "BabyApi";
 
 	var calcHoursBetweenTimes = function(date1, date2) {
 		var msDiff = date2.getTime() - date1.getTime();	

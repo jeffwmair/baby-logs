@@ -9,6 +9,18 @@ class QueryMapper:
 		self._credentials = credentials
 		self._baby_id = baby_id
 
+	def get_sleeps_for_day(self, date_string):
+		sql_sleeps = "select * from baby_sleep where start >= '%s' and start <= '%s 23:59:59' order by start" % (date_string,date_string)
+		con = mysql.connector.connect(user=self._credentials['user'], password=self._credentials['pass'],host=self._credentials['host'], database=self._credentials['db'])
+		try:
+			cursor = con.cursor()
+			cursor.execute(sql_sleeps)
+			sleeps = cursor.fetchall()
+			return sleeps
+		finally:
+			con.close()
+
+
 	def get_latest_each_record_type(self):
 		# get the latest sleep, pee, poo, feed (milk or fmla)
 		sql_pee = "select time from baby_keyval where entry_type = 'diaper' and (entry_value = '1' or entry_value = '3') order by time desc limit 1"

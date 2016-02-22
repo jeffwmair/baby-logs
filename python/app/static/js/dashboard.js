@@ -2,7 +2,7 @@ var APP = APP || {};
 
 APP.Dashboard = function() {
 
-	var API = "BabyApi.php";
+	var API = "BabyApi";
 	var SUFFIX_AGO = ' ago';
 
 	var errorHandler = function(errorMessage) {

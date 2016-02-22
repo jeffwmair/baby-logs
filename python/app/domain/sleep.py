@@ -4,6 +4,9 @@ from app.const.constants import Constants
 class SleepSet:
 	def __init__(self, records):
 
+		if len(records) == 0:
+			return
+
 		merged = self._merge_contiguous_sleeps(records)
 		self._organize_records_by_time(merged)
 
