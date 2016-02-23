@@ -10,7 +10,7 @@ class QueryMapper:
 		self._baby_id = baby_id
 
 	def get_sleeps_for_day(self, date_string):
-		sql_sleeps = "select * from baby_sleep where start >= '%s' and start <= '%s 23:59:59' order by start" % (date_string,date_string)
+		sql_sleeps = "select id, babyid, date_format(start, '%%Y-%%m-%%d %%T'), date_format(end, '%%Y-%%m-%%d %%T') from baby_sleep where start >= '%s' and start <= '%s 23:59:59' order by start" % (date_string,date_string)
 		con = mysql.connector.connect(user=self._credentials['user'], password=self._credentials['pass'],host=self._credentials['host'], database=self._credentials['db'])
 		try:
 			cursor = con.cursor()
@@ -23,8 +23,8 @@ class QueryMapper:
 
 	def get_latest_each_record_type(self):
 		# get the latest sleep, pee, poo, feed (milk or fmla)
-		sql_pee = "select time from baby_keyval where entry_type = 'diaper' and (entry_value = '1' or entry_value = '3') order by time desc limit 1"
-		sql_poo = "select time from baby_keyval where entry_type = 'diaper' and (entry_value = '2' or entry_value = '3') order by time desc limit 1"
+		sql_pee = "select time from baby_keyval where entry_type = 'diaper' and (entry_value = 'pee') order by time desc limit 1"
+		sql_poo = "select time from baby_keyval where entry_type = 'diaper' and (entry_value = 'poo') order by time desc limit 1"
 		sql_feed = "select time from baby_keyval where entry_type = 'milk' or entry_type = 'formula' order by time desc limit 1"
 		sql_sleep = "select end from baby_sleep where end <= current_timestamp() order by end desc limit 1"
 

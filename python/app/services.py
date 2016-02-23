@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from dateutil.parser import parse
 import traceback
 from domain.day import Day, SleepSet, FeedSet, DiaperSet
 
@@ -15,7 +16,7 @@ class ReportService():
 			row_dict = {
 					'id':sleep[0], 
 					'babyid':sleep[1], 
-					'start':sleep[2], 
+					'start':sleep[2],
 					'end':sleep[3]
 				}
 			sleep_json.append(row_dict)

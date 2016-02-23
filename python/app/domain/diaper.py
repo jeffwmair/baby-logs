@@ -9,8 +9,8 @@ class DiaperSet:
 		# 3 is both
 
 		# TODO: again with the string values in the DB... really gotta fix that
-		pees = [x for x in diaper_records if x.get_value() == '1' or x.get_value() == '3']
-		poos = [x for x in diaper_records if x.get_value() == '2' or x.get_value() == '3']
+		pees = [x for x in diaper_records if x.get_value() == 'pee']
+		poos = [x for x in diaper_records if x.get_value() == 'poo']
 
 		self._pee_count = len(pees)
 		self._poo_count = len(poos)

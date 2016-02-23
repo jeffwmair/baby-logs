@@ -76,7 +76,7 @@ class Day {
 	public function getPooCount() {
 		$count = 0;
 		foreach($this->diapers as $diaper) {
-			if ($diaper->value == 2 || $diaper->value == 3) {
+			if ($diaper->value == 'poo') {
 				$count++;
 			}
 		}

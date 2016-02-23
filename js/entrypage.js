@@ -17,6 +17,15 @@ APP.EntryPage = function() {
 		errTextEl.innerHTML = errMsg;
 	}
 
+	var diaperClickHandler = function(e) {
+		var mystartdate = getSleepClickStartDate(e);
+		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
+		var diaperVal = e.target.value;
+		UTILS.ajaxGetJson(API + "?action=addvalue&type=diaper&value="+diaperVal+"&time="+formatteddate, errorHandler, function(json) {
+			that.handleDataLoad(false, null, json);
+		});
+	}
+
 	var milkClickHandler = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
@@ -171,15 +180,12 @@ APP.EntryPage = function() {
 				specialClass = 'sleep_'+timeval;
 				break;
 			case 2:
-				specialClass = 'pee_'+timeval;
+				specialClass = 'diaper_'+timeval;
 				break;
 			case 3:
-				specialClass = 'poo_'+timeval + ' ' + 'pee_' + timeval;
-				break;
-			case 4:
 				specialClass = 'milk_'+timeval;
 				break;
-			case 5:
+			case 4:
 				specialClass = 'formula_'+timeval;
 				break;
 		}
@@ -216,12 +222,17 @@ APP.EntryPage = function() {
 			return options;
 		}
 
-		var buttonText = ['sleep', 'pee', 'poo'];
+		var generateDiaperOptions = function() {
+			return ['none', 'pee', 'poo'];
+		}
+
+		var buttonText = ['sleep' ];
 		var rowCount = 24*UTILS.HOURLY_DIVISIONS;
-		var nonButtonColumns = 3;
+		var nonButtonColumns = 4;
 		var colCount = buttonText.length + nonButtonColumns;
 		var milkOptions = generateMilkOptions();
 		var fmlaOptions = generateFormulaOptions();
+		var diaperOptions = generateDiaperOptions();
 
 		for(var i = 0; i < rowCount; i++) {
 			var timeField = times[i];
@@ -241,14 +252,21 @@ APP.EntryPage = function() {
 					button.innerHTML = buttonText[j-1];
 					td.appendChild(button);
 				}
-				else if (j == 4) {
+				else if (j == 2) {
+					var diaperBox = document.createElement('select');
+					assignButtonClass(j, diaperBox, timeField);
+					buttonList.push(diaperBox);
+					putFeedOptionsInSelect(diaperBox, diaperOptions);
+					td.appendChild(diaperBox);
+				}
+				else if (j == 3) {
 					var milkBox = document.createElement('select');
 					assignButtonClass(j, milkBox, timeField);
 					buttonList.push(milkBox);
 					putFeedOptionsInSelect(milkBox, milkOptions);
 					td.appendChild(milkBox);
 				}
-				else if (j == 5) {
+				else if (j == 4) {
 					var fmlaBox = document.createElement('select');
 					assignButtonClass(j, fmlaBox, timeField);
 					buttonList.push(fmlaBox);
@@ -286,22 +304,17 @@ APP.EntryPage = function() {
 						btn.onclick = sleepClickHandlerNotSleeping;
 					}
 					break;
-				case 'pee':
-					if (ds && ds.getPeeAtTime(time)) {
+				case 'diaper':
+					btn.onchange = diaperClickHandler;
+					if (ds && ds.getDiaperAtTimeAny(time)) {
 						setActiveButtonStyle(btn);
-						btn.onclick = peeHandlerClickRemovePee;
+						var diaperVal = ds.getDiaperAtTimeAny(time).value;
+						//var diaperValText = 'pee';
+						//if (diaperVal == '2' || diaperVal == '3') diaperValText = 'poo';
+						btn.value = diaperVal;
 					}
 					else {
-						btn.onclick = peeHandlerClickAddPee;
-					}
-					break;
-				case 'poo':
-					if (ds && ds.getPooAtTime(time)) {
-						setActiveButtonStyle(btn);
-						btn.onclick = pooHandlerClickRemovePoo;
-					}
-					else {
-						btn.onclick = pooHandlerClickAddPoo;
+						btn.value = 'none';
 					}
 					break;
 				case 'milk':

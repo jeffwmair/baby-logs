@@ -93,14 +93,8 @@ function addValueItem($dataservice) {
 	$type = get('type');
 	$val = get('value');
 	$time = get('time');
-	if ($type == 'milk' || $type == 'formula') {
-		$dataservice->deleteValueItemByType($time, $type);
-		if ($val != 'none') {
-			$dataservice->addValueItem($type, $val, $time);
-		}
-	}	
-	else {
-		$dataservice->deleteValueItem($time, $type, $val);
+	$dataservice->deleteValueItemByType($time, $type);
+	if ($val != 'none') {
 		$dataservice->addValueItem($type, $val, $time);
 	}
 	loadEntryData($dataservice, getDayFromTimeStr($time));

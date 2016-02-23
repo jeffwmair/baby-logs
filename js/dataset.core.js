@@ -144,6 +144,20 @@ DATA.Dataset = function(pDate, pSleeps, pFeeds, pDiapers) {
 		return this.getDiaperAtTime(time, 1) != undefined;
 	}
 
+	this.getDiaperAtTimeAny = function(time) {
+		var diaper;
+		/* got-awful code here... */
+		for(var i = 0, len = diapers.length; i < len; i++) {
+			var thisDiaperTime = DATETIME.getTime(diapers[i].time);
+			if (thisDiaperTime == time) {
+				if (!diaper || diaper.value < diapers[i].value) {
+					diaper = diapers[i];
+				}
+			}
+		}
+		return diaper;
+	}
+
 	this.getDiaperAtTime = function(time, val) {
 		var diaper;
 		for(var i = 0, len = diapers.length; i < len; i++) {
@@ -236,8 +250,8 @@ DATA.Dataset.Diaper = function(pTime, value) {
 	this.value = value;
 	this.time = pTime;
 	this.type = "diaper";
-	if (!(value == 1 || value == 2 || value == 3)) {
-		throw "Bad diaper value; 1 = pee, 2 = poo, 3 = both";
+	if (!(value == 'pee' || value == 'poo')) {
+		throw "Bad diaper value; value seen was:"+value;
 	}
 	this.getTimeBlock = function() {
 		return DATETIME.getTimeBlockFromDate(time);

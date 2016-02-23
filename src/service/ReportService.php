@@ -94,7 +94,7 @@ class ReportService {
 			}
 
 
-			$peeRecordTime = $this->dataMapper->getLatestDiaperRecord(1)->time;
+			$peeRecordTime = $this->dataMapper->getLatestDiaperRecord('pee')->time;
 			$peeRecordTimeFmt = $peeRecordTime->format("g:ia");
 			$peeMinutesAgo = $this->getMinutesAgoFromTime($now, $peeRecordTime->getTimestamp());
 			$peeStatus = 0;
@@ -109,7 +109,7 @@ class ReportService {
 			}
 
 
-			$pooRecordTime = $this->dataMapper->getLatestDiaperRecord(2)->time;
+			$pooRecordTime = $this->dataMapper->getLatestDiaperRecord('poo')->time;
 			$pooRecordTimeFmt = $pooRecordTime->format("g:ia");
 			$pooMinutesAgo = $this->getMinutesAgoFromTime($now, $pooRecordTime->getTimestamp());
 			$pooStatus = 0;
