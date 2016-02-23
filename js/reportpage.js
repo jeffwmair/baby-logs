@@ -37,6 +37,7 @@ APP.ReportPage = function(container, calHelper) {
 		sleepMaxHrsPerNight = data.nightSleepHrs;
 		milkData = data.milkMl;
 		formulaData = data.formulaMl;
+		solidFoodData = data.solidMl;
 		breastFeedsData = data.breastCount;
 
 		$(chartEl).highcharts({
@@ -130,6 +131,12 @@ APP.ReportPage = function(container, calHelper) {
 				name: 'Formula - Bottle',
 				type: 'spline',
 				data: formulaData,
+				tooltip: { valueSuffix: ' ml' }
+			},
+			{
+				name: 'Solid Food',
+				type: 'spline',
+				data: solidFoodData,
 				tooltip: { valueSuffix: ' ml' }
 			}
 

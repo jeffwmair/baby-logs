@@ -30,6 +30,7 @@ class Day {
 		$this->diapers = array();
 		$this->milkfeeds = array();
 		$this->fmlafeeds = array();
+		$this->solidfeeds = array();
 
 	}
 
@@ -58,6 +59,9 @@ class Day {
 		case 'formula':
 			array_push($this->fmlafeeds, $record);
 			break;
+		case 'solidfood':
+			array_push($this->solidfeeds, $record);
+			break;
 		}
 	}
 
@@ -81,6 +85,17 @@ class Day {
 			}
 		}
 		return $count;
+	}
+
+	/**
+	 * solid food
+	 */
+	public function getSolidMlAmount() {
+		$ml = 0;
+		foreach($this->solidfeeds as $feed) {
+			$ml += floatval($feed->value);
+		}
+		return $ml;
 	}
 
 

@@ -55,10 +55,13 @@ class ReportService {
 			// get most recent milk, sleep, pee, poo
 			$milkRecordTime = $this->dataMapper->getLatestFeedRecord('milk')->time;
 			$fmlaRecordTime = $this->dataMapper->getLatestFeedRecord('formula')->time;
+			$solidRecordTime = $this->dataMapper->getLatestFeedRecord('solidfood')->time;
 			$milkRecordTimeFmt = $milkRecordTime->format("g:ia");
 			$fmlaRecordTimeFmt = $fmlaRecordTime->format("g:ia");
+			$solidRecordTimeFmt = $solidRecordTime->format("g:ia");
 			$milkEndMinutesAgo = $this->getMinutesAgoFromTime($now, $milkRecordTime->getTimestamp());
 			$fmlaEndMinutesAgo = $this->getMinutesAgoFromTime($now, $fmlaRecordTime->getTimestamp());
+			$solidEndMinutesAgo = $this->getMinutesAgoFromTime($now, $solidRecordTime->getTimestamp());
 
 			$feedEndMinutesAgo = $milkEndMinutesAgo;
 			$feedRecordTimeFmt = $milkRecordTimeFmt;
@@ -67,6 +70,10 @@ class ReportService {
 			if ($fmlaEndMinutesAgo < $feedEndMinutesAgo) {
 				$feedEndMinutesAgo = $fmlaEndMinutesAgo;
 				$feedRecordTimeFmt = $fmlaRecordTimeFmt;
+			}
+			else if($solidEndMinutesAgo < $feedEndMinutesAgo) {
+				$feedEndMinutesAgo = $solidEndMinutesAgo;
+				$feedRecordTimeFmt = $solidRecordTimeFmt;
 			}
 
 			if ($feedEndMinutesAgo > (60*3)) {
@@ -140,6 +147,7 @@ class ReportService {
 			$latestDay = $reportDataDaily[count($reportDataDaily)-1];
 			$bottleMlToday = $latestDay['milkMl'] . "ml";
 			$formulaMlToday = $latestDay['formulaMl'] . "ml";
+			$solidMlToday = $latestDay['solidMl'] . "ml";
 			$breastCountToday = $latestDay['breastCount'];
 			$poosToday = $latestDay['poos'];
 		}
@@ -151,6 +159,7 @@ class ReportService {
 				"milkMlToday" => $bottleMlToday,
 				"formulaMlToday" => $formulaMlToday,
 				"breastCountToday" => $breastCountToday,
+				"solidMlToday" => $solidMlToday,
 				"prev" => array("status" => "$feedStatus", "time" => "$feedRecordTimeFmt", "minutesAgo"=>"$feedEndMinutesAgo")),
 			"sleep" => array(
 				"naps" => array("count" => $napCount, "duration" => $napDurationHrs),
@@ -209,6 +218,7 @@ class ReportService {
 				"poos" => $day->getPooCount(),
 				"milkMl" => $day->getMilkMlAmount(),
 				"formulaMl" => $day->getFormulaMlAmount(),
+				"solidMl" => $day->getSolidMlAmount(),
 				"breastCount" => $day->getBreastFeedCount()
 			);
 
@@ -232,6 +242,7 @@ class ReportService {
 		$poos = 0;
 		$bottleMl = 0;
 		$formulaMl = 0;
+		$solidMl = 0;
 		$breastCount = 0;
 
 		$day = null;
@@ -247,9 +258,9 @@ class ReportService {
 			// summarize if we are on a new week
 			$weekSummaryStart = $this->dateService->getStartOfWeekForDate( $day->getDay() );
 			if ( $weekSummaryStart->getTimestamp() != $prevWeekSummaryStart->getTimestamp() && $i > 0 ) {
-				$summary = $this->summarizeWeek( $prevWeekSummaryStart, $totalSleepHrs, $nightSleepHrs, $poos, $bottleMl, $formulaMl, $breastCount, $i );
+				$summary = $this->summarizeWeek( $prevWeekSummaryStart, $totalSleepHrs, $nightSleepHrs, $poos, $bottleMl, $formulaMl, $solidMl, $breastCount, $i );
 				array_push($reportData, $summary);
-				$totalSleepHrs = 0; $nightSleepHrs = 0; $poos = 0; $bottleMl = 0; $formulaMl = 0; $breastCount = 0; $i = 0;
+				$totalSleepHrs = 0; $nightSleepHrs = 0; $poos = 0; $bottleMl = 0; $formulaMl = 0; $solidMl = 0; $breastCount = 0; $i = 0;
 				$prevWeekSummaryStart = $weekSummaryStart;
 			}
 
@@ -259,6 +270,7 @@ class ReportService {
 			$poos += $day->getPooCount();
 			$bottleMl += $day->getMilkMlAmount();
 			$formulaMl += $day->getFormulaMlAmount();
+			$solidMl += $day->getSolidMlAmount();
 			$breastCount += $day->getBreastFeedCount();
 			$i++;
 
@@ -266,7 +278,7 @@ class ReportService {
 
 		// summarize the last week or week fragment
 		if ( $i > 0 ) {
-			$summary = $this->summarizeWeek( $prevWeekSummaryStart, $totalSleepHrs, $nightSleepHrs, $poos, $bottleMl, $formulaMl, $breastCount, $i );
+			$summary = $this->summarizeWeek( $prevWeekSummaryStart, $totalSleepHrs, $nightSleepHrs, $poos, $bottleMl, $formulaMl, $solidMl, $breastCount, $i );
 			array_push($reportData, $summary);
 			$i = 0;
 			$prevWeekSummaryStart = $weekSummaryStart;
@@ -299,7 +311,7 @@ class ReportService {
 	}
 
 
-	private function summarizeWeek($sundayDate, $totalSleepHrs, $nightSleepHrs, $poos, $bottleMl, $formulaMl, $breastCount, $dayCount) {
+	private function summarizeWeek($sundayDate, $totalSleepHrs, $nightSleepHrs, $poos, $bottleMl, $formulaMl, $solidMl, $breastCount, $dayCount) {
 
 		$xdate = $sundayDate->format("Y-m-d 00:00:00");
 
@@ -311,6 +323,7 @@ class ReportService {
 			"poos" => round($poos / $dayCount, $roundPrecision),
 			"milkMl" => round($bottleMl / $dayCount, $roundPrecision),
 			"formulaMl" => round($formulaMl / $dayCount, $roundPrecision),
+			"solidMl" => round($solidMl / $dayCount, $roundPrecision),
 			"breastCount" => round($breastCount / $dayCount, $roundPrecision)
 		);
 		return $summary;

@@ -16,6 +16,10 @@ CONVERTER.populateDatasetsFromJsonData = function(datasets, json) {
 		var ds = CONVERTER.getDatasetForDate(datasets, new Date(fmla.time));
 		ds.addFeed(new DATA.Dataset.Feed(new Date(fmla.time), 'formula', fmla.entry_value));
 	});
+	json.solidfoodfeeds.forEach(function(solidFd) {
+		var ds = CONVERTER.getDatasetForDate(datasets, new Date(solidFd.time));
+		ds.addFeed(new DATA.Dataset.Feed(new Date(solidFd.time), 'solidfood', solidFd.entry_value));
+	});
 	json.diapers.forEach(function(diaper) {
 		var ds = CONVERTER.getDatasetForDate(datasets, new Date(diaper.time));
 		ds.addDiaper(new DATA.Dataset.Diaper(new Date(diaper.time), diaper.entry_value));
@@ -63,6 +67,7 @@ CONVERTER.ReportDataConverterForChart = function() {
 		resultObj.nightSleepHrs = [];
 		resultObj.milkMl = [];
 		resultObj.formulaMl = [];
+		resultObj.solidMl = [];
 		resultObj.breastCount = [];
 		resultObj.poos = [];
 
@@ -72,6 +77,7 @@ CONVERTER.ReportDataConverterForChart = function() {
 			resultObj.nightSleepHrs.push( summary.nightSleepHrs );
 			resultObj.milkMl.push( summary.milkMl );
 			resultObj.formulaMl.push( summary.formulaMl );
+			resultObj.solidMl.push( summary.solidMl );
 			resultObj.breastCount.push( summary.breastCount );
 			resultObj.poos.push( summary.poos );
 		});

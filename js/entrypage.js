@@ -44,6 +44,15 @@ APP.EntryPage = function() {
 		});
 	}
 
+	var solidFoodClickHandler = function(e) {
+		var mystartdate = getSleepClickStartDate(e);
+		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
+		var amt = e.target.value;
+		UTILS.ajaxGetJson(API + "?action=addvalue&type=solidfood&value="+amt+"&time="+formatteddate, errorHandler, function(json) {
+			that.handleDataLoad(false, null, json);
+		});
+	}
+
 	var sleepClickHandlerNotSleeping = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var myendate = new Date(mystartdate.getTime() + (15*60000));
@@ -188,6 +197,9 @@ APP.EntryPage = function() {
 			case 4:
 				specialClass = 'formula_'+timeval;
 				break;
+			case 5:
+				specialClass = 'solidfood_'+timeval;
+				break;
 		}
 		button.setAttribute('class', specialClass);
 	}
@@ -217,22 +229,29 @@ APP.EntryPage = function() {
 
 		var generateMilkOptions = function() {
 			var options = ['none', 'BL', 'BR'];
-			for(var i = 10; i <= 90; i+=10) options.push(i);
+			for(var i = 50; i <= 90; i+=10) options.push(i);
 			for(var i = 95; i <= 280; i+=5) options.push(i);
 			return options;
 		}
 
+		var generateSolidFoodOptions = function() {
+			var options = ['none'];
+			for(var i = 10; i <= 180; i+=10) options.push(i);
+			return options;
+		}
+		
 		var generateDiaperOptions = function() {
 			return ['none', 'pee', 'poo'];
 		}
 
 		var buttonText = ['sleep' ];
 		var rowCount = 24*UTILS.HOURLY_DIVISIONS;
-		var nonButtonColumns = 4;
+		var nonButtonColumns = 5;
 		var colCount = buttonText.length + nonButtonColumns;
 		var milkOptions = generateMilkOptions();
 		var fmlaOptions = generateFormulaOptions();
 		var diaperOptions = generateDiaperOptions();
+		var solidFoodOptions = generateSolidFoodOptions();
 
 		for(var i = 0; i < rowCount; i++) {
 			var timeField = times[i];
@@ -273,6 +292,14 @@ APP.EntryPage = function() {
 					putFeedOptionsInSelect(fmlaBox, fmlaOptions);
 					td.appendChild(fmlaBox);
 				}
+				else if (j == 5) {
+					var solidFoodBox = document.createElement('select');
+					assignButtonClass(j, solidFoodBox, timeField);
+					buttonList.push(solidFoodBox);
+					putFeedOptionsInSelect(solidFoodBox, solidFoodOptions);
+					td.appendChild(solidFoodBox);
+				}
+
 			}
 		}
 	};
@@ -337,6 +364,16 @@ APP.EntryPage = function() {
 						btn.value = 'none';
 					}
 
+					break;
+				case 'solidfood':
+					btn.onchange = solidFoodClickHandler;
+					if (ds && ds.getFeedAtTime('solidfood', time)) {
+						setActiveButtonStyle(btn);
+						btn.value = ds.getFeedAtTime('solidfood', time).value;
+					}
+					else {
+						btn.value = 'none';
+					}
 					break;
 			}
 		}
