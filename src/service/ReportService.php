@@ -100,8 +100,21 @@ class ReportService {
 				$sleepStatus = 1;
 			}
 
+			$pooRecordTime = $this->dataMapper->getLatestDiaperRecord('poo')->time;
+			$pooRecordTimeFmt = $pooRecordTime->format("g:ia");
+			$pooMinutesAgo = $this->getMinutesAgoFromTime($now, $pooRecordTime->getTimestamp());
+			$pooStatus = 0;
+			if ($pooMinutesAgo > (60*5)) {
+				$pooStatus = 2;
+			}
+			else {
+				$pooStatus = 1;
+			}
 
 			$peeRecordTime = $this->dataMapper->getLatestDiaperRecord('pee')->time;
+			if ($peeRecordTime < $pooRecordTime) {
+				$peeRecordTime = $pooRecordTime;
+			}
 			$peeRecordTimeFmt = $peeRecordTime->format("g:ia");
 			$peeMinutesAgo = $this->getMinutesAgoFromTime($now, $peeRecordTime->getTimestamp());
 			$peeStatus = 0;
@@ -115,22 +128,6 @@ class ReportService {
 				$peeStatus = 1;
 			}
 
-
-			$pooRecordTime = $this->dataMapper->getLatestDiaperRecord('poo')->time;
-			$pooRecordTimeFmt = $pooRecordTime->format("g:ia");
-			$pooMinutesAgo = $this->getMinutesAgoFromTime($now, $pooRecordTime->getTimestamp());
-			$pooStatus = 0;
-		/*
-		if ($pooMinutesAgo > (60*7)) {
-			$pooStatus = 3;
-		}
-		 */
-			if ($pooMinutesAgo > (60*5)) {
-				$pooStatus = 2;
-			}
-			else {
-				$pooStatus = 1;
-			}
 
 			// naps
 			$napCount = 0;

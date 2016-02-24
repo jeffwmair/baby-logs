@@ -5,6 +5,7 @@ var APP = APP || {};
 */
 APP.EntryPage = function() {
 
+	var NONE_VALUE = 'none';
 	var API = "src/web/BabyApi.php";
 
 	var buttonList = [];
@@ -221,27 +222,27 @@ APP.EntryPage = function() {
 		// TODO: bring these ranges in from the database
 		//
 		var generateFormulaOptions = function() {
-			var options = ['none'];
+			var options = [NONE_VALUE];
 			for(var i = 50; i <= 90; i+=10) options.push(i);
 			for(var i = 95; i <= 270; i+=5) options.push(i);
 			return options;
 		}
 
 		var generateMilkOptions = function() {
-			var options = ['none', 'BL', 'BR'];
+			var options = [NONE_VALUE, 'BL', 'BR'];
 			for(var i = 50; i <= 90; i+=10) options.push(i);
 			for(var i = 95; i <= 280; i+=5) options.push(i);
 			return options;
 		}
 
 		var generateSolidFoodOptions = function() {
-			var options = ['none'];
+			var options = [NONE_VALUE];
 			for(var i = 10; i <= 180; i+=10) options.push(i);
 			return options;
 		}
 		
 		var generateDiaperOptions = function() {
-			return ['none', 'pee', 'poo'];
+			return [NONE_VALUE, 'pee', 'poo'];
 		}
 
 		var buttonText = ['sleep' ];
@@ -341,7 +342,7 @@ APP.EntryPage = function() {
 						btn.value = diaperVal;
 					}
 					else {
-						btn.value = 'none';
+						btn.value = NONE_VALUE;
 					}
 					break;
 				case 'milk':
@@ -351,7 +352,7 @@ APP.EntryPage = function() {
 						btn.value = ds.getFeedAtTime('milk', time).value;
 					}
 					else {
-						btn.value = 'none';
+						btn.value = NONE_VALUE;
 					}
 					break;
 				case 'formula':
@@ -361,7 +362,7 @@ APP.EntryPage = function() {
 						btn.value = ds.getFeedAtTime('formula', time).value;
 					}
 					else {
-						btn.value = 'none';
+						btn.value = NONE_VALUE;
 					}
 
 					break;
@@ -372,7 +373,7 @@ APP.EntryPage = function() {
 						btn.value = ds.getFeedAtTime('solidfood', time).value;
 					}
 					else {
-						btn.value = 'none';
+						btn.value = NONE_VALUE;
 					}
 					break;
 			}

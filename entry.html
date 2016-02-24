@@ -9,6 +9,7 @@
 			#date { display: inline }
 			#datePicker { margin-top:20px; margin-bottom:20px }
 			select,button,div#container { font-size:1.15em; }
+			th { background-color:white }
 		</style>
 	</head>
 	<body>
@@ -73,6 +74,7 @@
 	<script type='text/javascript' src='js/dataset.core.js'></script>
 	<script type='text/javascript' src='js/dataset.converter.js'></script>
 	<script type='text/javascript' src='js/entrypage.js'></script>
+	<script type='text/javascript' src='js/jquery.stickytableheaders.min.js'></script>
 	<script>
 
 		var table = document.getElementById('tblEntriesBody');
@@ -84,5 +86,6 @@
 		var now = new Date();
 		var dateEl = document.getElementById('date');
 		entryPage.init(now, table, backButton, forwardButton, dateEl, errorDiv, errorMsg);
+		$('#tblEntries').stickyTableHeaders({ fixedOffset : 50 });
 
 	</script>
