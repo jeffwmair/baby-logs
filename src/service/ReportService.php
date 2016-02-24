@@ -55,7 +55,7 @@ class ReportService {
 			// get most recent milk, sleep, pee, poo
 			$milkRecordTime = $this->dataMapper->getLatestFeedRecord('milk')->time;
 			$fmlaRecordTime = $this->dataMapper->getLatestFeedRecord('formula')->time;
-			$solidRecordTime = $this->dataMapper->getLatestFeedRecord('solidfood')->time;
+			$solidRecordTime = $this->dataMapper->getLatestFeedRecord('solid')->time;
 			$milkRecordTimeFmt = $milkRecordTime->format("g:ia");
 			$fmlaRecordTimeFmt = $fmlaRecordTime->format("g:ia");
 			$solidRecordTimeFmt = $solidRecordTime->format("g:ia");

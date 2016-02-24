@@ -178,7 +178,7 @@ APP.EntryPage = function() {
 
 		var generateFeedOptions = function() {
 			var options = [ NONE_VALUE, 'milk-BL', 'milk-BR' ];
-			var feedTypes = ['milk', 'formula', 'solidfood'];
+			var feedTypes = ['milk', 'formula', 'solid'];
 			for(var h = 0; h < feedTypes.length; h++) {
 				for(var i = 50; i <= 270; i+=10) options.push(feedTypes[h]+'-'+i);
 			}

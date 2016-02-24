@@ -59,7 +59,7 @@ class Day {
 		case 'formula':
 			array_push($this->fmlafeeds, $record);
 			break;
-		case 'solidfood':
+		case 'solid':
 			array_push($this->solidfeeds, $record);
 			break;
 		}

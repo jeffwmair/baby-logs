@@ -18,7 +18,7 @@ CONVERTER.populateDatasetsFromJsonData = function(datasets, json) {
 	});
 	json.solidfoodfeeds.forEach(function(solidFd) {
 		var ds = CONVERTER.getDatasetForDate(datasets, new Date(solidFd.time));
-		ds.addFeed(new DATA.Dataset.Feed(new Date(solidFd.time), 'solidfood', solidFd.entry_value));
+		ds.addFeed(new DATA.Dataset.Feed(new Date(solidFd.time), 'solid', solidFd.entry_value));
 	});
 	json.diapers.forEach(function(diaper) {
 		var ds = CONVERTER.getDatasetForDate(datasets, new Date(diaper.time));

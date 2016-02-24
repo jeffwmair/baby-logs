@@ -40,7 +40,7 @@ class DataService {
 		$sleeps = $this->queryMapper->getSleepsForDayJson($day);
 		$milkFeeds = $this->queryMapper->getValueItemsForDayJson($day, 'milk');
 		$fmlaFeeds = $this->queryMapper->getValueItemsForDayJson($day, 'formula');
-		$solidFoodFeeds = $this->queryMapper->getValueItemsForDayJson($day, 'solidfood');
+		$solidFoodFeeds = $this->queryMapper->getValueItemsForDayJson($day, 'solid');
 		$diapers = $this->queryMapper->getValueItemsForDayJson($day, 'diaper');
 
 		$itemArr = array();
