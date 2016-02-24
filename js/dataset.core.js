@@ -170,6 +170,21 @@ DATA.Dataset = function(pDate, pSleeps, pFeeds, pDiapers) {
 		return diaper;
 	}
 
+	this.getFeedAtTimeAny = function(time) {
+		var feed;
+		for(var i = 0, len = feeds.length; i < len; i++) {
+			var thisFeed = feeds[i];
+
+			var thisFeedTime = DATETIME.getTime(thisFeed.time);
+			if (thisFeedTime == time) {
+				feed = feeds[i];
+				break;
+			}
+		}
+		return feed;
+
+	}
+
 	this.getFeedAtTime = function(feedType, time) {
 		var feed;
 		for(var i = 0, len = feeds.length; i < len; i++) {
