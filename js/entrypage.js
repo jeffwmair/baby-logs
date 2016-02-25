@@ -180,7 +180,11 @@ APP.EntryPage = function() {
 			var options = [ NONE_VALUE, 'milk-BL', 'milk-BR' ];
 			var feedTypes = ['milk', 'formula', 'solid'];
 			for(var h = 0; h < feedTypes.length; h++) {
-				for(var i = 50; i <= 270; i+=10) options.push(feedTypes[h]+'-'+i);
+				var min_amount = 50;
+				if (h == 2) {
+					min_amount = 10;
+				}
+				for(var i = min_amount; i <= 270; i+=10) options.push(feedTypes[h]+'-'+i);
 			}
 			return options;
 		}
