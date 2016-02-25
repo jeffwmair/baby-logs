@@ -37,6 +37,10 @@ APP.ReportPage = function(container, calHelper) {
 		sleepMaxHrsPerNight = data.nightSleepHrs;
 		milkData = data.milkMl;
 		formulaData = data.formulaMl;
+		var milk_and_fmla_together = [];
+		for(var i = 0; i < milkData.length; i++) {
+			milk_and_fmla_together.push(milkData[i]+formulaData[i]);
+		}
 		solidFoodData = data.solidMl;
 		breastFeedsData = data.breastCount;
 
@@ -122,6 +126,14 @@ APP.ReportPage = function(container, calHelper) {
 				tooltip: { valueSuffix: ' feedings' }
 			},
 			{
+				name: 'Milk & Formula - Bottle',
+				type: 'spline',
+				data: milk_and_fmla_together,
+				tooltip: { valueSuffix: ' ml' }
+			},
+
+			/*
+			{
 				name: 'Milk - Bottle',
 				type: 'spline',
 				data: milkData,
@@ -133,6 +145,7 @@ APP.ReportPage = function(container, calHelper) {
 				data: formulaData,
 				tooltip: { valueSuffix: ' ml' }
 			},
+			*/
 			{
 				name: 'Solid Food',
 				type: 'spline',
