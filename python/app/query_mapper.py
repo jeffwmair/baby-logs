@@ -8,6 +8,17 @@ class QueryMapper:
 	def __init__(self, credentials, baby_id):
 		self._credentials = credentials
 		self._baby_id = baby_id
+
+	def delete_sleep(self, sleep_time):
+		sql = "delete from baby_sleep where start = '%s';" % (sleep_time)
+		con = mysql.connector.connect(user=self._credentials['user'], password=self._credentials['pass'],host=self._credentials['host'], database=self._credentials['db'])
+		try:
+			cursor = con.cursor()
+			cursor.execute(sql)
+		except Exception:
+			raise
+		finally:
+			con.close()
 	
 	def get_query_keyval_in_day_by_type(self,entry_type, date_string):
 		sql = "select date_format(time, '%%Y-%%m-%%d %%T'), entry_value, entry_type from baby_keyval where entry_type = '%s' and time >= '%s' and time <= '%s 23:59:59' order by time" % (entry_type,date_string,date_string)

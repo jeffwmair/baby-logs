@@ -6,11 +6,18 @@ from domain.day import Day, SleepSet, FeedSet, DiaperSet
 class ReportService():
 	def __init__(self, datamapper):
 		self._datamapper = datamapper
+	
+	def remove_sleep(self, sleep_time_string):
+		self._datamapper.delete_sleep(sleep_time_string)
 
-	def get_entry_data(self, date_string):
+	def get_entry_data(self, date_string_raw):
 
-		#sql_sleeps = "select time, entry_value, entry_type from baby_keyval
-		#sleeps = self._datamapper.get_sleeps_for_day(date_string)
+		# 2016-02-26 
+		# in case there is a time component, strip it off
+		date_string = date_string_raw[:10]
+		print date_string_raw
+		print date_string
+
 		data = self._datamapper.get_data_for_day(date_string)
 		result = {
 					'sleeps' : data['sleep'],

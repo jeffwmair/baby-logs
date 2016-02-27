@@ -52,6 +52,11 @@ def api():
 			data = svc.get_entry_data(day_string)
 		except Exception:
 			print traceback.format_exc()
+	
+	elif apiMethod == "removesleep":
+		sleep_time = request.args['sleepstart']
+		svc.remove_sleep(sleep_time)
+		data = svc.get_entry_data(sleep_time)
 
 	else:
 		raise Exception('Method "%s" not implemented' % apiMethod)
