@@ -10,24 +10,17 @@ class ReportService():
 	def get_entry_data(self, date_string):
 
 		#sql_sleeps = "select time, entry_value, entry_type from baby_keyval
-		sleeps = self._datamapper.get_sleeps_for_day(date_string)
-		sleep_json = list()
-		for sleep in sleeps:
-			row_dict = {
-					'id':sleep[0], 
-					'babyid':sleep[1], 
-					'start':sleep[2],
-					'end':sleep[3]
+		#sleeps = self._datamapper.get_sleeps_for_day(date_string)
+		data = self._datamapper.get_data_for_day(date_string)
+		result = {
+					'sleeps' : data['sleep'],
+					'milkfeeds' : data['milk'],
+					'fmlafeeds' : data['formula'],
+					'solidfoodfeeds' : data['solid'],
+					'diapers' : data['diapers'] 
 				}
-			sleep_json.append(row_dict)
 
-		data = {
-			'sleeps' : sleep_json,
-			'milkfeeds' : [],
-			'fmlafeeds' : [],
-			'diapers' : [] 
-		}
-		return data
+		return result
 
 	def get_dashboard_data(self):
 

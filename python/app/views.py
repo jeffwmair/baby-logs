@@ -43,12 +43,12 @@ def api():
 			data = svc.get_dashboard_data()
 		except Exception:
 			print traceback.format_exc()
+
 	elif apiMethod == "loadentrydata":
 		try:
 			day_string = datetime.now().strftime('%Y-%m-%d')
 			if 'day' in request.args:
 				day_string = request.args['day']
-			print 'daystring: %s' % day_string
 			data = svc.get_entry_data(day_string)
 		except Exception:
 			print traceback.format_exc()

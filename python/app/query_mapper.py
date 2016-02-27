@@ -8,15 +8,92 @@ class QueryMapper:
 	def __init__(self, credentials, baby_id):
 		self._credentials = credentials
 		self._baby_id = baby_id
+	
+	def get_query_keyval_in_day_by_type(self,entry_type, date_string):
+		sql = "select date_format(time, '%%Y-%%m-%%d %%T'), entry_value, entry_type from baby_keyval where entry_type = '%s' and time >= '%s' and time <= '%s 23:59:59' order by time" % (entry_type,date_string,date_string)
+		return sql
 
-	def get_sleeps_for_day(self, date_string):
+	def get_data_for_day(self, date_string):
+		data = dict()
 		sql_sleeps = "select id, babyid, date_format(start, '%%Y-%%m-%%d %%T'), date_format(end, '%%Y-%%m-%%d %%T') from baby_sleep where start >= '%s' and start <= '%s 23:59:59' order by start" % (date_string,date_string)
+		sql_milk = self.get_query_keyval_in_day_by_type('milk', date_string)
+		sql_fmla = self.get_query_keyval_in_day_by_type('formula', date_string)
+		sql_solid = self.get_query_keyval_in_day_by_type('solid', date_string)
+		sql_diapers = self.get_query_keyval_in_day_by_type('diaper', date_string)
 		con = mysql.connector.connect(user=self._credentials['user'], password=self._credentials['pass'],host=self._credentials['host'], database=self._credentials['db'])
 		try:
 			cursor = con.cursor()
+
 			cursor.execute(sql_sleeps)
 			sleeps = cursor.fetchall()
-			return sleeps
+
+			cursor.execute(sql_milk)
+			milk = cursor.fetchall()
+
+			cursor.execute(sql_fmla)
+			formula = cursor.fetchall()
+
+			cursor.execute(sql_solid)
+			solid = cursor.fetchall()
+
+			cursor.execute(sql_diapers)
+			diapers = cursor.fetchall()
+
+			milk_list = list()
+			formula_list = list()
+			solids_list = list()
+			diapers_list = list()
+			sleep_list = list()
+
+			for sleep in sleeps:
+				row = {
+						'id':sleep[0], 
+						'babyid':sleep[1], 
+						'start':sleep[2],
+						'end':sleep[3]
+					}
+				sleep_list.append(row)
+
+			for entry in milk:
+				row = {
+						'time':entry[0],
+						'entry_value':entry[1],
+						'entry_type':entry[2]
+					}
+				milk_list.append(row)
+
+			for entry in formula:
+				row = {
+						'time':entry[0],
+						'entry_value':entry[1],
+						'entry_type':entry[2]
+					}
+				formula_list.append(row)
+
+			for entry in solid:
+				row = {
+						'time':entry[0],
+						'entry_value':entry[1],
+						'entry_type':entry[2]
+					}
+				solids_list.append(row)
+
+			for entry in diapers:
+				row = {
+						'time':entry[0],
+						'entry_value':entry[1],
+						'entry_type':entry[2]
+					}
+				diapers_list.append(row)
+			
+			data['milk'] = milk_list
+			data['formula'] = formula_list
+			data['solid'] = solids_list
+			data['sleep'] = sleep_list
+			data['diapers'] = diapers_list
+
+
+			return data
 		finally:
 			con.close()
 

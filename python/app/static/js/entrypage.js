@@ -5,6 +5,7 @@ var APP = APP || {};
 */
 APP.EntryPage = function() {
 
+	var NONE_VALUE = 'none';
 	var API = "BabyApi";
 
 	var buttonList = [];
@@ -17,20 +18,30 @@ APP.EntryPage = function() {
 		errTextEl.innerHTML = errMsg;
 	}
 
-	var milkClickHandler = function(e) {
+	var diaperClickHandler = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
-		var amt = e.target.value;
-		UTILS.ajaxGetJson(API + "?action=addvalue&type=milk&value="+amt+"&time="+formatteddate, errorHandler, function(json) {
+		var diaperVal = e.target.value;
+		UTILS.ajaxGetJson(API + "?action=addvalue&type=diaper&value="+diaperVal+"&time="+formatteddate, errorHandler, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
 
-	var formulaClickHandler = function(e) {
+	var feedClickHandler = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
-		var amt = e.target.value;
-		UTILS.ajaxGetJson(API + "?action=addvalue&type=formula&value="+amt+"&time="+formatteddate, errorHandler, function(json) {
+		var feedType = '';
+		var feedValue = '';
+		if (e.target.value == 'none') {
+			feedType = 'feed';
+			feedValue = 'none';
+		}
+		else {
+			var argSplit = e.target.value.split('-');
+			feedType = argSplit[0];
+			feedValue = argSplit[1];
+		}
+		UTILS.ajaxGetJson(API + "?action=addvalue&type="+feedType+"&value="+feedValue+"&time="+formatteddate, errorHandler, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
@@ -49,35 +60,6 @@ APP.EntryPage = function() {
 		var mystartdate = getSleepClickStartDate(e);
 		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
 		UTILS.ajaxGetJson(API + "?action=removesleep&sleepstart="+formatteddate, errorHandler, function(json) {
-			that.handleDataLoad(false, null, json);
-		});
-	}
-
-	var peeHandlerClickAddPee = function(e) {
-		var mystartdate = getSleepClickStartDate(e);
-		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
-		UTILS.ajaxGetJson(API + "?action=addvalue&type=diaper&value=1&time="+formatteddate, errorHandler, function(json) {
-			that.handleDataLoad(false, null, json);
-		});
-	}
-	var peeHandlerClickRemovePee = function(e) {
-		var mystartdate = getSleepClickStartDate(e);
-		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
-		UTILS.ajaxGetJson(API + "?action=removevalue&type=diaper&value=1&time="+formatteddate, errorHandler, function(json) {
-			that.handleDataLoad(false, null, json);
-		});
-	}
-	var pooHandlerClickAddPoo = function(e) {
-		var mystartdate = getSleepClickStartDate(e);
-		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
-		UTILS.ajaxGetJson(API + "?action=addvalue&type=diaper&value=2&time="+formatteddate, errorHandler, function(json) {
-			that.handleDataLoad(false, null, json);
-		});
-	}
-	var pooHandlerClickRemovePoo = function(e) {
-		var mystartdate = getSleepClickStartDate(e);
-		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
-		UTILS.ajaxGetJson(API + "?action=removevalue&type=diaper&value=2&time="+formatteddate, errorHandler, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
 	}
@@ -171,16 +153,10 @@ APP.EntryPage = function() {
 				specialClass = 'sleep_'+timeval;
 				break;
 			case 2:
-				specialClass = 'pee_'+timeval;
+				specialClass = 'diaper_'+timeval;
 				break;
 			case 3:
-				specialClass = 'poo_'+timeval + ' ' + 'pee_' + timeval;
-				break;
-			case 4:
-				specialClass = 'milk_'+timeval;
-				break;
-			case 5:
-				specialClass = 'formula_'+timeval;
+				specialClass = 'feed_'+timeval;
 				break;
 		}
 		button.setAttribute('class', specialClass);
@@ -200,28 +176,30 @@ APP.EntryPage = function() {
 			});
 		}
 
-		// TODO: bring these ranges in from the database
-		//
-		var generateFormulaOptions = function() {
-			var options = ['none'];
-			for(var i = 50; i <= 90; i+=10) options.push(i);
-			for(var i = 95; i <= 270; i+=5) options.push(i);
+		var generateFeedOptions = function() {
+			var options = [ NONE_VALUE, 'milk-BL', 'milk-BR' ];
+			var feedTypes = ['milk', 'formula', 'solid'];
+			for(var h = 0; h < feedTypes.length; h++) {
+				var min_amount = 50;
+				if (h == 2) {
+					min_amount = 10;
+				}
+				for(var i = min_amount; i <= 270; i+=10) options.push(feedTypes[h]+'-'+i);
+			}
 			return options;
 		}
 
-		var generateMilkOptions = function() {
-			var options = ['none', 'BL', 'BR'];
-			for(var i = 10; i <= 90; i+=10) options.push(i);
-			for(var i = 95; i <= 280; i+=5) options.push(i);
-			return options;
+		var generateDiaperOptions = function() {
+			return [NONE_VALUE, 'pee', 'poo'];
 		}
 
-		var buttonText = ['sleep', 'pee', 'poo'];
+		var buttonText = ['sleep' ];
 		var rowCount = 24*UTILS.HOURLY_DIVISIONS;
 		var nonButtonColumns = 3;
 		var colCount = buttonText.length + nonButtonColumns;
-		var milkOptions = generateMilkOptions();
-		var fmlaOptions = generateFormulaOptions();
+		var diaperOptions = generateDiaperOptions();
+		var feedOptions = generateFeedOptions();
+		console.log(feedOptions);
 
 		for(var i = 0; i < rowCount; i++) {
 			var timeField = times[i];
@@ -241,19 +219,19 @@ APP.EntryPage = function() {
 					button.innerHTML = buttonText[j-1];
 					td.appendChild(button);
 				}
-				else if (j == 4) {
-					var milkBox = document.createElement('select');
-					assignButtonClass(j, milkBox, timeField);
-					buttonList.push(milkBox);
-					putFeedOptionsInSelect(milkBox, milkOptions);
-					td.appendChild(milkBox);
+				else if (j == 2) {
+					var diaperBox = document.createElement('select');
+					assignButtonClass(j, diaperBox, timeField);
+					buttonList.push(diaperBox);
+					putFeedOptionsInSelect(diaperBox, diaperOptions);
+					td.appendChild(diaperBox);
 				}
-				else if (j == 5) {
-					var fmlaBox = document.createElement('select');
-					assignButtonClass(j, fmlaBox, timeField);
-					buttonList.push(fmlaBox);
-					putFeedOptionsInSelect(fmlaBox, fmlaOptions);
-					td.appendChild(fmlaBox);
+				else if (j == 3) {
+					var feedBox = document.createElement('select');
+					assignButtonClass(j, feedBox, timeField);
+					buttonList.push(feedBox);
+					putFeedOptionsInSelect(feedBox, feedOptions);
+					td.appendChild(feedBox);
 				}
 			}
 		}
@@ -286,44 +264,30 @@ APP.EntryPage = function() {
 						btn.onclick = sleepClickHandlerNotSleeping;
 					}
 					break;
-				case 'pee':
-					if (ds && ds.getPeeAtTime(time)) {
+				case 'diaper':
+					btn.onchange = diaperClickHandler;
+					if (ds && ds.getDiaperAtTimeAny(time)) {
 						setActiveButtonStyle(btn);
-						btn.onclick = peeHandlerClickRemovePee;
+						var diaperVal = ds.getDiaperAtTimeAny(time).value;
+						//var diaperValText = 'pee';
+						//if (diaperVal == '2' || diaperVal == '3') diaperValText = 'poo';
+						btn.value = diaperVal;
 					}
 					else {
-						btn.onclick = peeHandlerClickAddPee;
+						btn.value = NONE_VALUE;
 					}
 					break;
-				case 'poo':
-					if (ds && ds.getPooAtTime(time)) {
+				case 'feed':
+					btn.onchange = feedClickHandler;
+					if (ds && ds.getFeedAtTimeAny(time)) {
 						setActiveButtonStyle(btn);
-						btn.onclick = pooHandlerClickRemovePoo;
+						var feedRecord = ds.getFeedAtTimeAny(time);
+						var inputText = feedRecord.type +'-'+ feedRecord.value;
+						btn.value = inputText;
 					}
 					else {
-						btn.onclick = pooHandlerClickAddPoo;
+						btn.value = NONE_VALUE;
 					}
-					break;
-				case 'milk':
-					btn.onchange = milkClickHandler;
-					if (ds && ds.getFeedAtTime('milk', time)) {
-						setActiveButtonStyle(btn);
-						btn.value = ds.getFeedAtTime('milk', time).value;
-					}
-					else {
-						btn.value = 'none';
-					}
-					break;
-				case 'formula':
-					btn.onchange = formulaClickHandler;
-					if (ds && ds.getFeedAtTime('formula', time)) {
-						setActiveButtonStyle(btn);
-						btn.value = ds.getFeedAtTime('formula', time).value;
-					}
-					else {
-						btn.value = 'none';
-					}
-
 					break;
 			}
 		}
