@@ -64,6 +64,7 @@ class ReportService():
 					'milkMlToday' : str(today_feed.get_milk_ml()) + 'ml',
 					'formulaMlToday' : str(today_feed.get_fmla_ml()) + 'ml',
 					'breastCountToday' : today_feed.get_breast_count(),
+					'solidMlToday' : str(today_feed.get_solid_ml()) + 'ml',
 					'prev' : {
 						'status' : self.get_feed_status(last_feed),
 						'time' : self.format_date(last_feed),

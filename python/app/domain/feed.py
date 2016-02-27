@@ -4,10 +4,12 @@ class FeedSet:
 
 		milk_feeds = (x for x in feed_records if x.get_type() == 'milk')
 		fmla_feeds = (x for x in feed_records if x.get_type() == 'formula')
+		solid_feeds = (x for x in feed_records if x.get_type() == 'solid')
 
 		self._breast_count = 0
 		self._milk_ml = 0
 		self._fmla_ml = 0
+		self._solid_ml = 0
 
 		# calculate everything in the constructor
 		for milk in milk_feeds:
@@ -22,6 +24,7 @@ class FeedSet:
 
 		# sum up forumula feeding amounts
 		self._fmla_ml = sum(int(feed.get_value()) for feed in fmla_feeds)
+		self._solid_ml = sum(int(feed.get_value()) for feed in solid_feeds)
 
 	def get_breast_count(self):
 		return self._breast_count
@@ -31,3 +34,6 @@ class FeedSet:
 
 	def get_fmla_ml(self):
 		return self._fmla_ml
+
+	def get_solid_ml(self):
+		return self._solid_ml

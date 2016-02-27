@@ -26,7 +26,7 @@ APP.Dashboard = function() {
 	}
 
 	this.setBigNumFeeds = function(field) {
-		field.innerHTML = this.data.feed.milkMlToday + ' milk<br>' + this.data.feed.breastCountToday + ' breast<br>' + this.data.feed.formulaMlToday + ' formula<br>';
+		field.innerHTML = this.data.feed.milkMlToday + ' milk<br>' + this.data.feed.breastCountToday + ' breast<br>' + this.data.feed.formulaMlToday + ' formula<br>' + this.data.feed.solidMlToday +' solid';
 	}
 
 	this.setBigNumPoos = function(field) {

@@ -54,7 +54,7 @@ class DayGenerator:
 		days = dict()
 		for key in day_keys:
 			sleeps = SleepSet(day_sleeps.get(key))
-			feeds = FeedSet([x for x in day_keyvals.get(key) if x.get_type() == 'milk' or x.get_type() == 'formula'])
+			feeds = FeedSet([x for x in day_keyvals.get(key) if x.get_type() == 'milk' or x.get_type() == 'formula' or x.get_type() == 'solid'])
 			diapers = DiaperSet([x for x in day_keyvals.get(key) if x.get_type() == 'diaper'])
 			days[key] = Day(key, sleeps, diapers, feeds)
 

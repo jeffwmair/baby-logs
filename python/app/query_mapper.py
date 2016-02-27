@@ -25,7 +25,7 @@ class QueryMapper:
 		# get the latest sleep, pee, poo, feed (milk or fmla)
 		sql_pee = "select time from baby_keyval where entry_type = 'diaper' and entry_value = 'pee' order by time desc limit 1"
 		sql_poo = "select time from baby_keyval where entry_type = 'diaper' and entry_value = 'poo' order by time desc limit 1"
-		sql_feed = "select time from baby_keyval where entry_type = 'milk' or entry_type = 'formula' order by time desc limit 1"
+		sql_feed = "select time from baby_keyval where entry_type = 'milk' or entry_type = 'formula' or entry_type = 'solid' order by time desc limit 1"
 		sql_sleep = "select end from baby_sleep where end <= current_timestamp() order by end desc limit 1"
 
 		con = mysql.connector.connect(user=self._credentials['user'], password=self._credentials['pass'],host=self._credentials['host'], database=self._credentials['db'])
