@@ -71,7 +71,8 @@ class ReportService {
 				$feedEndMinutesAgo = $fmlaEndMinutesAgo;
 				$feedRecordTimeFmt = $fmlaRecordTimeFmt;
 			}
-			else if($solidEndMinutesAgo < $feedEndMinutesAgo) {
+
+			if($solidEndMinutesAgo < $feedEndMinutesAgo) {
 				$feedEndMinutesAgo = $solidEndMinutesAgo;
 				$feedRecordTimeFmt = $solidRecordTimeFmt;
 			}
