@@ -16,10 +16,7 @@ class QueryMapper:
 	def get_data_for_day(self, date_string):
 		data = dict()
 		sql_sleeps = "select id, babyid, date_format(start, '%%Y-%%m-%%d %%T'), date_format(end, '%%Y-%%m-%%d %%T') from baby_sleep where start >= '%s' and start <= '%s 23:59:59' order by start" % (date_string,date_string)
-		sql_milk = self.get_query_keyval_in_day_by_type('milk', date_string)
-		sql_fmla = self.get_query_keyval_in_day_by_type('formula', date_string)
-		sql_solid = self.get_query_keyval_in_day_by_type('solid', date_string)
-		sql_diapers = self.get_query_keyval_in_day_by_type('diaper', date_string)
+		sql_keyval = "select date_format(time, '%%Y-%%m-%%d %%T'), entry_value, entry_type from baby_keyval where time >= '%s' and time <= '%s 23:59:59' order by time" % (date_string,date_string)
 		con = mysql.connector.connect(user=self._credentials['user'], password=self._credentials['pass'],host=self._credentials['host'], database=self._credentials['db'])
 		try:
 			cursor = con.cursor()
@@ -27,17 +24,15 @@ class QueryMapper:
 			cursor.execute(sql_sleeps)
 			sleeps = cursor.fetchall()
 
-			cursor.execute(sql_milk)
-			milk = cursor.fetchall()
+			cursor.execute(sql_keyval)
+			keyval_records = cursor.fetchall()
+			def get_records_by_type(typestring):
+				return [x for x in keyval_records if x[2] == typestring]
 
-			cursor.execute(sql_fmla)
-			formula = cursor.fetchall()
-
-			cursor.execute(sql_solid)
-			solid = cursor.fetchall()
-
-			cursor.execute(sql_diapers)
-			diapers = cursor.fetchall()
+			milk = get_records_by_type('milk')
+			formula = get_records_by_type('formula')
+			solid = get_records_by_type('solid')
+			diapers = get_records_by_type('diaper')
 
 			milk_list = list()
 			formula_list = list()
