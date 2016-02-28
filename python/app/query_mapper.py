@@ -9,17 +9,6 @@ class QueryMapper:
 		self._credentials = credentials
 		self._baby_id = baby_id
 
-	def execute_sql(self, sql):
-		print sql
-		con = mysql.connector.connect(user=self._credentials['user'], password=self._credentials['pass'],host=self._credentials['host'], database=self._credentials['db'])
-		try:
-			cursor = con.cursor()
-			cursor.execute(sql)
-		except Exception:
-			raise
-		finally:
-			con.close()
-
 	def insert_value_item(self, babyid, time_string, entry_type, entry_value):
 		sql = "insert into baby_keyval (babyid, time, entry_type, entry_value) values (%i, '%s', '%s', '%s');" % (babyid, time_string, entry_type, entry_value)
 		self.execute_sql(sql)
@@ -67,12 +56,9 @@ class QueryMapper:
 		con = mysql.connector.connect(user=self._credentials['user'], password=self._credentials['pass'],host=self._credentials['host'], database=self._credentials['db'])
 		try:
 			cursor = con.cursor()
+			sleeps = self.execute_sql(sql_sleeps, True, cursor)
+			keyval_records = self.execute_sql(sql_keyval, True, cursor)
 
-			cursor.execute(sql_sleeps)
-			sleeps = cursor.fetchall()
-
-			cursor.execute(sql_keyval)
-			keyval_records = cursor.fetchall()
 			def get_records_by_type(typestring):
 				return [x for x in keyval_records if x[2] == typestring]
 
@@ -151,21 +137,16 @@ class QueryMapper:
 
 		try:
 			cursor = con.cursor()
-
-			cursor.execute(sql_pee)
-			rows = cursor.fetchall()
+			rows = self.execute_sql(sql_pee, True, cursor)
 			last_pee = rows[0][0]
 
-			cursor.execute(sql_poo)
-			rows = cursor.fetchall()
+			rows = self.execute_sql(sql_poo, True, cursor)
 			last_poo = rows[0][0]
 
-			cursor.execute(sql_feed)
-			rows = cursor.fetchall()
+			rows = self.execute_sql(sql_feed, True, cursor)
 			last_feed = rows[0][0]
 
-			cursor.execute(sql_sleep)
-			rows = cursor.fetchall()
+			rows = self.execute_sql(sql_sleep, True, cursor)
 			last_sleep = rows[0][0]
 
 			return {'last_pee':last_pee, 'last_poo':last_poo, 'last_feed':last_feed, 'last_sleep':last_sleep}
@@ -193,13 +174,10 @@ class QueryMapper:
 		try:
 			cursor = con.cursor()
 			sql = "select id, start, end, DATE_FORMAT(start, '%%Y-%%m-%%d') as day from baby_sleep where start <= CURRENT_TIMESTAMP() %s order by start ASC" % sleep_date_filter
-			cursor.execute(sql)
-			sleep_rows = cursor.fetchall()
+			sleep_rows = self.execute_sql(sql, True, cursor)
 
 			sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time <= CURRENT_TIMESTAMP() %s order by time ASC' % keyval_date_filter;
-			cursor = con.cursor()
-			cursor.execute(sql)
-			keyval_rows = cursor.fetchall()
+			keyval_rows = self.execute_sql(sql, True, cursor)
 
 			day_gen = DayGenerator(1, sleep_rows, keyval_rows)
 			days = day_gen.get_days()
@@ -208,3 +186,23 @@ class QueryMapper:
 
 		finally:
 			con.close()
+
+	
+	def execute_sql(self, sql, return_rows = None, cursor = None):
+		print sql
+		create_own_connection = cursor == None
+		if create_own_connection:
+			con = mysql.connector.connect(user=self._credentials['user'], password=self._credentials['pass'],host=self._credentials['host'], database=self._credentials['db'])
+			cursor = con.cursor()
+		try:
+			cursor.execute(sql)
+			print 'return_rows: %s' % return_rows
+			if (return_rows):
+				return cursor.fetchall()
+		except Exception:
+			raise
+		finally:
+			if create_own_connection:
+				con.close()
+
+

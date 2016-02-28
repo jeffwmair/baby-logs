@@ -184,7 +184,7 @@ APP.EntryPage = function() {
 				if (h == 2) {
 					min_amount = 10;
 				}
-				for(var i = min_amount; i <= 270; i+=10) options.push(feedTypes[h]+'-'+i);
+				for(var i = min_amount; i <= 300; i+=10) options.push(feedTypes[h]+'-'+i);
 			}
 			return options;
 		}
