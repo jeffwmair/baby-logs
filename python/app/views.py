@@ -63,6 +63,13 @@ def api():
 		svc.add_sleep(start)
 		data = svc.get_entry_data(start)
 
+	elif apiMethod == "addvalue":
+		time = request.args['time']
+		entry_type = request.args['type']
+		entry_value = request.args['value']
+		svc.add_value_item(time, entry_type, entry_value)
+		data = svc.get_entry_data(time)
+
 	else:
 		raise Exception('Method "%s" not implemented' % apiMethod)
 

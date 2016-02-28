@@ -5,7 +5,16 @@ from domain.day import Day, SleepSet, FeedSet, DiaperSet
 
 class ReportService():
 	def __init__(self, datamapper):
+		self._babyid = 1
 		self._datamapper = datamapper
+
+	def add_value_item(self, time_string, item_type, item_value):
+		self._datamapper.delete_value_item(self._babyid, time_string, item_type)
+		if item_value != "none":
+			self._datamapper.insert_value_item(self._babyid, time_string, item_type, item_value)
+
+	def remove_value_item(self, time_string, item_type):
+		self._datamapper.delete_value_item(time_string, item_type)
 	
 	def remove_sleep(self, sleep_time_string):
 		self._datamapper.delete_sleep(sleep_time_string)
@@ -15,7 +24,7 @@ class ReportService():
 		sleep_end_string = (start_time + timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S') 
 		print 'Add sleep with start %s, and end %s' % (sleep_start_string, sleep_end_string)
 		babyid = 1
-		self._datamapper.add_sleep(babyid, sleep_start_string, sleep_end_string)
+		self._datamapper.insert_sleep(babyid, sleep_start_string, sleep_end_string)
 
 	def get_entry_data(self, date_string_raw):
 
