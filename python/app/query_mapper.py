@@ -40,6 +40,26 @@ class QueryMapper:
 		sql = "select date_format(time, '%%Y-%%m-%%d %%T'), entry_value, entry_type from baby_keyval where entry_type = '%s' and time >= '%s' and time <= '%s 23:59:59' order by time" % (entry_type,date_string,date_string)
 		return sql
 
+	def get_chart_data(self):
+		emptylist = list()
+		data = dict()
+		daily = list()
+		row = {
+				'day':'2016-02-20 00:00:00', 
+				'totalSleepHrs': 1,
+				'nightSleepHrs': 2,
+				'breastCount': 0,
+				'milkMl':400,
+				'solidMl':50,
+				'formulaMl':50,
+				'poos':1,
+				}
+		daily.append(row)
+		data['daily'] = daily
+		data['weekly'] = list()
+		print 'got chart data: %s' % data
+		return data
+
 	def get_data_for_day(self, date_string):
 		data = dict()
 		sql_sleeps = "select id, babyid, date_format(start, '%%Y-%%m-%%d %%T'), date_format(end, '%%Y-%%m-%%d %%T') from baby_sleep where start >= '%s' and start <= '%s 23:59:59' order by start" % (date_string,date_string)

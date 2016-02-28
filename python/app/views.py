@@ -70,6 +70,9 @@ def api():
 		svc.add_value_item(time, entry_type, entry_value)
 		data = svc.get_entry_data(time)
 
+	elif apiMethod == "loadreportdata":
+		data = svc.get_chart_data()
+
 	else:
 		raise Exception('Method "%s" not implemented' % apiMethod)
 

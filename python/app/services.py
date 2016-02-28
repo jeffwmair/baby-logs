@@ -9,6 +9,9 @@ class ReportService():
 		self._datamapper = datamapper
 		self._feed_types = ['milk', 'formula', 'solid', 'feed']
 
+	def get_chart_data(self):
+		return self._datamapper.get_chart_data()
+
 	def add_value_item(self, time_string, item_type, item_value):
 
 		print 'adding value item: %s/%s at %s' % (item_type, item_value, time_string)
