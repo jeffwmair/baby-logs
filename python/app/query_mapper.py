@@ -10,6 +10,7 @@ class QueryMapper:
 		self._baby_id = baby_id
 
 	def execute_sql(self, sql):
+		print sql
 		con = mysql.connector.connect(user=self._credentials['user'], password=self._credentials['pass'],host=self._credentials['host'], database=self._credentials['db'])
 		try:
 			cursor = con.cursor()
@@ -21,12 +22,10 @@ class QueryMapper:
 
 	def insert_value_item(self, babyid, time_string, entry_type, entry_value):
 		sql = "insert into baby_keyval (babyid, time, entry_type, entry_value) values (%i, '%s', '%s', '%s');" % (babyid, time_string, entry_type, entry_value)
-		print sql
 		self.execute_sql(sql)
 
 	def delete_value_item(self, babyid, time_string, entry_type):
 		sql = "delete from baby_keyval where babyid = %i and time = '%s' and entry_type = '%s';" % (babyid, time_string, entry_type)
-		print sql
 		self.execute_sql(sql)
 
 	def insert_sleep(self, babyid, sleep_start, sleep_end):

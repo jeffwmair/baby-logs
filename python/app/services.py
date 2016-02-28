@@ -7,9 +7,19 @@ class ReportService():
 	def __init__(self, datamapper):
 		self._babyid = 1
 		self._datamapper = datamapper
+		self._feed_types = ['milk', 'formula', 'solid', 'feed']
 
 	def add_value_item(self, time_string, item_type, item_value):
+
+		print 'adding value item: %s/%s at %s' % (item_type, item_value, time_string)
+		# delete the same type item first
 		self._datamapper.delete_value_item(self._babyid, time_string, item_type)
+
+		# this is awkward -- we might be changing from one type of feed to another, which is why we have this
+		if item_type in self._feed_types:
+			for feed_type in self._feed_types:
+				self._datamapper.delete_value_item(self._babyid, time_string, feed_type)
+
 		if item_value != "none":
 			self._datamapper.insert_value_item(self._babyid, time_string, item_type, item_value)
 
@@ -31,8 +41,6 @@ class ReportService():
 		# 2016-02-26 
 		# in case there is a time component, strip it off
 		date_string = date_string_raw[:10]
-		print date_string_raw
-		print date_string
 
 		data = self._datamapper.get_data_for_day(date_string)
 		result = {
