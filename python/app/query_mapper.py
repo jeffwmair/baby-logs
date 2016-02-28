@@ -67,12 +67,7 @@ class QueryMapper:
 			solid = get_records_by_type('solid')
 			diapers = get_records_by_type('diaper')
 
-			milk_list = list()
-			formula_list = list()
-			solids_list = list()
-			diapers_list = list()
 			sleep_list = list()
-
 			for sleep in sleeps:
 				row = {
 						'id':sleep[0], 
@@ -82,38 +77,22 @@ class QueryMapper:
 					}
 				sleep_list.append(row)
 
-			for entry in milk:
-				row = {
+			def get_keyval_rows(itemlist):
+				rowlist = list()	
+				for entry in itemlist:
+					row = {
 						'time':entry[0],
 						'entry_value':entry[1],
 						'entry_type':entry[2]
 					}
-				milk_list.append(row)
+					rowlist.append(row)
+				return rowlist
+				
+			formula_list = get_keyval_rows(formula)
+			milk_list = get_keyval_rows(milk)
+			solids_list = get_keyval_rows(solid)
+			diapers_list = get_keyval_rows(diapers)
 
-			for entry in formula:
-				row = {
-						'time':entry[0],
-						'entry_value':entry[1],
-						'entry_type':entry[2]
-					}
-				formula_list.append(row)
-
-			for entry in solid:
-				row = {
-						'time':entry[0],
-						'entry_value':entry[1],
-						'entry_type':entry[2]
-					}
-				solids_list.append(row)
-
-			for entry in diapers:
-				row = {
-						'time':entry[0],
-						'entry_value':entry[1],
-						'entry_type':entry[2]
-					}
-				diapers_list.append(row)
-			
 			data['milk'] = milk_list
 			data['formula'] = formula_list
 			data['solid'] = solids_list
@@ -204,5 +183,4 @@ class QueryMapper:
 		finally:
 			if create_own_connection:
 				con.close()
-
 
