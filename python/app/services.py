@@ -9,6 +9,13 @@ class ReportService():
 	
 	def remove_sleep(self, sleep_time_string):
 		self._datamapper.delete_sleep(sleep_time_string)
+	
+	def add_sleep(self, sleep_start_string):
+		start_time = parse(sleep_start_string)
+		sleep_end_string = (start_time + timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S') 
+		print 'Add sleep with start %s, and end %s' % (sleep_start_string, sleep_end_string)
+		babyid = 1
+		self._datamapper.add_sleep(babyid, sleep_start_string, sleep_end_string)
 
 	def get_entry_data(self, date_string_raw):
 

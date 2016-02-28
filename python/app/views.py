@@ -58,6 +58,11 @@ def api():
 		svc.remove_sleep(sleep_time)
 		data = svc.get_entry_data(sleep_time)
 
+	elif apiMethod == "sleep":
+		start = request.args['sleepstart']
+		svc.add_sleep(start)
+		data = svc.get_entry_data(start)
+
 	else:
 		raise Exception('Method "%s" not implemented' % apiMethod)
 
