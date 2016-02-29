@@ -116,17 +116,15 @@ class QueryMapper:
 
 		try:
 			cursor = con.cursor()
-			rows = self.execute_sql(sql_pee, True, cursor)
-			last_pee = rows[0][0]
 
-			rows = self.execute_sql(sql_poo, True, cursor)
-			last_poo = rows[0][0]
+			def get_last_record_time(sql):
+				rows = self.execute_sql(sql, True, cursor)
+				return rows[0][0]
 
-			rows = self.execute_sql(sql_feed, True, cursor)
-			last_feed = rows[0][0]
-
-			rows = self.execute_sql(sql_sleep, True, cursor)
-			last_sleep = rows[0][0]
+			last_pee = get_last_record_time(sql_pee)
+			last_poo = get_last_record_time(sql_poo)
+			last_feed = get_last_record_time(sql_feed)
+			last_sleep = get_last_record_time(sql_sleep)
 
 			return {'last_pee':last_pee, 'last_poo':last_poo, 'last_feed':last_feed, 'last_sleep':last_sleep}
 
