@@ -104,9 +104,6 @@ APP.EntryPage = function() {
 	}
 
 	var scrollToCurrentTime = function() {
-		var time = getMostRecentTimeBlock();
-		var timeElement = document.getElementById('td_'+time);
-		timeElement.scrollIntoView({behavior:"smooth", block:"start"});
 	}
 
 	/**
@@ -269,8 +266,6 @@ APP.EntryPage = function() {
 					if (ds && ds.getDiaperAtTimeAny(time)) {
 						setActiveButtonStyle(btn);
 						var diaperVal = ds.getDiaperAtTimeAny(time).value;
-						//var diaperValText = 'pee';
-						//if (diaperVal == '2' || diaperVal == '3') diaperValText = 'poo';
 						btn.value = diaperVal;
 					}
 					else {
@@ -293,7 +288,10 @@ APP.EntryPage = function() {
 		}
 
 		if (scrollToTime &&  date.getDayTime() == (new Date()).getDayTime()) {
-			scrollToCurrentTime();
+			// scroll to current time
+			var time = getMostRecentTimeBlock();
+			var timeElement = document.getElementById('td_'+time);
+			timeElement.scrollIntoView({behavior:"smooth", block:"start"});
 		}
 	};
 

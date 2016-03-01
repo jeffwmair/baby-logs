@@ -1,8 +1,8 @@
-import mysql.connector
-from app import app
 from domain.day import DayGenerator, Day
 from datetime import date, timedelta
 from db_records import BabyRecord, GuardianRecord, SleepRecord, KeyValueRecord
+import mysql.connector
+import traceback
 
 class QueryMapper:
 	def __init__(self, credentials, baby_id):
@@ -29,25 +29,45 @@ class QueryMapper:
 		sql = "select date_format(time, '%%Y-%%m-%%d %%T'), entry_value, entry_type from baby_keyval where entry_type = '%s' and time >= '%s' and time <= '%s 23:59:59' order by time" % (entry_type,date_string,date_string)
 		return sql
 
+
 	def get_chart_data(self):
-		emptylist = list()
-		data = dict()
-		daily = list()
-		row = {
-				'day':'2016-02-20 00:00:00', 
-				'totalSleepHrs': 1,
-				'nightSleepHrs': 2,
-				'breastCount': 0,
-				'milkMl':400,
-				'solidMl':50,
-				'formulaMl':50,
-				'poos':1,
-				}
-		daily.append(row)
-		data['daily'] = daily
-		data['weekly'] = list()
-		print 'got chart data: %s' % data
-		return data
+
+		sql = 'select id, start, end, date_format(start, "%Y-%m-%d") as day from baby_sleep where start <= CURRENT_TIMESTAMP() order by start ASC' 
+		sleep_rows = self.execute_sql(sql, True)
+		sql = 'select time, DATE_FORMAT(time, "%Y-%m-%d") as day, entry_type, entry_value from baby_keyval WHERE time <= CURRENT_TIMESTAMP() order by time ASC' 
+		keyval_rows = self.execute_sql(sql, True)
+		try:
+			day_gen = DayGenerator(1, sleep_rows, keyval_rows)
+			days = day_gen.get_days()
+			daily = list()
+			last_10_days = sorted(days, reverse=True)[:10]
+			for day_key in sorted(last_10_days):
+				day = days.get(day_key)
+				feed = day.get_feed()
+				sleep = day.get_sleep()
+				diaper = day.get_diaper()
+				row = {
+					'day':day_key, 
+					'totalSleepHrs': sleep.get_total_sleep_hrs(),
+					'nightSleepHrs': sleep.get_night_sleep_hrs(),
+					'breastCount': feed.get_breast_count(),
+					'milkMl':feed.get_milk_ml(),
+					'solidMl':feed.get_solid_ml(),
+					'formulaMl':feed.get_fmla_ml(),
+					'poos':diaper.get_poo_count(),
+					}
+				daily.append(row)
+
+
+			data = dict()
+			data['daily'] = daily
+			data['weekly'] = list()
+			print 'got chart data: %s' % data
+			return data
+
+		except Exception as ex:
+			print traceback.format_exc()
+
 
 	def get_data_for_day(self, date_string):
 		data = dict()
@@ -163,7 +183,6 @@ class QueryMapper:
 
 		finally:
 			con.close()
-
 	
 	def execute_sql(self, sql, return_rows = None, cursor = None):
 		print sql

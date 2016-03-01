@@ -69,4 +69,4 @@ class SleepSet:
 		return self._night_hrs
 
 	def get_total_sleep_hrs(self):
-		return self.get_last_night_sleeps() + self.get_nap_hrs() + self.get_night_sleeps()
+		return self.get_lastnight_sleep_hrs() + self.get_nap_hrs() + self.get_night_sleep_hrs()

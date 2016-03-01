@@ -53,10 +53,21 @@ class DayGenerator:
 
 		days = dict()
 		for key in day_keys:
-			sleeps = SleepSet(day_sleeps.get(key))
-			feeds = FeedSet([x for x in day_keyvals.get(key) if x.get_type() == 'milk' or x.get_type() == 'formula' or x.get_type() == 'solid'])
-			diapers = DiaperSet([x for x in day_keyvals.get(key) if x.get_type() == 'diaper'])
-			days[key] = Day(key, sleeps, diapers, feeds)
+			feeds = []
+			diapers = []
+			sleeps = []
+
+			if key in day_sleeps:
+				sleeps = day_sleeps.get(key)
+			if key in day_keyvals:
+				feeds = [x for x in day_keyvals.get(key) if x != None and x.get_type() == 'milk' or x.get_type() == 'formula' or x.get_type() == 'solid']
+				diapers = [x for x in day_keyvals.get(key) if x.get_type() == 'diaper']
+
+			sleep_set = SleepSet(sleeps)
+			feed_set = FeedSet(feeds)
+			diaper_set = DiaperSet(diapers)
+
+			days[key] = Day(key, sleep_set, diaper_set, feed_set)
 
 		self._days = days
 
@@ -69,6 +80,9 @@ class Day:
 		self._sleep = sleep_set
 		self._feed = feed_set
 		self._diaper = diaper_set
+
+	def __repr__(self):
+		return 'DAY: %s, sleeps:%i, feeds:%i, diapers:%s' % (self._date_string, len(self._sleep.get_merged_records()), self._feed.get_milk_ml(), self._diaper.get_poo_count())
 
 	def get_feed(self):
 		return self._feed

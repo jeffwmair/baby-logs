@@ -9,11 +9,14 @@ class ReportService():
 		self._datamapper = datamapper
 		self._feed_types = ['milk', 'formula', 'solid', 'feed']
 
+
+	# data that drives the chart/report page
 	def get_chart_data(self):
 		return self._datamapper.get_chart_data()
 
-	def add_value_item(self, time_string, item_type, item_value):
 
+	# add a new value-item
+	def add_value_item(self, time_string, item_type, item_value):
 		print 'adding value item: %s/%s at %s' % (item_type, item_value, time_string)
 		# delete the same type item first
 		self._datamapper.delete_value_item(self._babyid, time_string, item_type)
@@ -25,6 +28,7 @@ class ReportService():
 
 		if item_value != "none":
 			self._datamapper.insert_value_item(self._babyid, time_string, item_type, item_value)
+
 
 	def remove_value_item(self, time_string, item_type):
 		self._datamapper.delete_value_item(time_string, item_type)
@@ -143,7 +147,7 @@ class ReportService():
 		min_ago = self.get_time_minutes_ago(time)
 		if min_ago > 60*24:
 			return 3
-		elif min_ago > 60*6:
+		elif min_ago > 60*12:
 			return 2
 		else:
 			return 1
