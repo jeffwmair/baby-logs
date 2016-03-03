@@ -11,8 +11,8 @@ class ReportService():
 
 
 	# data that drives the chart/report page
-	def get_chart_data(self):
-		return self._datamapper.get_chart_data()
+	def get_chart_data_daily(self, days):
+		return self._datamapper.get_chart_data_daily(days)
 
 
 	# add a new value-item

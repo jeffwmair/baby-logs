@@ -70,10 +70,14 @@ def api():
 		svc.add_value_item(time, entry_type, entry_value)
 		data = svc.get_entry_data(time)
 
-	elif apiMethod == "loadreportdata":
-		data = svc.get_chart_data()
+	elif apiMethod == "loadreportdata_daily":
+		data = svc.get_chart_data_daily(10)
 
 	else:
 		raise Exception('Method "%s" not implemented' % apiMethod)
 
-	return jsonify(data)
+	try:
+		jsondata = jsonify(data)
+		return jsondata
+	except Exception:
+		print traceback.format_exc()

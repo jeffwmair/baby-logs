@@ -1,5 +1,5 @@
 from domain.day import DayGenerator, Day
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from db_records import BabyRecord, GuardianRecord, SleepRecord, KeyValueRecord
 import mysql.connector
 import traceback
@@ -30,26 +30,26 @@ class QueryMapper:
 		return sql
 
 
-	def get_chart_data(self):
+	def get_chart_data_daily(self, daysToShow):
 
-		sql = 'select id, start, end, date_format(start, "%Y-%m-%d") as day from baby_sleep where start <= CURRENT_TIMESTAMP() order by start ASC' 
+		startDate = (datetime.now() - timedelta(days=daysToShow-1)).strftime('%Y-%m-%d')
+		sql = 'select id, start, end, date_format(start, "%%Y-%%m-%%d") as day from baby_sleep where start >= "%s" and start <= CURRENT_TIMESTAMP() order by start ASC' % startDate
 		sleep_rows = self.execute_sql(sql, True)
-		sql = 'select time, DATE_FORMAT(time, "%Y-%m-%d") as day, entry_type, entry_value from baby_keyval WHERE time <= CURRENT_TIMESTAMP() order by time ASC' 
+		sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time >= "%s" and time <= CURRENT_TIMESTAMP() order by time ASC' % startDate
 		keyval_rows = self.execute_sql(sql, True)
 		try:
 			day_gen = DayGenerator(1, sleep_rows, keyval_rows)
 			days = day_gen.get_days()
 			daily = list()
-			last_10_days = sorted(days, reverse=True)[:10]
-			for day_key in sorted(last_10_days):
+			for day_key in sorted(days):
 				day = days.get(day_key)
 				feed = day.get_feed()
 				sleep = day.get_sleep()
 				diaper = day.get_diaper()
 				row = {
-					'day':day_key, 
+					'day':'%s 00:00:00' % day_key, 
 					'totalSleepHrs': sleep.get_total_sleep_hrs(),
-					'nightSleepHrs': sleep.get_night_sleep_hrs(),
+					'nightSleepHrs': sleep.get_unbroken_night_sleep_hrs(),
 					'breastCount': feed.get_breast_count(),
 					'milkMl':feed.get_milk_ml(),
 					'solidMl':feed.get_solid_ml(),
@@ -61,8 +61,6 @@ class QueryMapper:
 
 			data = dict()
 			data['daily'] = daily
-			data['weekly'] = list()
-			print 'got chart data: %s' % data
 			return data
 
 		except Exception as ex:
@@ -185,14 +183,14 @@ class QueryMapper:
 			con.close()
 	
 	def execute_sql(self, sql, return_rows = None, cursor = None):
-		print sql
+		#print sql
 		create_own_connection = cursor == None
 		if create_own_connection:
 			con = mysql.connector.connect(user=self._credentials['user'], password=self._credentials['pass'],host=self._credentials['host'], database=self._credentials['db'])
 			cursor = con.cursor()
 		try:
 			cursor.execute(sql)
-			print 'return_rows: %s' % return_rows
+			#print 'return_rows: %s' % return_rows
 			if (return_rows):
 				return cursor.fetchall()
 		except Exception:

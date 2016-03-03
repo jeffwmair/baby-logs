@@ -67,7 +67,21 @@ class DayGenerator:
 			feed_set = FeedSet(feeds)
 			diaper_set = DiaperSet(diapers)
 
-			days[key] = Day(key, sleep_set, diaper_set, feed_set)
+			this_day = Day(key, sleep_set, diaper_set, feed_set)
+			days[key] = this_day
+
+
+		prev_key = None
+		cur_key = None
+		for day_key in sorted(days):
+			if cur_key != None:
+				prev_key = cur_key
+			cur_key = day_key
+			# set the 'next day' link so we can calculate night sleep using multiple days
+			if prev_key != None:
+				prev_day = days[prev_key]
+				cur_day = days[cur_key]
+				prev_day.get_sleep().set_overnight_sleep_records(cur_day.get_sleep().get_last_night_records())
 
 		self._days = days
 
@@ -92,4 +106,3 @@ class Day:
 
 	def get_diaper(self):
 		return self._diaper
-	

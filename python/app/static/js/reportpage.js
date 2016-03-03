@@ -15,14 +15,14 @@ APP.ReportPage = function(container, calHelper) {
 	this.init = function( container, calHelper ) {
 		var that = this;
 
-		UTILS.ajaxGetJson(API+"?action=loadreportdata", errorHandler, function(json) {
+		UTILS.ajaxGetJson(API+"?action=loadreportdata_daily", errorHandler, function(json) {
 
 			var converter = new CONVERTER.ReportDataConverterForChart();
 			var chartDataDaily = converter.getChartData(json.daily);
-			var chartDataWeekly = converter.getChartData(json.weekly);
+			//var chartDataWeekly = converter.getChartData(json.weekly);
 
 			configureLineChart('#container_linechart_daily', 'Last 10 Days', chartDataDaily);
-			configureLineChart('#container_linechart_weekly', 'Weekly Averages', chartDataWeekly);
+			//configureLineChart('#container_linechart_weekly', 'Weekly Averages', chartDataWeekly);
 
 		});
 	}
