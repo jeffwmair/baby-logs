@@ -30,19 +30,22 @@ class QueryMapper:
 		return sql
 
 
-	def get_chart_data_daily(self, daysToShow):
+	def get_chart_data(self, weekly, daysToShow = None):
 
-		startDate = (datetime.now() - timedelta(days=daysToShow-1)).strftime('%Y-%m-%d')
+		startDate = '2000-01-01 00:00:00'
+		if daysToShow != None:
+			startDate = (datetime.now() - timedelta(days=daysToShow-1)).strftime('%Y-%m-%d')
+
 		sql = 'select id, start, end, date_format(start, "%%Y-%%m-%%d") as day from baby_sleep where start >= "%s" and start <= CURRENT_TIMESTAMP() order by start ASC' % startDate
 		sleep_rows = self.execute_sql(sql, True)
 		sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time >= "%s" and time <= CURRENT_TIMESTAMP() order by time ASC' % startDate
 		keyval_rows = self.execute_sql(sql, True)
 		try:
-			day_gen = DayGenerator(1, sleep_rows, keyval_rows)
-			days = day_gen.get_days()
+			day_gen = DayGenerator(1, weekly, sleep_rows, keyval_rows)
+			datasets = day_gen.get_datasets()
 			daily = list()
-			for day_key in sorted(days):
-				day = days.get(day_key)
+			for day_key in sorted(datasets):
+				day = datasets.get(day_key)
 				feed = day.get_feed()
 				sleep = day.get_sleep()
 				diaper = day.get_diaper()
@@ -60,7 +63,7 @@ class QueryMapper:
 
 
 			data = dict()
-			data['daily'] = daily
+			data['datasets'] = daily
 			return data
 
 		except Exception as ex:
@@ -174,8 +177,9 @@ class QueryMapper:
 			sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time <= CURRENT_TIMESTAMP() %s order by time ASC' % keyval_date_filter;
 			keyval_rows = self.execute_sql(sql, True, cursor)
 
-			day_gen = DayGenerator(1, sleep_rows, keyval_rows)
-			days = day_gen.get_days()
+			weekly_grouping = False
+			day_gen = DayGenerator(1, weekly_grouping, sleep_rows, keyval_rows)
+			days = day_gen.get_datasets()
 
 			return days
 

@@ -12,8 +12,12 @@ class ReportService():
 
 	# data that drives the chart/report page
 	def get_chart_data_daily(self, days):
-		return self._datamapper.get_chart_data_daily(days)
+		is_weekly = False
+		return self._datamapper.get_chart_data(is_weekly, days)
 
+	def get_chart_data_weekly(self):
+		is_weekly = True
+		return self._datamapper.get_chart_data(is_weekly)
 
 	# add a new value-item
 	def add_value_item(self, time_string, item_type, item_value):
@@ -44,8 +48,6 @@ class ReportService():
 		self._datamapper.insert_sleep(babyid, sleep_start_string, sleep_end_string)
 
 	def get_entry_data(self, date_string_raw):
-
-		# 2016-02-26 
 		# in case there is a time component, strip it off
 		date_string = date_string_raw[:10]
 

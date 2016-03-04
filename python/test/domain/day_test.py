@@ -6,6 +6,9 @@ from app.db_records import SleepRecord
 
 class DayTest(unittest.TestCase):
 
+	def test_group_by_week(self):
+		pass
+
 	def test_generate_days_correct_night_sleep(self):
 		# night sleep day 1
 		sleep1 = (1, datetime(2016, 1, 1, 20, 0, 0), datetime(2016, 1, 2, 0, 0, 0), '2016-01-01')
@@ -16,7 +19,7 @@ class DayTest(unittest.TestCase):
 		babyid = 1
 		day_generator = DayGenerator(babyid, sleep_records, keyval_records)
 
-		days = day_generator.get_days()
+		days = day_generator.get_datasets()
 		self.assertEqual(2, len(days))
 		day1 = days['2016-01-01']
 		day2 = days['2016-01-02']
@@ -32,7 +35,7 @@ class DayTest(unittest.TestCase):
 		babyid = 1
 		day_generator = DayGenerator(babyid, sleep_records, keyval_records)
 
-		days = day_generator.get_days()
+		days = day_generator.get_datasets()
 		self.assertEqual(1, len(days))
 		day1 = days['2016-01-01']
 
@@ -47,7 +50,7 @@ class DayTest(unittest.TestCase):
 		babyid = 1
 		day_generator = DayGenerator(babyid, sleep_records, keyval_records)
 
-		days = day_generator.get_days()
+		days = day_generator.get_datasets()
 		self.assertEqual(1, len(days))
 		day1 = days['2016-01-01']
 

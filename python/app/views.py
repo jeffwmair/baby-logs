@@ -15,7 +15,6 @@ def server_error(error):
 
 @app.route('/')
 def dashboard_page():
-	print 'start'
 	return render_template('index.html')
 
 @app.route('/entry')
@@ -37,6 +36,7 @@ def api():
 	mapper = QueryMapper(creds, babyid)
 
 	apiMethod = request.args['action']
+	print 'processing request with action=%s' % apiMethod
 	svc = ReportService(mapper);
 	if apiMethod == "loadDashboard":
 		try:
@@ -72,6 +72,9 @@ def api():
 
 	elif apiMethod == "loadreportdata_daily":
 		data = svc.get_chart_data_daily(10)
+
+	elif apiMethod == "loadreportdata_weekly":
+		data = svc.get_chart_data_weekly()
 
 	else:
 		raise Exception('Method "%s" not implemented' % apiMethod)

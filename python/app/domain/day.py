@@ -6,7 +6,10 @@ from app.domain.feed import FeedSet
 from app.domain.diaper import DiaperSet
 
 class DayGenerator:
-	def __init__(self, babyid, sleep_rows, keyval_rows):
+	def __init__(self, weekly_grouping, babyid, sleep_rows, keyval_rows):
+
+		if weekly_grouping:
+			print 'weekly_grouping is not yet implemented!'
 
 		day_sleeps = dict()
 		for row in sleep_rows:
@@ -85,7 +88,7 @@ class DayGenerator:
 
 		self._days = days
 
-	def get_days(self):
+	def get_datasets(self):
 		return self._days
 
 class Day:
