@@ -196,7 +196,6 @@ APP.EntryPage = function() {
 		var colCount = buttonText.length + nonButtonColumns;
 		var diaperOptions = generateDiaperOptions();
 		var feedOptions = generateFeedOptions();
-		console.log(feedOptions);
 
 		for(var i = 0; i < rowCount; i++) {
 			var timeField = times[i];
