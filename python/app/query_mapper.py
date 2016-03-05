@@ -128,7 +128,8 @@ class QueryMapper:
 
 	def get_latest_each_record_type(self):
 		# get the latest sleep, pee, poo, feed (milk or fmla)
-		sql_pee = "select time from baby_keyval where entry_type = 'diaper' and entry_value = 'pee' order by time desc limit 1"
+		# we'll count a poo as a pee also because there is likely pee anyway
+		sql_pee = "select time from baby_keyval where entry_type = 'diaper' and (entry_value = 'pee' or entry_value = 'poo') order by time desc limit 1"
 		sql_poo = "select time from baby_keyval where entry_type = 'diaper' and entry_value = 'poo' order by time desc limit 1"
 		sql_feed = "select time from baby_keyval where entry_type = 'milk' or entry_type = 'formula' or entry_type = 'solid' order by time desc limit 1"
 		sql_sleep = "select end from baby_sleep where end <= current_timestamp() order by end desc limit 1"
