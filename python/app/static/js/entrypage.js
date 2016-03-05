@@ -197,6 +197,12 @@ APP.EntryPage = function() {
 		var diaperOptions = generateDiaperOptions();
 		var feedOptions = generateFeedOptions();
 
+		// new
+		var diaperBox = document.createElement('select');
+		putFeedOptionsInSelect(diaperBox, diaperOptions);
+		var feedBox = document.createElement('select');
+		putFeedOptionsInSelect(feedBox, feedOptions);
+
 		for(var i = 0; i < rowCount; i++) {
 			var timeField = times[i];
 			var tr = document.createElement('tr');
@@ -216,18 +222,16 @@ APP.EntryPage = function() {
 					td.appendChild(button);
 				}
 				else if (j == 2) {
-					var diaperBox = document.createElement('select');
-					assignButtonClass(j, diaperBox, timeField);
-					buttonList.push(diaperBox);
-					putFeedOptionsInSelect(diaperBox, diaperOptions);
-					td.appendChild(diaperBox);
+					var diaperBoxLocal = diaperBox.cloneNode(true);//document.createElement('select');
+					assignButtonClass(j, diaperBoxLocal, timeField);
+					buttonList.push(diaperBoxLocal);
+					td.appendChild(diaperBoxLocal);
 				}
 				else if (j == 3) {
-					var feedBox = document.createElement('select');
-					assignButtonClass(j, feedBox, timeField);
-					buttonList.push(feedBox);
-					putFeedOptionsInSelect(feedBox, feedOptions);
-					td.appendChild(feedBox);
+					var feedBoxLocal = feedBox.cloneNode(true);// document.createElement('select');
+					assignButtonClass(j, feedBoxLocal, timeField);
+					buttonList.push(feedBoxLocal);
+					td.appendChild(feedBoxLocal);
 				}
 			}
 		}
