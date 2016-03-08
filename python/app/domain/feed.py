@@ -1,4 +1,24 @@
 from datetime import datetime
+
+class FeedSetAggregated:
+	def __init__(self, breast_count, milk_ml, solid_ml, fmla_ml):
+		self._breast_count = round(breast_count, 1)
+		self._milk_ml = round(milk_ml, 1)
+		self._solid_ml = round(solid_ml, 1)
+		self._fmla_ml = round(fmla_ml, 1)
+
+	def get_breast_count(self):
+		return self._breast_count
+
+	def get_milk_ml(self):
+		return self._milk_ml
+
+	def get_solid_ml(self):
+		return self._solid_ml
+
+	def get_fmla_ml(self):
+		return self._fmla_ml
+
 class FeedSet:
 	def __init__(self, feed_records):
 

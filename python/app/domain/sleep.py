@@ -1,6 +1,17 @@
 from datetime import datetime
 from app.const.constants import Constants
 
+class SleepAggregated():
+	def __init__(self, total_sleep_hrs, unbroken_night_sleep_hrs):
+		self._total_sleep_hrs = round(total_sleep_hrs, 1)
+		self._unbroken_night_sleep_hrs = round(unbroken_night_sleep_hrs, 1)
+
+	def get_unbroken_night_sleep_hrs(self):
+		return self._unbroken_night_sleep_hrs
+
+	def get_total_sleep_hrs(self):
+		return self._total_sleep_hrs
+
 class SleepSet:
 	def __init__(self, records):
 
@@ -77,6 +88,10 @@ class SleepSet:
 	def set_overnight_sleep_records(self, overnight_sleep_records):
 		# Here, calculate the longest unbroken sleep period.
 		sleeps_merged = self._night + overnight_sleep_records
+		if len(sleeps_merged) == 0:
+			self._unbroken_night_sleep_hrs = 0
+			return 
+
 		contiguous_night_sleeps = self._merge_contiguous_sleeps(sleeps_merged)
 		self._unbroken_night_sleep_hrs = max(x.get_duration() for x in contiguous_night_sleeps)
 

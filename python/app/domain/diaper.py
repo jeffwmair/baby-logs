@@ -20,3 +20,10 @@ class DiaperSet:
 
 	def get_poo_count(self):
 		return self._poo_count
+
+class DiaperSetAggregated:
+	def __init__(self, poo_count):
+		self._poo_count = round(poo_count, 1)
+	
+	def get_poo_count(self):
+		return self._poo_count

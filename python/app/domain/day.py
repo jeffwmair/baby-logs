@@ -1,15 +1,12 @@
 from dateutil.parser import parse
 from datetime import date, timedelta
 from app.db_records import BabyRecord, GuardianRecord, SleepRecord, KeyValueRecord
-from app.domain.sleep import SleepSet
-from app.domain.feed import FeedSet
-from app.domain.diaper import DiaperSet
+from app.domain.sleep import SleepSet, SleepAggregated
+from app.domain.feed import FeedSet, FeedSetAggregated
+from app.domain.diaper import DiaperSet, DiaperSetAggregated
 
-class DayGenerator:
-	def __init__(self, weekly_grouping, babyid, sleep_rows, keyval_rows):
-
-		if weekly_grouping:
-			print 'weekly_grouping is not yet implemented!'
+class DayGenerator():
+	def __init__(self, babyid, weekly_grouping, sleep_rows, keyval_rows):
 
 		day_sleeps = dict()
 		for row in sleep_rows:
@@ -73,7 +70,6 @@ class DayGenerator:
 			this_day = Day(key, sleep_set, diaper_set, feed_set)
 			days[key] = this_day
 
-
 		prev_key = None
 		cur_key = None
 		for day_key in sorted(days):
@@ -87,6 +83,72 @@ class DayGenerator:
 				prev_day.get_sleep().set_overnight_sleep_records(cur_day.get_sleep().get_last_night_records())
 
 		self._days = days
+
+		if weekly_grouping:
+			week_groups = dict()
+			for day_key in sorted(days):
+ 
+				# get the week that this day belongs to 
+				week_key = self.get_week_start_from_day(day_key)
+
+				# we need a list of days in this week
+				if not week_key in week_groups:
+					week_groups[week_key] = list()
+				week_group_list = week_groups[week_key]
+				week_group_list.append(days[day_key])
+					#this_day = Day(key, sleep_set, diaper_set, feed_set)
+
+			# Now we have groups of day lists; we need to aggregate the lists into single "Day" objects.
+			# They aren't really days anymore but we use that class.
+
+			week_groups_aggregated = dict()
+			for week_key in sorted(week_groups):
+				days_in_week = week_groups[week_key]
+				week_groups_aggregated[week_key] = self.get_aggregated_days(week_key, days_in_week)
+
+			# stick it where the regular non-aggregated days go
+			self._days = week_groups_aggregated
+
+
+	def get_aggregated_sleeps(self, days):
+		sleep_sets = [x.get_sleep() for x in days]
+		tot_sleep = sum(x.get_total_sleep_hrs() for x in sleep_sets)
+		avg_total_sleep = sum(x.get_total_sleep_hrs() for x in sleep_sets) / len(days) 
+		avg_night_sleep = sum(x.get_unbroken_night_sleep_hrs() for x in sleep_sets) / len(days)
+		return SleepAggregated(avg_total_sleep, avg_night_sleep)
+
+	def get_aggregated_diapers(self, days):
+		diaper_sets = [x.get_diaper() for x in days]
+		avg_poo_count = sum(x.get_poo_count() for x in diaper_sets) / len(days)
+		return DiaperSetAggregated(avg_poo_count)
+
+	def get_aggregated_feeds(self, days):
+		day_count = len(days)
+		feed_sets = [x.get_feed() for x in days]
+		avg_breast_count = sum(x.get_breast_count() for x in feed_sets) / day_count
+		avg_milk_ml = sum(x.get_milk_ml() for x in feed_sets) / day_count
+		avg_solid_ml = sum(x.get_solid_ml() for x in feed_sets) / day_count
+		avg_fmla_ml = sum(x.get_fmla_ml() for x in feed_sets) / day_count
+		return FeedSetAggregated(avg_breast_count, avg_milk_ml, avg_solid_ml, avg_fmla_ml)
+
+	def get_aggregated_days(self, date_string, days):
+		sleep_set = self.get_aggregated_sleeps(days)
+		diaper_set = self.get_aggregated_diapers(days)
+		feed_set = self.get_aggregated_feeds(days)
+		return Day(date_string, sleep_set, diaper_set, feed_set)
+
+	def get_week_start_from_day(self, date_string):
+		# 6 == sunday, 0 == monday
+		date_value = parse(date_string)
+		day_of_week = date_value.weekday()
+		if day_of_week == 6:
+			return date_string
+		else:
+			# subtract day of week+1 days
+			return (date_value - timedelta(days=(day_of_week+1))).strftime('%Y-%m-%d')
+
+	def group_days_into_week(self):
+		pass
 
 	def get_datasets(self):
 		return self._days

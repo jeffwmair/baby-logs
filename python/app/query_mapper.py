@@ -179,7 +179,8 @@ class QueryMapper:
 			keyval_rows = self.execute_sql(sql, True, cursor)
 
 			weekly_grouping = False
-			day_gen = DayGenerator(1, weekly_grouping, sleep_rows, keyval_rows)
+			babyid = 1
+			day_gen = DayGenerator(babyid, weekly_grouping, sleep_rows, keyval_rows)
 			days = day_gen.get_datasets()
 
 			return days
