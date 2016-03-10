@@ -6,3 +6,6 @@ scripts/*
 database/insert_seed_data.sql
 prod_deploy_do.sh
 resources/credentials.properties
+*.pyc
+venv/
+credentials*
