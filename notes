@@ -33,3 +33,8 @@ other:
 merge contiguous sleep records:
 	- probably best to do this all the time
 
+
+http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world
+
+Installing mod_wsgi: 
+http://fstoke.me/blog/?p=3583

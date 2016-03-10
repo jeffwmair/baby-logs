@@ -1,8 +1,6 @@
 # Baby Logs
 Application to track baby sleeping, feeding and diapers.
 
-Work in progress...
-
 ## Dashboard
 ![Alt text](/docs/DashboardPage.png)
 
