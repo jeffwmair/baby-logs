@@ -1,6 +1,5 @@
 credentials.php
-scripts/*
-!scripts/*.c
+scripts
 *.swp
 *.out
 database/insert_seed_data.sql
