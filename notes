@@ -19,15 +19,11 @@ other:
 		entry page
 		dashboard
 		report page
-	fix timezone mistake
 	authentication
 		openid
 	admin page
 		log / diagnostics
 		control how many days are shown on daily report
-		control min and max feed amount for entry page
-	lock down old entries	(3 days+)?
-		- make page read-only
 	milestones - comment + picture
 
 merge contiguous sleep records:

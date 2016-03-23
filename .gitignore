@@ -8,3 +8,4 @@ resources/credentials.properties
 *.pyc
 venv/
 credentials.properties
+apache2.conf

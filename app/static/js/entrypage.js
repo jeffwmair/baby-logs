@@ -106,6 +106,43 @@ APP.EntryPage = function() {
 	var scrollToCurrentTime = function() {
 	}
 
+	var addTimeHrOptionsToSelect = function(selectEl) {
+		var val = 0;
+		while (val <= 23) {
+			var opt = document.createElement('option');
+			opt.setAttribute('value', val);
+			opt.innerHTML = val;
+			selectEl.appendChild(opt);
+			val += 1;
+		}
+	}
+
+	var addTimeMinOptionsToSelect = function(selectEl) {
+		var interval = 15; // 15 minutes
+		var val = 0;
+		while (val <= 60) {
+			var opt = document.createElement('option');
+			opt.setAttribute('value', val);
+			opt.innerHTML = val;
+			selectEl.appendChild(opt);
+			val += interval;
+		}
+	}
+
+	var hookUpSleepRangeDialog = function() {
+
+		var saveButton = document.getElementById('btnSaveSleepRange');
+		saveButton.onclick = function() {
+			// todo: get the start and end times, send to the server
+			// then reload the page data
+			alert("Sorry, this isn't finished yet...");
+		}
+		addTimeHrOptionsToSelect(document.getElementById('selectSleepStartHr'));
+		addTimeHrOptionsToSelect(document.getElementById('selectSleepEndHr'));
+		addTimeMinOptionsToSelect(document.getElementById('selectSleepStartMin'));
+		addTimeMinOptionsToSelect(document.getElementById('selectSleepEndMin'));
+	}
+
 	/**
 	* Init the page
 	*/
@@ -141,6 +178,8 @@ APP.EntryPage = function() {
 		var timesThroughDay = generateAllTimes();
 		generateTable(timesThroughDay, tableEl);
 		this.loadData(true);
+
+		hookUpSleepRangeDialog();
 	}
 
 	var assignButtonClass = function(column, button, timeval) {
