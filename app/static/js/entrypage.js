@@ -106,56 +106,6 @@ APP.EntryPage = function() {
 	var scrollToCurrentTime = function() {
 	}
 
-	var intWithLeadingZero = function(intVal) {
-		if (intVal > 9) return intVal;
-		return '0' + intVal;
-	}
-
-	var addTimeHrOptionsToSelect = function(selectEl) {
-		var val = 1;
-		while (val <= 12) {
-			var opt = document.createElement('option');
-			opt.setAttribute('value', val);
-			opt.innerHTML = intWithLeadingZero(val);
-			selectEl.appendChild(opt);
-			val += 1;
-		}
-	}
-
-	var addTimeMinOptionsToSelect = function(selectEl) {
-		var interval = 15; // 15 minutes
-		var val = 0;
-		while (val <= 60) {
-			var opt = document.createElement('option');
-			opt.setAttribute('value', val);
-			opt.innerHTML = intWithLeadingZero(val);
-			selectEl.appendChild(opt);
-			val += interval;
-		}
-	}
-
-	var hookUpSleepRangeDialog = function() {
-
-		var saveButton = document.getElementById('btnSaveSleepRange');
-		saveButton.onclick = function(e) {
-			var btn = e.target;
-			var dialog = btn.parentElement.parentElement;
-			var startHr = dialog.querySelector('#selectSleepStartHr').value;
-			var startMin = dialog.querySelector('#selectSleepStartMin').value;
-			var startAmPm = dialog.querySelector('#selectSleepStartAmPm').value;
-			var endHr = dialog.querySelector('#selectSleepEndHr').value;
-			var endMin = dialog.querySelector('#selectSleepEndMin').value;
-			var endAmPm = dialog.querySelector('#selectSleepEndAmPm').value;
-			debugger;
-			// todo: get the start and end times, send to the server
-			// then reload the page data
-		}
-		addTimeHrOptionsToSelect(document.getElementById('selectSleepStartHr'));
-		addTimeHrOptionsToSelect(document.getElementById('selectSleepEndHr'));
-		addTimeMinOptionsToSelect(document.getElementById('selectSleepStartMin'));
-		addTimeMinOptionsToSelect(document.getElementById('selectSleepEndMin'));
-	}
-
 	/**
 	* Init the page
 	*/
@@ -191,8 +141,6 @@ APP.EntryPage = function() {
 		var timesThroughDay = generateAllTimes();
 		generateTable(timesThroughDay, tableEl);
 		this.loadData(true);
-
-		hookUpSleepRangeDialog();
 	}
 
 	var assignButtonClass = function(column, button, timeval) {

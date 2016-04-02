@@ -1,5 +1,6 @@
 from app import app
 import traceback
+import json
 from datetime import datetime
 from flask import jsonify, Response
 from flask import request
@@ -62,6 +63,11 @@ def api():
 		start = request.args['sleepstart']
 		svc.add_sleep(start)
 		data = svc.get_entry_data(start)
+
+	elif apiMethod == "sleeprange":
+		#jsondata = json.loads(request.args['data'])
+		#print jsondata['selectSleepStartHr'];
+		raise Exception('Method "%s" not implemented' % apiMethod)
 
 	elif apiMethod == "addvalue":
 		time = request.args['time']

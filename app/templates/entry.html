@@ -46,12 +46,13 @@
 				<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 				<strong>Error!</strong> <span id='errMsg'>error message goes here!</span>
 			</div>
-			<!-- Button trigger modal  -->
-			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+			<!-- Button trigger modal
+			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sleepDialog">
 				Enter Sleep Range
 			</button>
-			<!-- Modal -->
-			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+			  -->
+			<!-- Modal 
+			<div class="modal fade" id="sleepDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
@@ -67,8 +68,8 @@
 									<td><select id='selectSleepStartMin'></select></td>
 									<td>
 										<select id='selectSleepStartAmPm'>
-											<option value="am">am</option>
 											<option value="pm">pm</option>
+											<option value="am">am</option>
 										</select>
 									</td>
 								</tr>
@@ -92,6 +93,7 @@
 					</div>
 				</div>
 			</div>
+			-->
 
 			<div class="table-responsive">
 				<table id='tblEntries' class="table table-striped table-condensed">
@@ -123,6 +125,7 @@
 	<script type='text/javascript' src='static/js/dataset.core.js'></script>
 	<script type='text/javascript' src='static/js/dataset.converter.js'></script>
 	<script type='text/javascript' src='static/js/entrypage.js'></script>
+	<script type='text/javascript' src='static/js/entrypage_sleepdialog.js'></script>
 	<script type='text/javascript' src='static/js/jquery.stickytableheaders.min.js'></script>
 	<script>
 
@@ -135,6 +138,12 @@
 		var now = new Date();
 		var dateEl = document.getElementById('date');
 		entryPage.init(now, table, backButton, forwardButton, dateEl, errorDiv, errorMsg);
+
+		var sleepEntryDialog = new APP.SleepEntryDialog();
+		debugger;
+		var dialog = document.getElementById('sleepDialog');
+		sleepEntryDialog.init(dialog);
+
 		$('#tblEntries').stickyTableHeaders({ fixedOffset : 50 });
 
 	</script>

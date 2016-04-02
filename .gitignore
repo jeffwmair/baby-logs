@@ -9,3 +9,5 @@ resources/credentials.properties
 venv/
 credentials.properties
 apache2.conf
+.idea/
+*.iml
