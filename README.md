@@ -21,7 +21,7 @@ ProxyPassReverse /ljpy http://localhost:8080/
 
 This also requires that I have a host mapping setup from babylogger_python to 127.0.0.1 in my hosts file. 
 
-Then go to: http://babylogger_python/ljpy/
+Then go to: [http://babylogger_python/ljpy/](http://babylogger_python/ljpy/)
 
 (Note the trailing forward slash!!)
 
