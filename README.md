@@ -21,6 +21,10 @@ ProxyPassReverse /ljpy http://localhost:8080/
 
 This also requires that I have a host mapping setup from babylogger_python to 127.0.0.1 in my hosts file. 
 
+Then go to: http://babylogger_python/ljpy/
+
+(Note the trailing forward slash!!)
+
 Some more information can be found here: https://github.com/jeffwmair/samplecode/tree/master/apache-virtualhosts
 
 ## Dashboard
