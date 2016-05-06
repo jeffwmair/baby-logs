@@ -18,7 +18,13 @@ APP.ReportPage = function(container, calHelper) {
 		var converter = new CONVERTER.ReportDataConverterForChart();
 		UTILS.ajaxGetJson(API+"?action=loadreportdata_daily", errorHandler, function(json) {
 			var chartDataDaily = converter.getChartData(json.datasets);
-			configureLineChart('#container_linechart_daily', 'Last 10 Days', chartDataDaily);
+			if (chartDataDaily.dates.length > 0) {
+			 	configureLineChart('#container_linechart_daily', 'Last 10 Days', chartDataDaily);
+			}
+			else {
+				console.warn('No daily data found, so hiding this chart');
+				$('#container_linechart_daily').hide()
+			}
 		});
 
 		UTILS.ajaxGetJson(API+"?action=loadreportdata_weekly", errorHandler, function(json) {
@@ -26,7 +32,6 @@ APP.ReportPage = function(container, calHelper) {
 			configureLineChart('#container_linechart_weekly', 'Weekly Averages', chartDataWeekly);
 		});
 	}
-
 
 	var configureLineChart = function(chartEl, chartTitle, data) {
 		
