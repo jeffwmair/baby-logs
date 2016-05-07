@@ -91,6 +91,8 @@ class ReportService():
 		today_sleep = dayToday.get_sleep()
 		today_feed = dayToday.get_feed()
 		today_diaper = dayToday.get_diaper()
+		
+		print last_poo
 
 		data = { 
 				'feed' : 
@@ -135,7 +137,10 @@ class ReportService():
 		return data
 
 	def get_time_minutes_ago(self, time):
-		return (datetime.now() - time).seconds / 60.0
+		minutes_ago = (datetime.now() - time).seconds / 60.0
+		days_ago = (datetime.now() - time).days
+		minutes_ago = minutes_ago + days_ago * 24 * 60
+		return minutes_ago
 
 	def get_pee_status(self, time):
 		min_ago = self.get_time_minutes_ago(time)

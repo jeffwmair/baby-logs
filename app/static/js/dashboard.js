@@ -4,6 +4,7 @@ APP.Dashboard = function() {
 
 	var API = "BabyApi";
 	var SUFFIX_AGO = ' ago';
+	var ONE_DAY_MINUTES = 1440;
 
 	var errorHandler = function(errorMessage) {
 		console.error(errorMessage);
@@ -34,18 +35,36 @@ APP.Dashboard = function() {
 	}
 
 	this.setMostRecentFeedData = function(field) {
+		if (this.data.feed.prev.minutesAgo > ONE_DAY_MINUTES) 
+			return;
 		field.innerHTML = getIcon(this.data.feed.prev.status) + this.data.feed.prev.time + ' (' + formatMinutesAgo(this.data.feed.prev.minutesAgo) + ')';
 	}
 
+	/**
+	 * Activities entry is too old for display
+	 */
+	var mostRecentActivitiesTooOld = function(minutesAgo) {
+		return minutesAgo > ONE_DAY_MINUTES;
+	}
+
 	this.setMostRecentSleepData = function(field) {
+		if (mostRecentActivitiesTooOld(this.data.sleep.prev.minutesAgo)) 
+			return;
+
 		field.innerHTML = getIcon(this.data.sleep.prev.status) + this.data.sleep.prev.time + ' (' + formatMinutesAgo(this.data.sleep.prev.minutesAgo) + ')';
 	}
 
 	this.setMostRecentPeeData = function(field) {
+		if (mostRecentActivitiesTooOld(this.data.pee.prev.minutesAgo)) 
+			return;
+
 		field.innerHTML = getIcon(this.data.pee.prev.status) + this.data.pee.prev.time + ' (' + formatMinutesAgo(this.data.pee.prev.minutesAgo) + ')';
 	}
 
 	this.setMostRecentPooData = function(field) {
+		if (mostRecentActivitiesTooOld(this.data.poo.prev.minutesAgo)) 
+			return;
+
 		field.innerHTML = getIcon(this.data.poo.prev.status) + this.data.poo.prev.time + ' (' + formatMinutesAgo(this.data.poo.prev.minutesAgo) + ')';
 	}
 
