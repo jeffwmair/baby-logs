@@ -68,7 +68,6 @@ class ReportService():
 		startToday = datetime(startTodayDay.year, startTodayDay.month, startTodayDay.day, 0, 0, 0)
 		endToday = startToday + timedelta(days=1) - timedelta(seconds=1)
 
-		#TODO: for fun, try loading these two calls in separate threads.  Can we use something like Futures in python?
 		days = self._datamapper.get_days(startToday, endToday)
 		most_recent_records = self._datamapper.get_latest_each_record_type()
 
@@ -76,6 +75,8 @@ class ReportService():
 		last_poo = most_recent_records['last_poo']
 		last_feed = most_recent_records['last_feed']
 		last_sleep = most_recent_records['last_sleep']
+
+		#TODO: hide the most recent activities if they are all older than X hours 
 
 		todayKey = startTodayDay.strftime('%Y-%m-%d')
 		dayToday = None

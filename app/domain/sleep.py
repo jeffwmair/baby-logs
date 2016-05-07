@@ -15,6 +15,11 @@ class SleepAggregated():
 class SleepSet:
 	def __init__(self, records):
 
+		self._night_hrs = 0
+		self._day_hrs = 0
+		self._last_night_hrs = 0
+		self._nap_count = 0
+
 		if len(records) == 0:
 			return
 
