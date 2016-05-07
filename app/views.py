@@ -29,6 +29,7 @@ def charts_page():
 @app.route('/BabyApi')
 def api():
 	data = None
+
 	# TODO: fix this
 	babyid = 1;
 

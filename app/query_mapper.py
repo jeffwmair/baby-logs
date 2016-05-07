@@ -8,21 +8,31 @@ class QueryMapper:
 	def __init__(self, credentials, baby_id):
 		self._credentials = credentials
 		self._baby_id = baby_id
+		self._disabled = credentials['disable.modifications'] == 'True'
+		self._disabled_error = 'The application is currently disabled from further input'
 
 	def insert_value_item(self, babyid, time_string, entry_type, entry_value):
 		sql = "insert into baby_keyval (babyid, time, entry_type, entry_value) values (%i, '%s', '%s', '%s');" % (babyid, time_string, entry_type, entry_value)
+		if self._disabled:
+			raise Exception(self._disabled_error)
 		self.execute_sql(sql)
 
 	def delete_value_item(self, babyid, time_string, entry_type):
 		sql = "delete from baby_keyval where babyid = %i and time = '%s' and entry_type = '%s';" % (babyid, time_string, entry_type)
+		if self._disabled:
+			raise Exception(self._disabled_error)
 		self.execute_sql(sql)
 
 	def insert_sleep(self, babyid, sleep_start, sleep_end):
 		sql = "insert into baby_sleep (babyid, start, end) values (%i, '%s', '%s');" % (babyid, sleep_start, sleep_end)
+		if self._disabled:
+			raise Exception(self._disabled_error)
 		self.execute_sql(sql)
 
 	def delete_sleep(self, sleep_time):
 		sql = "delete from baby_sleep where start = '%s';" % (sleep_time)
+		if self._disabled:
+			raise Exception(self._disabled_error)
 		self.execute_sql(sql)
 	
 	def get_query_keyval_in_day_by_type(self,entry_type, date_string):
