@@ -25,6 +25,14 @@ Then go to: [http://babylogger_python/ljpy/](http://babylogger_python/ljpy/) **(
 
 Some more information can be found here: https://github.com/jeffwmair/samplecode/tree/master/apache-virtualhosts
 
+### Startup Note:
+
+When starting via the start.sh script, in order to be able to later disconnect the terminal from the shell, the process output must be redirected to a file.  So start like this:
+
+```shell
+./start.sh > log.txt &
+```
+
 ## Dashboard
 ![Alt text](/docs/DashboardPage.png)
 
