@@ -1,12 +1,26 @@
 # Baby Logs
 Application to track baby sleeping, feeding and diapers.
 
+## Screenshots
+
+**Dashboard**
+
+![Alt text](/docs/DashboardPage.png)
+
+**Entry Page**
+
+![Alt text](/docs/EntryPage.png)
+
+**Report Page**
+
+![Alt text](/docs/ReportPage.png)
+
 ## Web Server & Python Configuration
 My deployment (production & dev) consists of:
 * python (cherrypy) in a virtualenvironment
 * apache web server using a reverse proxy to redirect requests to the cherrypy instance running at its own port
 
-### Example for dev:
+**Example for dev:**
 Snippet from httpd.conf:
 
 ```xml
@@ -25,19 +39,10 @@ Then go to: [http://babylogger_python/ljpy/](http://babylogger_python/ljpy/) **(
 
 Some more information can be found here: https://github.com/jeffwmair/samplecode/tree/master/apache-virtualhosts
 
-### Startup Note:
+**Startup Note:**
 
 When starting via the start.sh script, in order to be able to later disconnect the terminal from the shell, the process output must be redirected to a file.  So start like this:
 
 ```shell
 ./start.sh > log.txt &
 ```
-
-## Dashboard
-![Alt text](/docs/DashboardPage.png)
-
-## Entry Page
-![Alt text](/docs/EntryPage.png)
-
-## Report Page
-![Alt text](/docs/ReportPage.png)
