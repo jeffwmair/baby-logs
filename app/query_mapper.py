@@ -213,5 +213,6 @@ class QueryMapper:
 			raise
 		finally:
 			if create_own_connection:
+				con.commit()
 				con.close()
 
