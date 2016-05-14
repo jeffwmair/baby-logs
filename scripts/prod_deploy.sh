@@ -1,7 +1,7 @@
 #!/bin/bash
 if [[ -z $1 ]]; then
 	echo "Please provide ssh connection"
-	exit 1
+	return
 fi
 
 cd "$BABY_LOGGER"
@@ -20,6 +20,7 @@ rsync -azP * \
 	--exclude "README*md" \
 	--exclude "credentials.properties*" \
 	--exclude "scripts/" \
+	--exclude "*.sh" \
 	--exclude "database/" \
 	--exclude "test/" \
 	--exclude "venv/" \
