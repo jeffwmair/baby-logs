@@ -151,7 +151,14 @@ class QueryMapper:
 
 			def get_last_record_time(sql):
 				rows = self.execute_sql(sql, True, cursor)
-				return rows[0][0]
+				try:
+					if len(rows) == 0:
+						return datetime(1900, 1, 1)
+					else:
+						return rows[0][0]
+				except Exception:
+					print 'Failure in executing: "%s"' % (sql)
+					raise
 
 			last_pee = get_last_record_time(sql_pee)
 			last_poo = get_last_record_time(sql_poo)
