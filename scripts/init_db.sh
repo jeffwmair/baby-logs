@@ -48,7 +48,6 @@ grant_user_to_db() {
 create_tables() {
 	echo "Creating tables in $DB"
 	mysql "$DB" < ./database/create_tables.sql
-	mysql "$DB" < ./database/insert_seed_data.sql
 }
 
 create_db
