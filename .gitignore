@@ -1,6 +1,4 @@
-/scripts/private/
 /venv/
-/database/insert_seed_data.sql
 /.idea/
 *.swp
 *.out
