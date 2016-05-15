@@ -17,8 +17,7 @@ Application to track baby sleeping, feeding and diapers.
 
 ## Getting Started
 
-**DB Setup**
-
+Steps to get going.  Note: there is a scripts/recreate_database.sh script, but it relies on a seed data script that I have excluded (personal info).  But you can basically use it for the 1st step.
 
 ```bash
 # Setup the Mysql database.  
