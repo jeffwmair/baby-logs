@@ -12,3 +12,4 @@ apache2.conf
 *.iml
 export.sql
 /logs.txt
+notes
