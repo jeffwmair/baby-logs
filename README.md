@@ -17,21 +17,19 @@ Application to track baby sleeping, feeding and diapers.
 
 ## Getting Started
 
-Steps to get going.  Note: there is a scripts/recreate_database.sh script, but it relies on a seed data script that I have excluded (personal info).  But you can basically use it for the 1st step.
-
 ```bash
-# Setup the Mysql database.  
-$ mysql <yourdb> < database/create_tables.sql
 # Create your python virtual env using:
 $ virtualenv venv
 # Activate the environment
 $ source activate_environment.sh
-#After activating the environment, run the load_requirements_into_venv script.
-$ source scripts/load_requirements_into_venv.sh
+# After activating the environment, run the load_requirements_into_venv script.
+$ ./scripts/load_requirements_into_venv.sh
+# Setup our mysql database; the provided dbname will be created; user will be created and assigned to the db
+$ ./scripts/init_db.sh <sql_user> <sql_pass> <db_name> <mysql_host>
 # run unit tests (if you like)
-$ source scripts/runtests.sh     # note that we are sourcing these scripts
+$ ./scripts/runtests.sh     # note that we are sourcing these scripts
 # run the web server (go to http://localhost:8080)
-$ source scripts/start.sh
+$ ./scripts/start.sh
 ```
 
 ## Web Server &  Reverse Proxying
