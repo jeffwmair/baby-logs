@@ -6,7 +6,5 @@
 *.pyc
 *.iml
 credentials.properties
-apache2.conf
 export.sql
-todo.txt
 logs.txt
