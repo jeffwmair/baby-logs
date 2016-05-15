@@ -19,46 +19,19 @@ Application to track baby sleeping, feeding and diapers.
 
 **DB Setup**
 
-Setup the Mysql database.  
 
 ```bash
+# Setup the Mysql database.  
 $ mysql <yourdb> < database/create_tables.sql
-```
-
-**Virtual Environment Creation**
-
-Create your python virtual env using:
-```bash
+# Create your python virtual env using:
 $ virtualenv venv
-```
-
-**Environment Activation**
-
-Activate the environment by sourcing `activate_environment.sh`. This introduces an environment variable used by other scripts, and it activates the python `virtual environment`.
-```bash
+# Activate the environment
 $ source activate_environment.sh
-```
-
-**Import your Python Requirements**
-
-After activating the environment, run the load_requirements_into_venv script.
-
-```bash
+#After activating the environment, run the load_requirements_into_venv script.
 $ source scripts/load_requirements_into_venv.sh
-```
-
-**Run the Tests**
-
-After activating the environment, run the tests with:
-```bash
+# run unit tests (if you like)
 $ source scripts/runtests.sh     # note that we are sourcing these scripts
-```
-
-**Start the web server**
-
-After calling the following script, the server should be running at http://localhost:8080
-
-```bash
+# run the web server (go to http://localhost:8080)
 $ source scripts/start.sh
 ```
 
