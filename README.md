@@ -39,6 +39,14 @@ Activate the environment by sourcing `activate_environment.sh`. This introduces 
 $ source activate_environment.sh
 ```
 
+**Import your Python Requirements**
+
+After activating the environment, run the load_requirements_into_venv script.
+
+```bash
+$ source scripts/load_requirements_into_venv.sh
+```
+
 **Run the Tests**
 
 After activating the environment, run the tests with:
