@@ -25,6 +25,13 @@ Setup the Mysql database.
 $ mysql <yourdb> < database/create_tables.sql
 ```
 
+**Virtual Environment Creation**
+
+Create your python virtual env using:
+```bash
+$ virtualenv venv
+```
+
 **Environment Activation**
 
 Activate the environment by sourcing `activate_environment.sh`. This introduces an environment variable used by other scripts, and it activates the python `virtual environment`.
