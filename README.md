@@ -15,6 +15,13 @@ Application to track baby sleeping, feeding and diapers.
 
 ![Alt text](/docs/ReportPage.png)
 
+## Requirements:
+
+* Python 2.7
+* VirtualEnvironment
+* Mysql (default login must have access to create databases, users, add tables)
+* Apache
+
 ## Getting Started
 
 ```bash
@@ -28,9 +35,11 @@ $ ./scripts/load_requirements_into_venv.sh
 $ ./scripts/init_db.sh <sql_user> <sql_pass> <db_name> <mysql_host>
 # run unit tests (if you like)
 $ ./scripts/runtests.sh     # note that we are sourcing these scripts
-# run the web server (go to http://localhost:8080)
+# run the web server
 $ ./scripts/start.sh
 ```
+
+If there are no problems with any of the above steps, you should be able to access the system at [http://localhost:8080](http://localhost:8080)
 
 ## Web Server &  Reverse Proxying
 My deployment (production & dev) consists of:
