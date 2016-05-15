@@ -34,7 +34,7 @@ $ source scripts/runtests.sh     # note that we are sourcing these scripts
 $ source scripts/start.sh
 ```
 
-## Web Server & Python Configuration
+## Web Server &  Reverse Proxying
 My deployment (production & dev) consists of:
 * python (cherrypy) in a virtualenvironment
 * apache web server using a reverse proxy to redirect requests to the cherrypy instance running at its own port
