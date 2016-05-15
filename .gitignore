@@ -2,12 +2,10 @@
 /.idea/
 *.swp
 *.out
-prod_deploy_do.sh
-resources/credentials.properties
 *.pyc
+*.iml
 credentials.properties
 apache2.conf
-*.iml
 export.sql
-/logs.txt
-notes
+todo.txt
+logs.txt
