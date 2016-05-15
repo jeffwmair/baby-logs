@@ -1,7 +1,7 @@
 # Baby Logs
 Application to track baby sleeping, feeding and diapers.
 
-Basic usage is to go to the Entry screen and enter instances of sleep, feedings, and diaper changes.  Then you can view the day's overview on the Overview page, with some high level metrics, or view daily & weekly summaries on the Charts page.
+Basic usage is to go to the **Entry** screen and enter instances of sleep, feedings, and diaper changes.  Then you can view the day's overview on the **Overview** page, with some high level metrics, or view daily & weekly summaries on the **Charts** page.
 
 ## Screenshots
 
