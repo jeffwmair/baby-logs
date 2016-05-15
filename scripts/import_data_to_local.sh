@@ -1,2 +1,7 @@
 #!/bin/bash
-mysql home_data < export.sql
+
+set -e
+
+cd "$BABY_LOGGER"
+DB=$(cat credentials.properties |grep db|cut -c4-)
+mysql "$DB" < database/export.sql

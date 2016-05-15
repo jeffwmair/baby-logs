@@ -1,4 +1,8 @@
 #!/bin/bash
+
+set -e
+
 cd "$BABY_LOGGER"
-mysql home_data < ./database/drop_tables.sql
-mysql home_data < ./database/create_tables.sql
+DB=$(cat credentials.properties |grep db|cut -c4-)
+mysql "$DB" < ./database/drop_tables.sql
+mysql "$DB" < ./database/create_tables.sql
