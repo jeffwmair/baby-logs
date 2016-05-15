@@ -14,14 +14,14 @@ _EOF_
 
 rsync -azP * \
 	--exclude "*.swp" \
-	--exclude "notes" \
+	--exclude "todo.txt" \
+	--exclude "logs.*" \
 	--exclude ".DS_Store" \
 	--exclude ".gitignore" \
 	--exclude "README*md" \
 	--exclude "credentials.properties*" \
-	--exclude "scripts/" \
-	--exclude "*.sh" \
 	--exclude "database/" \
 	--exclude "test/" \
 	--exclude "venv/" \
+	--exclude "docs/" \
 	$SERVER:/var/www/html/liamjournal
