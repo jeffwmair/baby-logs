@@ -20,8 +20,8 @@ Basic usage is to go to the **Entry** screen and enter instances of sleep, feedi
 ## Requirements:
 
 * Python 2.7
-* VirtualEnvironment
-* Mysql (default login must have access to create databases, users, add tables)
+* VirtualEnvironment (sudo apt-get install python-virtualenv)
+* Mysql (default login must have access to create databases, users, add tables; ie, put user/password into ~/.my.cnf)
 * Apache
 
 ## Getting Started
