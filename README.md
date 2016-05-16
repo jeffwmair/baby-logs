@@ -22,10 +22,24 @@ Basic usage is to go to the **Entry** screen and enter instances of sleep, feedi
 * Python 2.7
 * VirtualEnvironment (sudo apt-get install python-virtualenv)
 * Mysql (default login must have access to create databases, users, add tables; ie, put user/password into ~/.my.cnf)
-* Apache
 
 ## Getting Started
 
+First verify that the requirements are installed:
+```bash
+# This should open an python interactive prompt. 
+# Just hit ctrl-d to exit.
+$ python		
+
+# This should log you directly into mysql.  
+# If not, you may need to configure your .my.cnf file.
+$ mysql
+
+# This should give a meaningful version number like 14.0.5
+$ virtualenv --version
+```
+
+Then actually getting started:
 ```bash
 # Create your python virtual env using:
 $ virtualenv venv
