@@ -5,30 +5,24 @@ set -e
 
 echo "Starting init db script..."
 
-USER=$1
-PASS=$2
-DB=$3
-HOST=$4
-
-if [ -z "$USER" ]; then
-	echo "User argument not provided"
-	exit 1
-fi
-if [ -z "$PASS" ]; then
-	echo "User argument not provided"
-	exit 1
-fi
-if [ -z "$DB" ]; then
-	echo "User argument not provided"
-	exit 1
-fi
-if [ -z "$HOST" ]; then
-	echo "User argument not provided"
-	exit 1
-fi
-
+USER=''
+PASS=''
+DB=''
+HOST=''
+CREDENTIALS_FILE="credentials.properties"
 
 cd "$BABY_LOGGER"
+
+read_credentials() {
+	if [ ! -e "$CREDENTIALS_FILE" ]; then
+		echo "Credentials file $CREDENTIALS_FILE not found!"
+		exit 1
+	fi
+	USER=$(cat "$CREDENTIALS_FILE" |grep user|cut -c6-)
+	PASS=$(cat "$CREDENTIALS_FILE" |grep pass|cut -c6-)
+	DB=$(cat "$CREDENTIALS_FILE" |grep db|cut -c4-)
+	HOST=$(cat "$CREDENTIALS_FILE" |grep host|cut -c6-)
+}
 
 create_db() {
 	echo "Creating db $DB"
@@ -50,8 +44,8 @@ create_tables() {
 	mysql "$DB" < ./database/create_tables.sql
 }
 
+read_credentials
 create_db
 create_user
 grant_user_to_db
 create_tables	
-./scripts/create_credentials_properties.sh "$USER" "$PASS" "$DB" "$HOST"
