@@ -10,7 +10,12 @@ APP.EntryPage = function() {
 
 	var buttonList = [];
 	var that = this;
+
+	that.FIFTEEN_MINUTES = 15*60000;
 	
+	/**
+	 * Handle an error and place in the UI appropriately
+	 */
 	var errorHandler = function(errMsg) {
 		var errDiv = that.pageState.getErrorDiv();
 		errDiv.style.display = 'block';
@@ -18,9 +23,17 @@ APP.EntryPage = function() {
 		errTextEl.innerHTML = errMsg;
 	}
 
+	/**
+	 * Format the date for a server call
+	 */
+	var getFormattedDateForServerCall = function(date) {
+		var use24HrFormat = true;
+		return DATETIME.getYyyymmddFormat(date) + ' ' + DATETIME.getFormattedTime(date.getHours(), date.getMinutes(), use24HrFormat);
+	}
+
 	var diaperClickHandler = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
-		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
+		var formatteddate = getFormattedDateForServerCall(mystartdate);
 		var diaperVal = e.target.value;
 		UTILS.ajaxGetJson(API + "?action=addvalue&type=diaper&value="+diaperVal+"&time="+formatteddate, errorHandler, function(json) {
 			that.handleDataLoad(false, null, json);
@@ -29,7 +42,7 @@ APP.EntryPage = function() {
 
 	var feedClickHandler = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
-		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
+		var formatteddate = getFormattedDateForServerCall(mystartdate);
 		var feedType = '';
 		var feedValue = '';
 		if (e.target.value == 'none') {
@@ -48,9 +61,9 @@ APP.EntryPage = function() {
 
 	var sleepClickHandlerNotSleeping = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
-		var myendate = new Date(mystartdate.getTime() + (15*60000));
-		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
-		var formattedEndDate = DATETIME.getYyyymmddFormat(myendate) + ' ' + DATETIME.getFormattedTime(myendate.getHours(), myendate.getMinutes(), true);
+		var myendate = new Date(mystartdate.getTime() + that.FIFTEEN_MINUTES);
+		var formatteddate = getFormattedDateForServerCall(mystartdate);
+		var formattedEndDate = getFormattedDateForServerCall(myendate);
 		UTILS.ajaxGetJson(API + "?action=sleep&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, errorHandler, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
@@ -58,7 +71,7 @@ APP.EntryPage = function() {
 
 	var sleepClickHandlerIsSleeping = function(e) {
 		var mystartdate = getSleepClickStartDate(e);
-		var formatteddate = DATETIME.getYyyymmddFormat(mystartdate) + ' ' + DATETIME.getFormattedTime(mystartdate.getHours(), mystartdate.getMinutes(), true);
+		var formatteddate = getFormattedDateForServerCall(mystartdate);
 		UTILS.ajaxGetJson(API + "?action=removesleep&sleepstart="+formatteddate, errorHandler, function(json) {
 			that.handleDataLoad(false, null, json);
 		});
@@ -87,7 +100,7 @@ APP.EntryPage = function() {
 
 	var getMostRecentTimeBlock = function() {
 		var now = new Date();	
-		var nowRoundedMs = DATETIME.getNextQuarterHourTime(now).getTime() - (15*60000);
+		var nowRoundedMs = DATETIME.getNextQuarterHourTime(now).getTime() - that.FIFTEEN_MINUTES;
 		var nowRoundedDate = new Date(nowRoundedMs);
 		var time = DATETIME.getTime(nowRoundedDate);
 		return time;
@@ -164,7 +177,10 @@ APP.EntryPage = function() {
 	*/
 	var generateTable = function(times, tableEl) {
 
-		var putFeedOptionsInSelect = function(selectEl, options) {
+		/**
+		 * Generate option elements and put in the given select
+		 */
+		var putOptionsInSelect = function(selectEl, options) {
 			options.forEach(function(val) {
 				var opt = document.createElement('option');
 				opt.setAttribute('value', val);
@@ -173,6 +189,9 @@ APP.EntryPage = function() {
 			});
 		}
 
+		/**
+		 * Generate all the possible feed options
+		 */
 		var generateFeedOptions = function() {
 			var options = [ NONE_VALUE, 'milk-BL', 'milk-BR' ];
 			var feedTypes = ['milk', 'formula', 'solid'];
@@ -186,6 +205,9 @@ APP.EntryPage = function() {
 			return options;
 		}
 
+		/**
+		 * Generate all the possible diaper options
+		 */
 		var generateDiaperOptions = function() {
 			return [NONE_VALUE, 'pee', 'poo'];
 		}
@@ -197,11 +219,15 @@ APP.EntryPage = function() {
 		var diaperOptions = generateDiaperOptions();
 		var feedOptions = generateFeedOptions();
 
-		// new
 		var diaperBox = document.createElement('select');
-		putFeedOptionsInSelect(diaperBox, diaperOptions);
+		putOptionsInSelect(diaperBox, diaperOptions);
 		var feedBox = document.createElement('select');
-		putFeedOptionsInSelect(feedBox, feedOptions);
+		putOptionsInSelect(feedBox, feedOptions);
+
+		/**
+		 * setup all the rows.  Alternatively we could hardcode the whole html document, which 
+		 * would improve performance. But I like it this way.
+		 */
 
 		for(var i = 0; i < rowCount; i++) {
 			var timeField = times[i];
@@ -222,13 +248,13 @@ APP.EntryPage = function() {
 					td.appendChild(button);
 				}
 				else if (j == 2) {
-					var diaperBoxLocal = diaperBox.cloneNode(true);//document.createElement('select');
+					var diaperBoxLocal = diaperBox.cloneNode(true);
 					assignButtonClass(j, diaperBoxLocal, timeField);
 					buttonList.push(diaperBoxLocal);
 					td.appendChild(diaperBoxLocal);
 				}
 				else if (j == 3) {
-					var feedBoxLocal = feedBox.cloneNode(true);// document.createElement('select');
+					var feedBoxLocal = feedBox.cloneNode(true);
 					assignButtonClass(j, feedBoxLocal, timeField);
 					buttonList.push(feedBoxLocal);
 					td.appendChild(feedBoxLocal);
