@@ -2,93 +2,6 @@ if (typeof DATA === "undefined" ) DATA = {};
 
 DATA.MS_PER_WEEK = 604800000;
 
-DATA.DatasetWeekGroup = function(weekDate) {
-	this.summaries = [];
-	this.week = new Date(weekDate.getTime());
-	this.week.setMilliseconds(0); this.week.setSeconds(0); this.week.setMinutes(0); this.week.setHours(0);
-	while (this.week.getDay() > 0) {
-		this.week.setDate(this.week.getDate() - 1);
-	}
-	this.doesSummaryBelongInGroup = function(summary) {
-		// belongs in this week if the date
-		var dsMs = summary.date.getTime();
-		var weekMs = this.week.getTime();
-		var diff = dsMs - weekMs;
-		return diff > 0 && diff < DATA.MS_PER_WEEK;
-	}
-	this.getAggregatedSummary = function() {
-		var aggSum = new DATA.DatasetSummary(new Date(this.week.getTime()));
-		var totSleep = 0, nightSleep = 0, fmlaBott = 0, milkBott = 0, milkBreast = 0, diapers = 0;
-		var i = 0;
-		this.summaries.forEach(function(s) {
-			totSleep += s.totalSleepHrs;
-			nightSleep += s.nightSleepHrs;
-			fmlaBott += s.formulaBottleMl;
-			milkBott += s.milkBottleMl;
-			milkBreast += s.milkBreastCount;
-			diapers += s.diaperCount;
-			i++;
-		});
-
-		aggSum.totalSleepHrs = round(1.0 * totSleep / i);
-		aggSum.nightSleepHrs = round(1.0 * nightSleep / i);
-		aggSum.milkBottleMl = round(1.0 * milkBott / i);
-		aggSum.formulaBottleMl = round(1.0 * fmlaBott / i);
-		aggSum.milkBreastCount = round(1.0 * milkBreast / i);
-		aggSum.diaperCount = round(1.0 * diapers / i);
-
-		return aggSum;
-	}
-
-	var round = function(val) {
-		return Math.round(val * 100) / 100;
-	}
-}
-
-DATA.DatasetWeekGroupList = function() {
-	this.weekGroups = [];
-	this.add = function(summary) {
-		var found = false;
-		for(var i = 0, len = this.weekGroups.length; i < len && !found; i++) {
-			var wk = this.weekGroups[i];
-			if (wk.doesSummaryBelongInGroup(summary)) {
-				wk.summaries.push(summary);
-				found = true;
-			}
-		}
-		
-		if (!found) {
-			var newWeekGroup = new DATA.DatasetWeekGroup(summary.date);
-			newWeekGroup.summaries.push(summary);
-			this.weekGroups.push(newWeekGroup);
-		}
-	}
-
-	this.getSingleSummary = function() {
-		var singleSum = new DATA.DatasetSummary([], [], [], [], [], []);
-		this.weekGroups.forEach(function(wg) {
-			var aggregatedSummary = wg.getAggregatedSummary();
-			singleSum.date.push(aggregatedSummary.date);
-			singleSum.totalSleepHrs.push(aggregatedSummary.totalSleepHrs);
-			singleSum.nightSleepHrs.push(aggregatedSummary.nightSleepHrs);
-			singleSum.milkBottleMl.push(aggregatedSummary.milkBottleMl);
-			singleSum.milkBreastCount.push(aggregatedSummary.milkBreastCount);
-			singleSum.diaperCount.push(aggregatedSummary.diaperCount);
-		});
-
-		return singleSum;
-	}
-}
-
-DATA.DatasetSummary = function(date, totalSleep, nightSleep, milkMl, milkBreastCount, diaperCount) {
-	this.date = date;
-	this.totalSleepHrs = totalSleep;
-	this.nightSleepHrs = nightSleep;
-	this.milkBottleMl = milkMl;
-	this.milkBreastCount = milkBreastCount;
-	this.diaperCount = diaperCount;
-}
-
 DATA.Dataset = function(pDate, pSleeps, pFeeds, pDiapers) {
 
 	this.date = new Date(pDate);
@@ -240,7 +153,7 @@ DATA.Dataset.Sleep = function(start, end) {
 
 	this.getDurationInMinutes = function() {
 		if (!this.end) return 0;
-		var msDiff = this.end.getTime() - this.start.getTime();	
+		var msDiff = this.end.getTime() - this.start.getTime();
 		return msDiff / 60000;
 	}
 
