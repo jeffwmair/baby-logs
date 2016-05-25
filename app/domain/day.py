@@ -11,17 +11,13 @@ class DayGenerator():
 		day_sleeps = dict()
 		for row in sleep_rows:
 
-			sleep_baby_id = row[0]
-			sleep_start = row[1]
-			sleep_end = row[2]
-			sleep_day_key = row[3]
-			day_date = parse(sleep_day_key)
+			day_date = parse(row.get_day_key())
 
-			if sleep_day_key not in day_sleeps:
-				day_sleeps[sleep_day_key] = list()
+			if row.get_day_key() not in day_sleeps:
+				day_sleeps[row.get_day_key()] = list()
 
-			day_sleeps_list = day_sleeps[sleep_day_key]
-			sleep_record = SleepRecord(sleep_start, sleep_end)
+			day_sleeps_list = day_sleeps[row.get_day_key()]
+			sleep_record = SleepRecord(row.get_sleep_start(), row.get_sleep_end())
 			day_sleeps_list.append(sleep_record)
 
 		day_keyvals = dict()

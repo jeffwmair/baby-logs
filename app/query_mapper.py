@@ -1,6 +1,7 @@
 from domain.day import DayGenerator, Day
 from datetime import date, datetime, timedelta
 from db_records import BabyRecord, GuardianRecord, SleepRecord, KeyValueRecord
+from sleep_row import SleepRow
 import mysql.connector
 import traceback
 
@@ -48,10 +49,15 @@ class QueryMapper:
 
 		sql = 'select id, start, end, date_format(start, "%%Y-%%m-%%d") as day from baby_sleep where start >= "%s" and start <= CURRENT_TIMESTAMP() order by start ASC' % startDate
 		sleep_rows = self.execute_sql(sql, True)
+
+		sleep_row_objects = list()
+		for row in sleep_rows:
+			sleep_row_objects.append(SleepRow(row))	
+
 		sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time >= "%s" and time <= CURRENT_TIMESTAMP() order by time ASC' % startDate
 		keyval_rows = self.execute_sql(sql, True)
 		try:
-			day_gen = DayGenerator(1, weekly, sleep_rows, keyval_rows)
+			day_gen = DayGenerator(1, weekly, sleep_row_objects, keyval_rows)
 			datasets = day_gen.get_datasets()
 			daily = list()
 			for day_key in sorted(datasets):
@@ -192,12 +198,16 @@ class QueryMapper:
 			sql = "select id, start, end, DATE_FORMAT(start, '%%Y-%%m-%%d') as day from baby_sleep where start <= CURRENT_TIMESTAMP() %s order by start ASC" % sleep_date_filter
 			sleep_rows = self.execute_sql(sql, True, cursor)
 
+			sleep_row_objects = list()
+			for row in sleep_rows:
+				sleep_row_objects.append(SleepRow(row))	
+
 			sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time <= CURRENT_TIMESTAMP() %s order by time ASC' % keyval_date_filter;
 			keyval_rows = self.execute_sql(sql, True, cursor)
 
 			weekly_grouping = False
 			babyid = 1
-			day_gen = DayGenerator(babyid, weekly_grouping, sleep_rows, keyval_rows)
+			day_gen = DayGenerator(babyid, weekly_grouping, sleep_row_objects, keyval_rows)
 			days = day_gen.get_datasets()
 
 			return days
