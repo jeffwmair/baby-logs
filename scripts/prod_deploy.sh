@@ -24,4 +24,5 @@ rsync -azP * \
 	--exclude "test/" \
 	--exclude "venv/" \
 	--exclude "docs/" \
+	--exclude "private/" \
 	$SERVER:/var/www/html/liamjournal
