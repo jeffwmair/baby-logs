@@ -4,6 +4,10 @@ UTILS.get2DigitFormat = function(val) {
 	return (val < 10) ? '0' + val : val;
 }
 
+UTILS.ajax = function(url, callback) {
+	return UTILS.ajaxGetJson(url, null, callback, true);
+}
+
 UTILS.ajaxGetJson = function(url, errorHandler, callback, doAsync) {
 	// load data from server via ajax
 	var xmlhttp = new XMLHttpRequest();
