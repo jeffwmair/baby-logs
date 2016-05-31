@@ -33,7 +33,8 @@
 			 */
 			self.$allSleepButtons.forEach(function(item) {
 				$on(item, 'click', function() {
-					callback(item.className.split('sleep_')[1]);
+					var sleepTime = DATETIME.parseAmPmTime(item.className.split('sleep_')[1]);
+					callback(sleepTime);
 				});
 			});
 
