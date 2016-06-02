@@ -83,7 +83,7 @@
 			optionsHtml += '<option value="'+opt+'">'+opt+'</option>';
 		});
 
-		return '<select class="feed_{{time}}" style="background-color:{{color}}">'
+		return '<select class="feed feed_{{time}}" style="background-color:{{color}}">'
 		+	optionsHtml
 		+ '</select>';
 	}
@@ -93,7 +93,7 @@
 		if (selection) {
 			bg = this._getActiveColor();
 		}
-		return '<select class="diaper_'+time+'" style="background-color:'+bg+'">'
+		return '<select class="diaper diaper_'+time+'" style="background-color:'+bg+'">'
 		+		this._generateHtmlOption('none', selection)
 		+		this._generateHtmlOption('pee', selection)
 		+		this._generateHtmlOption('poo', selection)

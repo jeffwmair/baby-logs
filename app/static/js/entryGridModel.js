@@ -40,6 +40,11 @@
 
 	}
 
+	var getFormattedDateForServerCall = function(date) {
+		var use24HrFormat = true;
+		return DATETIME.getYyyymmddFormat(date) + ' ' + DATETIME.getFormattedTime(date.getHours(), date.getMinutes(), use24HrFormat);
+	}
+
 	/**
 	 * Toggles the sleep state for that time
 	 */
@@ -52,16 +57,19 @@
 		var isRemoveSleep = (dateData && dateData.sleep);
 		var apiAction = isRemoveSleep ? 'removesleep' : 'sleep';
 
-		var getFormattedDateForServerCall = function(date) {
-			var use24HrFormat = true;
-			return DATETIME.getYyyymmddFormat(date) + ' ' + DATETIME.getFormattedTime(date.getHours(), date.getMinutes(), use24HrFormat);
-		}
-
 		var formatteddate = getFormattedDateForServerCall(date);
 		var myendate = new Date(date.getTime() + (15*60000));
 		var formattedEndDate = getFormattedDateForServerCall(myendate);
 
 		UTILS.ajax("BabyApi?action="+apiAction+"&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, function(json) {
+			self._handleData(json, callback);
+		});
+	}
+
+	Model.prototype.setDiaper = function(date, val, callback) {
+		var self = this;
+
+		UTILS.ajax("BabyApi?action=addvalue&type=diaper&value="+val+"&time="+getFormattedDateForServerCall(date), function(json) {
 			self._handleData(json, callback);
 		});
 	}

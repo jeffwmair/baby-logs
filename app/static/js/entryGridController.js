@@ -32,6 +32,17 @@
 
 		});
 
+		self.view.bind('setDiaperValue', function(val, diaperTime) {
+
+			var datetime = new Date(self.day);	
+			datetime.setHours(diaperTime.getHours(), diaperTime.getMinutes());
+			self.model.setDiaper(datetime, val, function(data) {
+				self._renderAndBind(data);	
+			});
+
+		});
+
+
 	}
 
 	/**

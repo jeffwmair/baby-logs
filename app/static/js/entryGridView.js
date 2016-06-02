@@ -18,6 +18,7 @@
 
 		// get dynamic controls after binding
 		self.$allSleepButtons = qsa('button');
+		self.$allDiaperSelects = qsa('select.diaper');
 	}
 
 	/**
@@ -38,6 +39,21 @@
 				});
 			});
 
+		}
+		else if (name === 'setDiaperValue') {
+	
+			/**
+			 * Bind all the diaper value dropdowns.
+			 * When changed, return the sleep data
+			 */
+			self.$allDiaperSelects.forEach(function(item) {
+				$on(item, 'change', function() {
+					var sleepTime = DATETIME.parseAmPmTime(item.className.split('diaper_')[1]);
+					callback(item.value, sleepTime);
+				});
+			});
+
+		
 		}
 		else {
 			throw 'foobar!';
