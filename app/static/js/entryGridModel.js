@@ -7,16 +7,17 @@
 
 	Model.prototype._handleData = function(json, callback) {
 
-		var data = {};
+		var self = this;
+		self.data = {};
 
 		var createArrIfNotThere = function(key) {
-			if (data[key] == undefined) data[key] = []; 
+			if (self.data[key] == undefined) self.data[key] = []; 
 		}
 
 		var putData = function(key, type, item) {
 			var timeKey = DATETIME.getTime(new Date(key));
 			createArrIfNotThere(timeKey);
-			data[timeKey][type] = item;
+			self.data[timeKey][type] = item;
 		}
 
 		json.diapers.forEach(function(item)  {
@@ -35,7 +36,7 @@
 			putData(item.time, 'feed', item);
 		});
 
-		callback.call(this, data);	
+		callback.call(self, self.data);	
 
 	}
 
@@ -45,6 +46,12 @@
 	Model.prototype.toggleSleep = function(date, callback) {
 
 		var self = this;
+
+		// sort out the toggle direction
+		var dateData = self.data[DATETIME.getTime(date)];
+		var isRemoveSleep = (dateData && dateData.sleep);
+		var apiAction = isRemoveSleep ? 'removesleep' : 'sleep';
+
 		var getFormattedDateForServerCall = function(date) {
 			var use24HrFormat = true;
 			return DATETIME.getYyyymmddFormat(date) + ' ' + DATETIME.getFormattedTime(date.getHours(), date.getMinutes(), use24HrFormat);
@@ -54,7 +61,7 @@
 		var myendate = new Date(date.getTime() + (15*60000));
 		var formattedEndDate = getFormattedDateForServerCall(myendate);
 
-		UTILS.ajax("BabyApi?action=sleep&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, function(json) {
+		UTILS.ajax("BabyApi?action="+apiAction+"&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, function(json) {
 			self._handleData(json, callback);
 		});
 	}

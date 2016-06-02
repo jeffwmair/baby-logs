@@ -15,12 +15,11 @@
 		this.day = day;
 	}
 
-	Controller.prototype._render = function(data) {
-		this.view.render(data);
-	}
-
-	Controller.prototype._bind = function() {
+	Controller.prototype._renderAndBind = function(data) {
 		var self = this;
+
+		self.view.render(data);
+
 		/* rendering must happen before binding so that we have all the elements that need to be bound */
 		self.view.bind('sleepButtonClick', function(sleepTime) {
 
@@ -28,11 +27,11 @@
 			var datetime = new Date(self.day);	
 			datetime.setHours(sleepTime.getHours(), sleepTime.getMinutes());
 			self.model.toggleSleep(datetime, function(data) {
-				self._render(data);	
-				self._bind();
+				self._renderAndBind(data);	
 			});
 
 		});
+
 	}
 
 	/**
@@ -43,8 +42,7 @@
 		var self = this;
 
 		self.model.read(self.day, function(data) {
-			self._render(data);	
-			self._bind();
+			self._renderAndBind(data);	
 		});
 	}
 
