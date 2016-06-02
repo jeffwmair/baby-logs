@@ -66,6 +66,24 @@
 		});
 	}
 
+	Model.prototype.setFeed = function(date, val, callback) {
+		var self = this;
+
+		// feed api is a little funny:
+		var type = 'feed';
+		var value = 'none';
+
+		if (val != 'none') {
+			var valsplit = val.split('-');
+			type = valsplit[0]
+			value = valsplit[1]
+		}
+
+		UTILS.ajax("BabyApi?action=addvalue&type="+type+"&value="+value+"&time="+getFormattedDateForServerCall(date), function(json) {
+			self._handleData(json, callback);
+		});
+	}
+
 	Model.prototype.setDiaper = function(date, val, callback) {
 		var self = this;
 

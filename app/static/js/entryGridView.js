@@ -19,6 +19,7 @@
 		// get dynamic controls after binding
 		self.$allSleepButtons = qsa('button');
 		self.$allDiaperSelects = qsa('select.diaper');
+		self.$allFeedSelects = qsa('select.feed');
 	}
 
 	/**
@@ -40,11 +41,27 @@
 			});
 
 		}
+		else if (name === 'setFeedValue') {
+	
+			/**
+			 * Bind all the feed value dropdowns.
+			 * When changed, return the data
+			 */
+			self.$allFeedSelects.forEach(function(item) {
+				$on(item, 'change', function() {
+					var sleepTime = DATETIME.parseAmPmTime(item.className.split('feed_')[1]);
+					callback(item.value, sleepTime);
+				});
+			});
+
+		
+		}
+
 		else if (name === 'setDiaperValue') {
 	
 			/**
 			 * Bind all the diaper value dropdowns.
-			 * When changed, return the sleep data
+			 * When changed, return the data
 			 */
 			self.$allDiaperSelects.forEach(function(item) {
 				$on(item, 'change', function() {

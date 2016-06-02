@@ -42,6 +42,17 @@
 
 		});
 
+		self.view.bind('setFeedValue', function(val, feedTime) {
+
+			var datetime = new Date(self.day);	
+			datetime.setHours(feedTime.getHours(), feedTime.getMinutes());
+			self.model.setFeed(datetime, val, function(data) {
+				self._renderAndBind(data);	
+			});
+
+		});
+
+
 
 	}
 
