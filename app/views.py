@@ -18,6 +18,10 @@ def server_error(error):
 def dashboard_page():
 	return render_template('index.html')
 
+@app.route('/date')
+def date_test():
+	return render_template('dayPicker.html')
+
 @app.route('/grid')
 def grid_test():
 	return render_template('grid.html')
