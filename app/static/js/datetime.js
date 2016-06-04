@@ -78,6 +78,9 @@ DATETIME.getDateFormatForDay = function(date) {
 	return day + ' ' + mon + ' ' + date.getDate() + ', ' + date.getFullYear();
 }
 
+/**
+ * 2016-06-30
+ */
 DATETIME.getYyyymmddFormat = function(date) {
 	var month = UTILS.get2DigitFormat(date.getMonth()+1);
 	var day = UTILS.get2DigitFormat(date.getDate());

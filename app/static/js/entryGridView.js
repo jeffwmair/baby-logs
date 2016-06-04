@@ -7,19 +7,25 @@
 
 		// view elements
 		self.$entryGrid = qs('#entry-grid');
+		self.$prevDayButton = qs('#btnBack');
+		self.$nextDayButton = qs('#btnForward');
+		self.$dayPickerDate = qs('#dayPickerDate');
 	}
 
 	/**
 	 * Render the grid
 	 */
-	View.prototype.render = function(data) {
+	View.prototype.render = function(gridData, date) {
+		console.log(date);
 		var self = this;
-		self.$entryGrid.innerHTML = self.template.generateHtml(data);
+		self.$entryGrid.innerHTML = self.template.generateHtml(gridData);
 
 		// get dynamic controls after binding
-		self.$allSleepButtons = qsa('button');
+		self.$allSleepButtons = qsa('#entry-grid button');
 		self.$allDiaperSelects = qsa('select.diaper');
 		self.$allFeedSelects = qsa('select.feed');
+
+		self.$dayPickerDate.innerHTML = DATETIME.getDateFormatForDay(date);
 	}
 
 	/**
@@ -42,7 +48,6 @@
 
 		}
 		else if (name === 'setFeedValue') {
-	
 			/**
 			 * Bind all the feed value dropdowns.
 			 * When changed, return the data
@@ -53,10 +58,17 @@
 					callback(item.value, sleepTime);
 				});
 			});
-
-		
 		}
-
+		else if (name === 'nextDay') {
+			$on(self.$nextDayButton, 'click', function() {
+				callback();
+			});
+		}
+		else if (name==='prevDay'){
+			$on(self.$prevDayButton, 'click', function() {
+				callback();
+			});
+		}
 		else if (name === 'setDiaperValue') {
 	
 			/**
@@ -73,7 +85,7 @@
 		
 		}
 		else {
-			throw 'foobar!';
+			throw 'Unexpected bind name:'+name;
 		}
 	}
 

@@ -5,7 +5,6 @@
 		var self = this;
 		self.model = model;
 		self.view = view;
-		self.day = day;
 	}
 
 	/**
@@ -15,45 +14,38 @@
 		this.day = day;
 	}
 
-	Controller.prototype._renderAndBind = function(data) {
+	Controller.prototype._renderAndBindGrid = function(gridData, date) {
 		var self = this;
 
-		self.view.render(data);
+		self.view.render(gridData, self.model.getDate());
 
 		/* rendering must happen before binding so that we have all the elements that need to be bound */
 		self.view.bind('sleepButtonClick', function(sleepTime) {
 
 			// sleep button toggled
-			var datetime = new Date(self.day);	
-			datetime.setHours(sleepTime.getHours(), sleepTime.getMinutes());
-			self.model.toggleSleep(datetime, function(data) {
-				self._renderAndBind(data);	
+			self.model.toggleSleep(sleepTime, function(data) {
+				self._renderAndBindGrid(data);	
 			});
 
 		});
 
 		self.view.bind('setDiaperValue', function(val, diaperTime) {
 
-			var datetime = new Date(self.day);	
-			datetime.setHours(diaperTime.getHours(), diaperTime.getMinutes());
-			self.model.setDiaper(datetime, val, function(data) {
-				self._renderAndBind(data);	
+			//datetime.setHours(diaperTime.getHours(), diaperTime.getMinutes());
+			self.model.setDiaper(diaperTime, val, function(data) {
+				self._renderAndBindGrid(data);	
 			});
 
 		});
 
 		self.view.bind('setFeedValue', function(val, feedTime) {
 
-			var datetime = new Date(self.day);	
-			datetime.setHours(feedTime.getHours(), feedTime.getMinutes());
-			self.model.setFeed(datetime, val, function(data) {
-				self._renderAndBind(data);	
+			//datetime.setHours(feedTime.getHours(), feedTime.getMinutes());
+			self.model.setFeed(feedTime, val, function(data) {
+				self._renderAndBindGrid(data);	
 			});
 
 		});
-
-
-
 	}
 
 	/**
@@ -63,9 +55,27 @@
 
 		var self = this;
 
-		self.model.read(self.day, function(data) {
-			self._renderAndBind(data);	
+		self.model.read(function(gridData, date) {
+
+			self._renderAndBindGrid(gridData, date);
+
+			// bind the controls that never go away
+
+			self.view.bind('nextDay', function() {
+				self.model.moveToNextDay(function(gridData, date) {
+					self._renderAndBindGrid(gridData, date);	
+				});
+			});
+
+			self.view.bind('prevDay', function() {
+				self.model.moveToPrevDay(function(gridData, date) {
+					self._renderAndBindGrid(gridData, date);	
+				});
+			});
+
+
 		});
+
 	}
 
 	window.grid = window.grid || {};

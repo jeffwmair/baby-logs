@@ -3,6 +3,25 @@
 
 	function Model() {
 		var self = this;
+		// default start date is now/today
+		this.date = new Date();
+	}
+
+	/**
+	 * Get the selected date
+	 */
+	Model.prototype.getDate = function() {
+		return this.date;
+	}
+
+	Model.prototype.moveToNextDay = function(callback) {
+		this.date = new Date(this.date.getTime() + 24*60*60*1000);
+		this.read(callback);
+	}
+
+	Model.prototype.moveToPrevDay = function(callback) {
+		this.date = new Date(this.date.getTime() - 24*60*60*1000);
+		this.read(callback);
 	}
 
 	Model.prototype._handleData = function(json, callback) {
@@ -36,7 +55,7 @@
 			putData(item.time, 'feed', item);
 		});
 
-		callback.call(self, self.data);	
+		callback.call(self, self.data, self.getDate());	
 
 	}
 
@@ -57,8 +76,10 @@
 		var isRemoveSleep = (dateData && dateData.sleep);
 		var apiAction = isRemoveSleep ? 'removesleep' : 'sleep';
 
-		var formatteddate = getFormattedDateForServerCall(date);
-		var myendate = new Date(date.getTime() + (15*60000));
+		var gridDate = new Date(self.getDate());
+		gridDate.setHours(date.getHours(), date.getMinutes(), 0);
+		var formatteddate = getFormattedDateForServerCall(gridDate);
+		var myendate = new Date(gridDate.getTime() + (15*60000));
 		var formattedEndDate = getFormattedDateForServerCall(myendate);
 
 		UTILS.ajax("BabyApi?action="+apiAction+"&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, function(json) {
@@ -79,7 +100,10 @@
 			value = valsplit[1]
 		}
 
-		UTILS.ajax("BabyApi?action=addvalue&type="+type+"&value="+value+"&time="+getFormattedDateForServerCall(date), function(json) {
+		var datetime = self.getDate();
+		datetime.setHours(date.getHours(), date.getMinutes());
+
+		UTILS.ajax("BabyApi?action=addvalue&type="+type+"&value="+value+"&time="+getFormattedDateForServerCall(datetime), function(json) {
 			self._handleData(json, callback);
 		});
 	}
@@ -87,7 +111,9 @@
 	Model.prototype.setDiaper = function(date, val, callback) {
 		var self = this;
 
-		UTILS.ajax("BabyApi?action=addvalue&type=diaper&value="+val+"&time="+getFormattedDateForServerCall(date), function(json) {
+		var datetime = self.getDate();
+		datetime.setHours(date.getHours(), date.getMinutes());
+		UTILS.ajax("BabyApi?action=addvalue&type=diaper&value="+val+"&time="+getFormattedDateForServerCall(datetime), function(json) {
 			self._handleData(json, callback);
 		});
 	}
@@ -95,9 +121,10 @@
 	/**
 	 * Reads the model from storage
 	 */
-	Model.prototype.read = function(date, callback) {
+	Model.prototype.read = function(callback) {
 		var self = this;
-		UTILS.ajax("BabyApi?action=loadentrydata&day="+DATETIME.getYyyymmddFormat(date), function(json) {
+		console.log('model.read for date:'+self.getDate());
+		UTILS.ajax("BabyApi?action=loadentrydata&day="+DATETIME.getYyyymmddFormat(self.date), function(json) {
 			self._handleData(json, callback);	
 		});
 
