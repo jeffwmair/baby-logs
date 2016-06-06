@@ -39,61 +39,17 @@
 			<h2>Entries</h2>
 			<div id='datePicker'>
 				<button id='btnBack'>&lt;&lt;</button>
-				<h3 id='date'></h3>
+				<h3 id='dayPickerDate'></h3>
 				<button id='btnForward'>&gt;&gt;</button>
 			</div>
 			<div id="errorDiv" class="alert alert-danger" style="display:none">
 				<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 				<strong>Error!</strong> <span id='errMsg'>error message goes here!</span>
 			</div>
-			<!-- Button trigger modal
-			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sleepDialog">
-				Enter Sleep Range
-			</button>
-			  -->
-			<!-- Modal 
-			<div class="modal fade" id="sleepDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-				<div class="modal-dialog" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-							<img src='static/images/babysleepicon.jpg' width="50px"/>
-							<h4 class="modal-title" id="myModalLabel">Enter Sleep Range</h4>
-						</div>
-						<div class="modal-body">
-							<table id='dialogSleepEntryTable'>
-								<tr>
-									<td><strong>Start</strong></td>
-									<td><select id='selectSleepStartHr'></select></td>
-									<td><select id='selectSleepStartMin'></select></td>
-									<td>
-										<select id='selectSleepStartAmPm'>
-											<option value="pm">pm</option>
-											<option value="am">am</option>
-										</select>
-									</td>
-								</tr>
-								<tr>
-									<td><strong>End</strong></td>
-									<td><select id='selectSleepEndHr'></select></td>
-									<td><select id='selectSleepEndMin'></select></td>
-									<td>
-										<select id='selectSleepEndAmPm'>
-											<option value="am">am</option>
-											<option value="pm">pm</option>
-										</select>
-									</td>
-								</tr>
-							</table>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-							<button id='btnSaveSleepRange' type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
-						</div>
-					</div>
-				</div>
+
+			<div class='table-responsive'>
+				<div id="entry-grid" class="table-responsive"/>
 			</div>
-			-->
 
 			<div class="table-responsive">
 				<table id='tblEntries' class="table table-striped table-condensed">
@@ -121,14 +77,19 @@
 		</body>
 	</html>
 	<script type='text/javascript' src='static/js/utils.js'></script>
+	<script type='text/javascript' src='static/js/helpers.js'></script>
 	<script type='text/javascript' src='static/js/datetime.js'></script>
 	<script type='text/javascript' src='static/js/dataset.core.js'></script>
 	<script type='text/javascript' src='static/js/dataset.converter.js'></script>
-	<script type='text/javascript' src='static/js/entrypage.js'></script>
-	<script type='text/javascript' src='static/js/entrypage_sleepdialog.js'></script>
+	<script type='text/javascript' src='static/js/entrypageTemplate.js'></script>
+	<script type='text/javascript' src='static/js/entrypageView.js'></script>
+	<script type='text/javascript' src='static/js/entrypageModel.js'></script>
+	<script type='text/javascript' src='static/js/entrypageController.js'></script>
+	<script type='text/javascript' src='static/js/entryGrid.js'></script>
 	<script type='text/javascript' src='static/js/jquery.stickytableheaders.min.js'></script>
 	<script>
 
+		/*
 		var table = document.getElementById('tblEntriesBody');
 		var backButton = document.getElementById('btnBack');
 		var forwardButton = document.getElementById('btnForward');
@@ -139,10 +100,7 @@
 		var dateEl = document.getElementById('date');
 		entryPage.init(now, table, backButton, forwardButton, dateEl, errorDiv, errorMsg);
 
-		var sleepEntryDialog = new APP.SleepEntryDialog();
-		var dialog = document.getElementById('sleepDialog');
-		sleepEntryDialog.init(dialog);
-
 		$('#tblEntries').stickyTableHeaders({ fixedOffset : 50 });
 
+		*/
 	</script>

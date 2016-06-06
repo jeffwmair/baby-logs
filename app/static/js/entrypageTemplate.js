@@ -26,6 +26,54 @@
 		return this.tableTemplate.replace('{{rows}}', this._generateRows(data));
 	}
 
+	/**
+	 * Update existing html with the given data
+	 */
+	Template.prototype.updateHtml = function(grid, data) {
+		var self = this;
+
+		// keys to our data object, and to our element classes
+		var times = self._generateAllTimes();
+
+		times.forEach(function(t) {
+			var btnSleep = qs('.sleep_'+t);
+			var ddlDiaper = qs('.diaper_'+t);
+			var ddlFeed = qs('.feed_'+t);
+			var elements = [ btnSleep, ddlDiaper, ddlFeed ];
+
+			if (!data[t]) {
+				self._setElementsToDefaultState(elements);
+			}
+			else {
+				self._setActiveInactive(btnSleep, data[t].sleep);
+				self._setActiveInactive(ddlDiaper, data[t].diaper);
+				self._setActiveInactive(ddlFeed, data[t].feed);
+			}
+
+		});
+
+	}
+
+	Template.prototype._setActiveInactive = function(element, state) {
+		if (state) {
+			this._setActive(element);
+		}
+		else {
+			this._setElementsToDefaultState([element]);
+		}
+	}
+
+	Template.prototype._setElementsToDefaultState = function(elements) {
+		elements.forEach(function(el) {	
+			el.style.backgroundColor = "";
+		});
+	}
+
+
+	Template.prototype._setActive = function(element) {
+		element.style.backgroundColor = this._getActiveColor();	
+	}
+
 	Template.prototype._getActiveColor = function() {
 		return '#50C050';
 	}

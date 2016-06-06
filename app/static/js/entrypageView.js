@@ -28,6 +28,11 @@
 		self.$dayPickerDate.innerHTML = DATETIME.getDateFormatForDay(date);
 	}
 
+	View.prototype.update = function(gridData, date) { 
+		console.log(gridData);
+		this.template.updateHtml(this.$entryGrid, gridData);
+	}
+
 	/**
 	 * Bind a dom event to a callback
 	 */

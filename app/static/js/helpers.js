@@ -4,10 +4,10 @@
 
 	// Get element(s) by CSS selector:
 	window.qs = function (selector, scope) {
-		return (scope || document).querySelector(selector);
+		return (scope || document).querySelector(selector.replace(':', '\\:'));
 	};
 	window.qsa = function (selector, scope) {
-		return (scope || document).querySelectorAll(selector);
+		return (scope || document).querySelectorAll(selector.replace(':', '\\:'));
 	};
 
 	// addEventListener wrapper:
