@@ -27,7 +27,7 @@
 
 			// sleep button toggled
 			self.model.toggleSleep(sleepTime, function(data) {
-				self.view.update(data);
+				self.view.update(data, self.model.getDate());
 			});
 
 		});
@@ -35,7 +35,7 @@
 		self.view.bind('setDiaperValue', function(val, diaperTime) {
 
 			self.model.setDiaper(diaperTime, val, function(data) {
-				self.view.update(data);
+				self.view.update(data, self.model.getDate());
 			});
 
 		});
@@ -43,7 +43,7 @@
 		self.view.bind('setFeedValue', function(val, feedTime) {
 
 			self.model.setFeed(feedTime, val, function(data) {
-				self.view.update(data);
+				self.view.update(data, self.model.getDate());
 			});
 
 		});
@@ -64,13 +64,13 @@
 
 			self.view.bind('nextDay', function() {
 				self.model.moveToNextDay(function(gridData, date) {
-					self.view.update(gridData);
+					self.view.update(gridData, date);
 				});
 			});
 
 			self.view.bind('prevDay', function() {
 				self.model.moveToPrevDay(function(gridData, date) {
-					self.view.update(gridData);
+					self.view.update(gridData, date);
 				});
 			});
 

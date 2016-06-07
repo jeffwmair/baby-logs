@@ -29,6 +29,7 @@
 
 	View.prototype.update = function(gridData, date) { 
 		this.template.updateHtml(this.$entryGrid, gridData);
+		this.$dayPickerDate.innerHTML = DATETIME.getDateFormatForDay(date);
 	}
 
 	/**
