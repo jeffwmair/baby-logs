@@ -123,7 +123,6 @@
 	 */
 	Model.prototype.read = function(callback) {
 		var self = this;
-		console.log('model.read for date:'+self.getDate());
 		UTILS.ajax("BabyApi?action=loadentrydata&day="+DATETIME.getYyyymmddFormat(self.date), function(json) {
 			self._handleData(json, callback);	
 		});

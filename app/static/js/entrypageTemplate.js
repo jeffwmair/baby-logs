@@ -35,28 +35,48 @@
 		// keys to our data object, and to our element classes
 		var times = self._generateAllTimes();
 
+		// rip through all the 'times'
 		times.forEach(function(t) {
+
 			var btnSleep = qs('.sleep_'+t);
 			var ddlDiaper = qs('.diaper_'+t);
 			var ddlFeed = qs('.feed_'+t);
-			var elements = [ btnSleep, ddlDiaper, ddlFeed ];
+			var all_elements = [ btnSleep, ddlDiaper, ddlFeed ];
 
 			if (!data[t]) {
-				self._setElementsToDefaultState(elements);
+				self._setElementsToDefaultState(all_elements);
 			}
 			else {
-				self._setActiveInactive(btnSleep, data[t].sleep);
-				self._setActiveInactive(ddlDiaper, data[t].diaper);
-				self._setActiveInactive(ddlFeed, data[t].feed);
+				self._setActiveOrInactive(btnSleep, data[t].sleep);
+				self._setActiveOrInactive(ddlDiaper, data[t].diaper);
+				self._setActiveOrInactive(ddlFeed, data[t].feed);
 			}
 
 		});
 
 	}
 
-	Template.prototype._setActiveInactive = function(element, state) {
-		if (state) {
+
+	/**
+	 * Sets an element to be either active or inactive.
+	 */
+	Template.prototype._setActiveOrInactive = function(element, dataObject) {
+		var getFeedValue = function() {
+			return dataObject.entry_type + '-' + dataObject.entry_value;
+		}
+		if (dataObject) {
 			this._setActive(element);
+			if (dataObject.entry_type) {
+				switch (dataObject.entry_type) {
+					case 'diaper':
+						element.value = dataObject.entry_value;
+						break;
+					default:
+						// default will be for 'feed' (milk, fmla, etc)
+						element.value = getFeedValue();
+						break;
+				}
+			}
 		}
 		else {
 			this._setElementsToDefaultState([element]);
@@ -66,6 +86,7 @@
 	Template.prototype._setElementsToDefaultState = function(elements) {
 		elements.forEach(function(el) {	
 			el.style.backgroundColor = "";
+			el.value = "none";
 		});
 	}
 

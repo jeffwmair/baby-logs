@@ -16,7 +16,6 @@
 	 * Render the grid
 	 */
 	View.prototype.render = function(gridData, date) {
-		console.log(date);
 		var self = this;
 		self.$entryGrid.innerHTML = self.template.generateHtml(gridData);
 
@@ -29,7 +28,6 @@
 	}
 
 	View.prototype.update = function(gridData, date) { 
-		console.log(gridData);
 		this.template.updateHtml(this.$entryGrid, gridData);
 	}
 
