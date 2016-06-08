@@ -61,7 +61,7 @@
 			self._renderAndBindGrid(gridData, date);
 
 			// bind the controls that never go away
-
+			
 			self.view.bind('nextDay', function() {
 				self.model.moveToNextDay(function(gridData, date) {
 					self.view.update(gridData, date);

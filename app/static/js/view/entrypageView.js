@@ -67,10 +67,18 @@
 			$on(self.$nextDayButton, 'click', function() {
 				callback();
 			});
+
+			$on(window, 'keydown', function(e) {
+				if (e.keyIdentifier === 'Right') callback();
+			});
 		}
 		else if (name==='prevDay'){
 			$on(self.$prevDayButton, 'click', function() {
 				callback();
+			});
+
+			$on(window, 'keydown', function(e) {
+				if (e.keyIdentifier === 'Left') callback();
 			});
 		}
 		else if (name === 'setDiaperValue') {
