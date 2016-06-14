@@ -2,17 +2,17 @@
 
 	'use strict'
 
-	function EntryGrid() {
-		this.model = new grid.Model();	
-		this.template = new grid.Template();	
-		this.view = new grid.View(this.template);
-		this.controller = new grid.Controller(this.model, this.view, new Date());
+	function Page() {
+		this.model = new entry.Model();	
+		this.template = new entry.Template();	
+		this.view = new entry.View(this.template);
+		this.controller = new entry.Controller(this.model, this.view, new Date());
 	}
 
-	var mygrid = new EntryGrid();
+	var page = new Page();
 
 	function setView() {
-		mygrid.controller.setView();
+		page.controller.setView();
 	}
 
 	$on(window, 'load', setView);

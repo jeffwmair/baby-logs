@@ -102,7 +102,7 @@
 	}
 
 
-	window.grid = window.grid || {};
-	window.grid.View = View;
+	window.entry = window.entry || {};
+	window.entry.View = View;
 
 })(window);

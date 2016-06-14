@@ -202,7 +202,7 @@
 	}
 
 
-	window.grid = window.grid || {};
-	window.grid.Template = Template;
+	window.entry = window.entry || {};
+	window.entry.Template = Template;
 
 })(window);

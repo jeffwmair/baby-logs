@@ -120,32 +120,9 @@
 			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 		</body>
 	</html>
-	<script type='text/javascript' src='static/js/utils/utils.js'></script>
-	<script src="static/js/dashboard.js"></script>
-	<script type='text/javascript' defer>
-
-		var page = new APP.Dashboard();
-		page.init();
-
-		var txtBigNaps = document.getElementById('bigNumSleeps');
-		page.setBigNumNaps(txtBigNaps);
-
-		var txtBigFeeds = document.getElementById('bigNumFeedings');
-		page.setBigNumFeeds(txtBigFeeds);
-
-		var txtBigPoos = document.getElementById('bigNumPoos');
-		page.setBigNumPoos(txtBigPoos);
-
-		var txtMostRecentFeed = document.getElementById('txtMostRecentFeed');
-		page.setMostRecentFeedData(txtMostRecentFeed);
-
-		var txtMostRecentSleep = document.getElementById('txtMostRecentSleep');
-		page.setMostRecentSleepData(txtMostRecentSleep);
-
-		var txtMostRecentPee = document.getElementById('txtMostRecentPee');
-		page.setMostRecentPeeData(txtMostRecentPee);
-
-		var txtMostRecentPoo = document.getElementById('txtMostRecentPoo');
-		page.setMostRecentPooData(txtMostRecentPoo);
-
-	</script>
+	<script src='static/js/utils/utils.js'></script>
+	<script src='static/js/utils/helpers.js'></script>
+	<script src="static/js/view/dashboardView.js"></script>
+	<script src="static/js/model/dashboardModel.js"></script>
+	<script src="static/js/controller/dashboardController.js"></script>
+	<script src="static/js/dashboardNew.js"></script>

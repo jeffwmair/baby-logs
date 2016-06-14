@@ -123,13 +123,12 @@
 	 */
 	Model.prototype.read = function(callback) {
 		var self = this;
-		UTILS.ajax("BabyApi?action=loadentrydata&day="+DATETIME.getYyyymmddFormat(self.date), function(json) {
-			self._handleData(json, callback);	
+		UTILS.ajax("BabyApi?action=loadDashboard", function(json) {
+			callback(json);
 		});
-
 	}
 
-	window.entry = window.entry || {};
-	window.entry.Model = Model;
+	window.dashboard = window.dashboard || {};
+	window.dashboard.Model = Model;
 
 })(window);

@@ -79,7 +79,7 @@
 
 	}
 
-	window.grid = window.grid || {};
-	window.grid.Controller = Controller;
+	window.entry = window.entry || {};
+	window.entry.Controller = Controller;
 
 })(window);
