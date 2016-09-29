@@ -23,6 +23,15 @@ Basic usage is to go to the **Entry** screen and enter instances of sleep, feedi
 * VirtualEnvironment (sudo apt-get install python-virtualenv)
 * Mysql (default login must have access to create databases, users, add tables; ie, put user/password into ~/.my.cnf)
 
+## Installing Requirements (new section!)
+```bash
+sudo apt-get update -y
+sudo apt-get upgrade -y
+sudo apt-get install python -y
+sudo apt-get install virtualenv -y
+sudo apt-get install mysql-server -y
+```
+
 ## Getting Started
 
 First verify that the requirements are installed:
@@ -59,7 +68,7 @@ $ cp credentials.properties.sample credentials.properties
 $ ./scripts/init_db.sh
 
 # run unit tests (if you like)
-$ ./scripts/runtests.sh     # note that we are sourcing these scripts
+$ ./scripts/runtests.sh     
 
 # run the web server
 $ ./scripts/start.sh
