@@ -48,12 +48,6 @@ $ mysql
 $ virtualenv --version
 ```
 
-Create a Mysql User:
-
-```bash
-# todo: create a user
-```
-
 Then actually getting started:
 ```bash
 # Create your python virtual env using:
