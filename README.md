@@ -54,7 +54,7 @@ Clone the repo
 git clone https://github.com/jeffwmair/baby-logs.git && cd baby-logs
 ```
 
-Then actually getting started:
+Bootstrap the system:
 ```bash
 # Create your python virtual env using:
 $ virtualenv venv
