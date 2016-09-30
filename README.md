@@ -17,14 +17,16 @@ Basic usage is to go to the **Entry** screen and enter instances of sleep, feedi
 
 ![Alt text](/docs/ReportPage.png)
 
-## Requirements:
+## Setup
+
+**Requirements**
 
 * Python 2.7
 * VirtualEnvironment (sudo apt-get install python-virtualenv)
 * Mysql (default login must have access to create databases, users, add tables; ie, put user/password into ~/.my.cnf)
 * Apache for reverse-proxying
 
-## Installing Requirements
+### Installing Requirements
 ```bash
 sudo apt-get update -y
 sudo apt-get upgrade -y
@@ -34,7 +36,7 @@ sudo apt-get install mysql-server -y
 sudo apt-get install apache2 -y
 ```
 
-### Additional Apache Setup for Reverse Proxying to the Python App
+**Additional Apache Setup for Reverse Proxying to the Python App**
 
 ```bash
 # add the proxy module to apache
@@ -51,29 +53,14 @@ ProxyPassReverse /babylogs http://127.0.0.1:8080/
 sudo apachectl restart
 ```
 
-## Getting Started
-
-First verify that the requirements are installed:
-```bash
-# This should open an python interactive prompt. 
-# Just hit ctrl-d to exit.
-$ python		
-
-# This should log you directly into mysql.  
-# If not, you may need to configure your .my.cnf file.
-$ mysql
-
-# This should give a meaningful version number like 14.0.5
-$ virtualenv --version
-```
-
-Clone the repo
+### Clone the repo
 
 ```bash
 git clone https://github.com/jeffwmair/baby-logs.git && cd baby-logs
 ```
 
-Bootstrap the system:
+### Configure the application
+
 ```bash
 # Create your python virtual env using:
 $ virtualenv venv
@@ -102,7 +89,7 @@ $ mysql {your_db_name} < backup.sql
 $ ./scripts/start.sh > logs.txt &
 ```
 
-## Visit the Application
+## Login
 Browse to:
 
 [http://yourserver/babylogs/ -- via apache](http://yourserver/babylogs/)
