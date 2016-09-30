@@ -106,5 +106,7 @@ $ ./scripts/start.sh > logs.txt &
 Browse to:
 
 [http://yourserver/babylogs/ -- via apache](http://yourserver/babylogs/)
+
 or
+
 [http://yourserver:8080/ -- python app](http://yourserver:8080/)
