@@ -76,6 +76,9 @@ $ ./scripts/init_db.sh
 # run unit tests (if you like)
 $ ./scripts/runtests.sh     
 
+# at this point you can import your database backup if you have one
+$ mysql {your_db_name} < backup.sql
+
 # run the web server
 $ ./scripts/start.sh
 ```
