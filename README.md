@@ -98,40 +98,13 @@ $ ./scripts/runtests.sh
 # at this point you can import your database backup if you have one
 $ mysql {your_db_name} < backup.sql
 
-# run the web server
-$ ./scripts/start.sh
+# run the web server (disconnect so we can exit from the ssh session)
+$ ./scripts/start.sh > logs.txt &
 ```
 
-If there are no problems with any of the above steps, you should be able to access the system at [http://localhost:8080](http://localhost:8080)
+## Visit the Application
+Browse to:
 
-## Web Server &  Reverse Proxying
-My deployment (production & dev) consists of:
-* python (cherrypy) in a virtualenvironment
-* apache web server using a reverse proxy to redirect requests to the cherrypy instance running at its own port
-
-**Example for dev:**
-Snippet from httpd.conf:
-
-```xml
-<VirtualHost *:80>
-ProxyPreserveHost On
-ProxyRequests Off
-ServerName babylogger_python
-ProxyPass /ljpy http://localhost:8080/
-ProxyPassReverse /ljpy http://localhost:8080/
-</VirtualHost>
-```
-
-This also requires that I have a host mapping setup from babylogger_python to 127.0.0.1 in my hosts file.
-
-Then go to: [http://babylogger_python/ljpy/](http://babylogger_python/ljpy/) **(Note the trailing forward slash!!)**
-
-Some more information can be found here: https://github.com/jeffwmair/samplecode/tree/master/apache-virtualhosts
-
-**Startup Note:**
-
-When starting via the start.sh script, in order to be able to later disconnect the terminal from the shell, the process output must be redirected to a file.  So start like this:
-
-```shell
-./start.sh > log.txt &
-```
+[http://yourserver/babylogs/ -- via apache](http://yourserver/babylogs/)
+or
+[http://yourserver:8080/ -- python app](http://yourserver:8080/)
