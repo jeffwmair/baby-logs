@@ -48,6 +48,12 @@ $ mysql
 $ virtualenv --version
 ```
 
+Clone the repo
+
+```bash
+git clone https://github.com/jeffwmair/baby-logs.git && cd baby-logs
+```
+
 Then actually getting started:
 ```bash
 # Create your python virtual env using:
