@@ -22,6 +22,7 @@ Basic usage is to go to the **Entry** screen and enter instances of sleep, feedi
 * Python 2.7
 * VirtualEnvironment (sudo apt-get install python-virtualenv)
 * Mysql (default login must have access to create databases, users, add tables; ie, put user/password into ~/.my.cnf)
+* Apache for reverse-proxying
 
 ## Installing Requirements (new section!)
 ```bash
@@ -30,6 +31,24 @@ sudo apt-get upgrade -y
 sudo apt-get install python -y
 sudo apt-get install virtualenv -y
 sudo apt-get install mysql-server -y
+sudo apt-get install apache2 -y
+```
+
+### Additional Apache Setup for Reverse Proxying to the Python App
+
+```bash
+# add the proxy module to apache
+cd /etc/apache2/mods-enabled && ln -s ../mods-available/proxy_http.load proxy_http.load
+cd /etc/apache2/mods-enabled && ln -s ../mods-available/proxy.load proxy.load
+
+# edit apache2.conf (/etc/apache2/apache2.conf), and add the following (replace babylogs with whatever directory you want; ie, http://server/babylogs/):
+ProxyPreserveHost On
+ProxyRequests Off
+ProxyPass /babylogs http://127.0.0.1:8080/
+ProxyPassReverse /babylogs http://127.0.0.1:8080/
+
+# restart
+sudo apachectl restart
 ```
 
 ## Getting Started
