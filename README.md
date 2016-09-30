@@ -24,7 +24,7 @@ Basic usage is to go to the **Entry** screen and enter instances of sleep, feedi
 * Mysql (default login must have access to create databases, users, add tables; ie, put user/password into ~/.my.cnf)
 * Apache for reverse-proxying
 
-## Installing Requirements (new section!)
+## Installing Requirements
 ```bash
 sudo apt-get update -y
 sudo apt-get upgrade -y
