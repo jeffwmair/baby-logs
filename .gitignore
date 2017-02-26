@@ -8,3 +8,6 @@
 credentials.properties
 export.sql
 logs.txt
+.vagrant/
+.vscode/
+*.log

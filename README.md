@@ -19,81 +19,17 @@ Basic usage is to go to the **Entry** screen and enter instances of sleep, feedi
 
 ## Setup
 
-**Requirements**
+I'm using vagrant, so you just need to run `vagrant up`, which use make use of a bootstrap script to configure the dependencies.
 
-* Python 2.7
-* VirtualEnvironment (sudo apt-get install python-virtualenv)
-* Mysql (default login must have access to create databases, users, add tables; ie, put user/password into ~/.my.cnf)
-* Apache for reverse-proxying
+Once the vagrant machine is up, login with `vagrant ssh`, switch to the vagrant-sync'd directory `/vagrant`, and run the installation (next section).
 
-### Installing Requirements
-```bash
-sudo apt-get update -y
-sudo apt-get upgrade -y
-sudo apt-get install python -y
-sudo apt-get install virtualenv -y
-sudo apt-get install mysql-server -y
-sudo apt-get install apache2 -y
-```
-
-**Additional Apache Setup for Reverse Proxying to the Python App**
+### Install the application
 
 ```bash
-# add the proxy module to apache
-cd /etc/apache2/mods-enabled && ln -s ../mods-available/proxy_http.load proxy_http.load
-cd /etc/apache2/mods-enabled && ln -s ../mods-available/proxy.load proxy.load
-
-# edit apache2.conf (/etc/apache2/apache2.conf), and add the following (replace babylogs with whatever directory you want; ie, http://server/babylogs/):
-ProxyPreserveHost On
-ProxyRequests Off
-ProxyPass /babylogs http://127.0.0.1:8080/
-ProxyPassReverse /babylogs http://127.0.0.1:8080/
-
-# restart
-sudo apachectl restart
-```
-
-### Clone the repo
-
-```bash
-git clone https://github.com/jeffwmair/baby-logs.git && cd baby-logs
-```
-
-### Configure the application
-
-```bash
-# Create your python virtual env using:
-virtualenv venv
-
-# Activate the environment
-source activate_environment.sh
-
-# After activating the environment, run the load_requirements_into_venv script.
-./scripts/load_requirements_into_venv.sh
-
-# Configure your credentials.properties.
-# Copy the sample to credentials.properties, then edit the file and set
-# your desired mysql user, password, dbname (and host if its not localhost)
-cp credentials.properties.sample credentials.properties
-
-# Setup our mysql database; from credentials.properties, the provided dbname will be created; user will be created and assigned to the db
-./scripts/init_db.sh
-
-# run unit tests (if you like)
-./scripts/runtests.sh     
-
-# at this point you can import your database backup if you have one
-mysql {your_db_name} < backup.sql
-
-# run the web server (disconnect so we can exit from the ssh session)
-./scripts/start.sh > logs.txt &
+./scripts/install.sh
 ```
 
 ## Login
 Browse to:
 
-[http://yourserver/babylogs/ -- via apache](http://yourserver/babylogs/)
-
-or
-
-[http://yourserver:8080/ -- python app](http://yourserver:8080/)
+[http://localhost:8091/](http://localhost:8091/)

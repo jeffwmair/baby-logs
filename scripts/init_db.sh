@@ -35,7 +35,7 @@ create_user() {
 }
 
 grant_user_to_db() {
-	echo "Granting user $USER to $DB"
+	echo "granting $USER to $DB"
 	mysql --execute="grant all on $DB.* to '$USER'@'$HOST';"
 }
 
