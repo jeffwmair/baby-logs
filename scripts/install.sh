@@ -17,4 +17,4 @@ cp credentials.properties.sample credentials.properties
 ./scripts/runtests.sh     
 
 # run the web server (disconnect so we can exit from the ssh session)
-./scripts/start.sh > logs.txt &
+python cherrypy_start.py > logs.txt &
