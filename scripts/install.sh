@@ -1,13 +1,9 @@
 #!/bin/bash
 
-# Create your python virtual env using:
-virtualenv venv
+export BABY_LOGGER=`pwd`
 
-# Activate the environment
-source activate_environment.sh
-
-# After activating the environment, run the load_requirements_into_venv script.
-./scripts/load_requirements_into_venv.sh
+# load python dependencies
+sudo pip install --egg -r requirements.txt
 
 # Configure your credentials.properties.
 # Copy the sample to credentials.properties, then edit the file and set

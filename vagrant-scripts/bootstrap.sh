@@ -1,6 +1,8 @@
 #!/bin/bash
+# deals with sporadit issue of not being able to hit the web resource that provides apt-get packages.  That's google's dns server
+sudo echo "nameserver 8.8.8.8" > /etc/resolv.conf
 apt-get install -y git
-apt-get install -y python-virtualenv
+apt-get install -y python-pip
 debconf-set-selections <<< 'mysql-server mysql-server/root_password password mysqlrootpass'
 debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password mysqlrootpass'
 apt-get install -y mysql-server-5.5
