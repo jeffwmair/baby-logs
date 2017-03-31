@@ -17,7 +17,7 @@ Basic usage is to go to the **Entry** screen and enter instances of sleep, feedi
 
 ![Alt text](/docs/ReportPage.png)
 
-## Setup
+## Setup with Vagrant
 
 I'm using vagrant, so you just need to run `vagrant up`, which use make use of a bootstrap script to configure the dependencies.
 
@@ -36,7 +36,13 @@ Once the vagrant machine is up, login with `vagrant ssh`, switch to the vagrant-
 python cherrypy_start.py > logs.txt &
 ```
 
-## Login
+### Login
 Browse to:
 
 [http://localhost:8091/](http://localhost:8091/)
+
+## Setup with Vs Code
+
+To use with VS Code, first launch a virtual environment on the command line.  Then launch VS Code from that running venv.  That's the trick!
+
+
