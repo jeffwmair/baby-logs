@@ -1,0 +1,26 @@
+{
+  "name": "baby-logs",
+  "version": "2.0.0",
+  "description": "Application to track baby sleeping, feeding and diapers.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeffwmair/baby-logs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jeffwmair/baby-logs/issues"
+  },
+  "homepage": "https://github.com/jeffwmair/baby-logs#readme",
+  "dependencies": {
+    "bower": "^1.8.0"
+  }
+}

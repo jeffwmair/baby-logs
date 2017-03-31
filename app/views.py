@@ -1,101 +1,92 @@
-from app import app
 import traceback
-import json
 from datetime import datetime
-from flask import jsonify, Response
+from flask import jsonify
 from flask import request
 from flask import render_template
 from services import ReportService
 from properties_reader import PropertiesReader
 from query_mapper import QueryMapper
-from exceptions import Exception, ValueError, NameError
+from exceptions import Exception
+from app import app
 
 @app.errorhandler(500)
 def server_error(error):
-	return traceback.format_exc()
+    return traceback.format_exc()
 
 @app.route('/')
 def dashboard_page():
-	return render_template('index.html')
-
-@app.route('/date')
-def date_test():
-	return render_template('dayPicker.html')
-
-@app.route('/grid')
-def grid_test():
-	return render_template('grid.html')
+    return render_template('index.html')
 
 @app.route('/entry')
 def entry_page():
-	return render_template('entry.html')
+    return render_template('entry.html')
 
 @app.route('/charts')
 def charts_page():
-	return render_template('charts.html')
+    return render_template('charts.html')
 
 @app.route('/BabyApi')
 def api():
-	data = None
+    data = None
 
-	# TODO: fix this
-	babyid = 1;
+    # TODO: fix this
+    babyid = 1
 
-	credentialsReader = PropertiesReader('credentials.properties');
-	creds = credentialsReader.read_from_file()
-	mapper = QueryMapper(creds, babyid)
+    credentialsReader = PropertiesReader('credentials.properties')
+    creds = credentialsReader.read_from_file()
+    mapper = QueryMapper(creds, babyid)
 
-	apiMethod = request.args['action']
-	print 'processing request with action=%s' % apiMethod
-	svc = ReportService(mapper);
-	if apiMethod == "loadDashboard":
-		try:
-			data = svc.get_dashboard_data()
-		except Exception:
-			print traceback.format_exc()
+    apiMethod = request.args['action']
+    print 'processing request with action=%s' % apiMethod
+    svc = ReportService(mapper);
+    if apiMethod == "loadDashboard":
+        try:
+            data = svc.get_dashboard_data()
+        except Exception:
+            print traceback.format_exc()
 
-	elif apiMethod == "loadentrydata":
-		try:
-			day_string = datetime.now().strftime('%Y-%m-%d')
-			if 'day' in request.args:
-				day_string = request.args['day']
-			data = svc.get_entry_data(day_string)
-		except Exception:
-			print traceback.format_exc()
-	
-	elif apiMethod == "removesleep":
-		sleep_time = request.args['sleepstart']
-		svc.remove_sleep(sleep_time)
-		data = svc.get_entry_data(sleep_time)
+    elif apiMethod == "loadentrydata":
+        try:
+            day_string = datetime.now().strftime('%Y-%m-%d')
+            if 'day' in request.args:
+                day_string = request.args['day']
+            data = svc.get_entry_data(day_string)
+        except Exception:
+            print traceback.format_exc()
 
-	elif apiMethod == "sleep":
-		start = request.args['sleepstart']
-		svc.add_sleep(start)
-		data = svc.get_entry_data(start)
+    elif apiMethod == "removesleep":
+        sleep_time = request.args['sleepstart']
+        svc.remove_sleep(sleep_time)
+        data = svc.get_entry_data(sleep_time)
 
-	elif apiMethod == "sleeprange":
-		#jsondata = json.loads(request.args['data'])
-		#print jsondata['selectSleepStartHr'];
-		raise Exception('Method "%s" not implemented' % apiMethod)
+    elif apiMethod == "sleep":
+        start = request.args['sleepstart']
+        svc.add_sleep(start)
+        data = svc.get_entry_data(start)
 
-	elif apiMethod == "addvalue":
-		time = request.args['time']
-		entry_type = request.args['type']
-		entry_value = request.args['value']
-		svc.add_value_item(time, entry_type, entry_value)
-		data = svc.get_entry_data(time)
+    elif apiMethod == "sleeprange":
+        #jsondata = json.loads(request.args['data'])
+        #print jsondata['selectSleepStartHr'];
+        raise Exception('Method "%s" not implemented' % apiMethod)
 
-	elif apiMethod == "loadreportdata_daily":
-		data = svc.get_chart_data_daily(10)
+    elif apiMethod == "addvalue":
+        time = request.args['time']
+        entry_type = request.args['type']
+        entry_value = request.args['value']
+        svc.add_value_item(time, entry_type, entry_value)
+        data = svc.get_entry_data(time)
 
-	elif apiMethod == "loadreportdata_weekly":
-		data = svc.get_chart_data_weekly()
+    elif apiMethod == "loadreportdata_daily":
+        data = svc.get_chart_data_daily(10)
 
-	else:
-		raise Exception('Method "%s" not implemented' % apiMethod)
+    elif apiMethod == "loadreportdata_weekly":
+        data = svc.get_chart_data_weekly()
 
-	try:
-		jsondata = jsonify(data)
-		return jsondata
-	except Exception:
-		print traceback.format_exc()
+    else:
+        raise Exception('Method "%s" not implemented' % apiMethod)
+
+    try:
+        jsondata = jsonify(data)
+        return jsondata
+    except Exception:
+        print traceback.format_exc()

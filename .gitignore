@@ -11,3 +11,6 @@ logs.txt
 .vagrant/
 .vscode/
 *.log
+bower_components/
+node_modules/
+app/static/js/lib/
