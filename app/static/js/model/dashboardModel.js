@@ -2,17 +2,13 @@
 	'use strict'
 
 	function Model() {
-		var self = this;
 	}
 
 	/**
 	 * Reads the model from storage
 	 */
 	Model.prototype.read = function(callback) {
-		var self = this;
-		UTILS.ajax("BabyApi?action=loadDashboard", function(json) {
-			callback(json);
-		});
+		UTILS.ajax("BabyApi?action=loadDashboard", callback);
 	}
 
 	window.dashboard = window.dashboard || {};

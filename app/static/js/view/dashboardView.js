@@ -1,94 +1,51 @@
-(function(window) {
+(function (window) {
 	'use strict'
-
-	var SUFFIX_AGO = ' ago';
 	var ONE_DAY_MINUTES = 1440;
 
 	function View() {
-
-		var self = this;
-
 		// view elements
-		self.$txtMostRecentFeed = qs('#txtMostRecentFeed');
-		self.$txtMostRecentSleep = qs('#txtMostRecentSleep');
-		self.$txtMostRecentPee = qs('#txtMostRecentPee');
-		self.$txtMostRecentPoo = qs('#txtMostRecentPoo');
-		self.$txtBigNaps = qs('#bigNumSleeps');
-		self.$txtBigFeeds = qs('#bigNumFeedings');
-		self.$txtBigPoos = qs('#bigNumPoos');
+		this.$txtMostRecentFeed = qs('#txtMostRecentFeed');
+		this.$txtMostRecentSleep = qs('#txtMostRecentSleep');
+		this.$txtMostRecentPee = qs('#txtMostRecentPee');
+		this.$txtMostRecentPoo = qs('#txtMostRecentPoo');
+		this.$txtBigNaps = qs('#bigNumSleeps');
+		this.$txtBigFeeds = qs('#bigNumFeedings');
+		this.$txtBigPoos = qs('#bigNumPoos');
 	}
 
 	/**
 	 * Render the view with the provided data.
 	 */
-	View.prototype.render = function(data) {
-		var self = this;
+	View.prototype.render = function (data) {
+		this.$txtBigPoos.innerHTML = data.poo.todayCount;
+		this.$txtBigNaps.innerHTML = data.sleep.naps.count + ' naps<br>' + data.sleep.naps.duration + ' hrs';
+		this.$txtBigFeeds.innerHTML = data.feed.milkMlToday + ' milk<br>' + data.feed.breastCountToday + ' breast<br>' + data.feed.formulaMlToday + ' formula<br>' + data.feed.solidMlToday + ' solid';
 
-		self.$txtBigPoos.innerHTML = data.poo.todayCount;
-		self.$txtBigNaps.innerHTML = data.sleep.naps.count + ' naps<br>' + data.sleep.naps.duration + ' hrs';
-		self.$txtBigFeeds.innerHTML = data.feed.milkMlToday + ' milk<br>' + data.feed.breastCountToday + ' breast<br>' + data.feed.formulaMlToday + ' formula<br>' + data.feed.solidMlToday +' solid';
-
-
-		if (data.feed.prev.minutesAgo <= ONE_DAY_MINUTES)  {
-			self.$txtMostRecentFeed.innerHTML = self._getIcon(data.feed.prev.status) + data.feed.prev.time + ' (' + self._formatMinutesAgo(data.feed.prev.minutesAgo) + ')';
+		function assignIfNotTooOld(textbox, data) {
+			if (data.prev.minutesAgo < ONE_DAY_MINUTES) {
+				textbox.innerHTML = this._getIcon(data.prev.status) + data.prev.time + ' (' + this._formatMinutesAgo(data.prev.minutesAgo) + ')';
+			}
 		}
 
-		if (!self._mostRecentActivitiesTooOld(data.sleep.prev.minutesAgo))  {
-			self.$txtMostRecentSleep.innerHTML = self._getIcon(data.sleep.prev.status) + data.sleep.prev.time + ' (' + self._formatMinutesAgo(data.sleep.prev.minutesAgo) + ')';
-		}
-
-		if (!self._mostRecentActivitiesTooOld(data.pee.prev.minutesAgo))  {
-			self.$txtMostRecentPee.innerHTML = self._getIcon(data.pee.prev.status) + data.pee.prev.time + ' (' + self._formatMinutesAgo(data.pee.prev.minutesAgo) + ')';
-		}
-
-		if (!self._mostRecentActivitiesTooOld(data.poo.prev.minutesAgo)) {
-			self.$txtMostRecentPoo.innerHTML = self._getIcon(data.poo.prev.status) + data.poo.prev.time + ' (' + self._formatMinutesAgo(data.poo.prev.minutesAgo) + ')';
-		}
-
-	}
-
-	/**
-	 * This is time passed too long to show?
-	 */
-	View.prototype._mostRecentActivitiesTooOld = function(minutesAgo) {
-		return minutesAgo > ONE_DAY_MINUTES;
+		assignIfNotTooOld.call(this, this.$txtMostRecentFeed, data.feed);
+		assignIfNotTooOld.call(this, this.$txtMostRecentSleep, data.sleep);
+		assignIfNotTooOld.call(this, this.$txtMostRecentPee, data.pee);
+		assignIfNotTooOld.call(this, this.$txtMostRecentPoo, data.poo);
 	}
 
 	/**
 	 * Get the appropriate icon for this status.
 	 */
-	View.prototype._getIcon = function(status) {
-		var img = '';
-		var file = '';
-		switch(status) {
-			case 1:
-				file = 'Circle_Green';
-				break;
-			case 2:
-				file = 'Circle_Yellow';
-				break;
-			case 3:
-				file = 'Circle_Red';
-				break;
-			default:
-				throw "Status value: "+status;
-		}
-
-		img = '<img src="static/images/'+file+'.png" style="width:18px;margin-right:10px" />';
-		return img;
+	View.prototype._getIcon = function (status) {
+		var fileMap = { 1: 'Circle_Green', 2: 'Circle_Yellow', 3: 'Circle_Red' };
+		return '<img src="static/images/' + fileMap[status] + '.png" style="width:18px;margin-right:10px" />';
 	}
 
 	/**
 	 * Format the time
 	 */
-	View.prototype._formatMinutesAgo = function(mins) {
-
-		if (mins < 60) {
-			//return parseFloat(mins).toFixed(0) + ' minutes ago';
-			return '< 1 hr ago';
-		}
-
-		return (mins / 60.0).toFixed(1) + ' hrs ago';
+	View.prototype._formatMinutesAgo = function (mins) {
+		return mins < 60 ? '< 1 hr ago' : (mins / 60.0).toFixed(1) + ' hrs ago';
 	}
 
 	window.dashboard = window.dashboard || {};
