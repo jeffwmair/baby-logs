@@ -10,6 +10,9 @@ sudo pip install --egg -r requirements.txt
 # your desired mysql user, password, dbname (and host if its not localhost)
 cp credentials.properties.sample credentials.properties
 
+# set appropriate timezone if applicable
+sudo timedatectl set-timezone America/New_York
+
 # Setup our mysql database; from credentials.properties, the provided dbname will be created; user will be created and assigned to the db
 ./scripts/init_db.sh
 
