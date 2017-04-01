@@ -31,12 +31,12 @@ create_db() {
 
 create_user() {
 	echo "Creating user $USER"
-	mysql --execute="create user '$USER'@'$HOST' identified by '$PASS';"
+	mysql --execute="create user '$USER'@'%' identified by '$PASS';"
 }
 
 grant_user_to_db() {
 	echo "granting $USER to $DB"
-	mysql --execute="grant all on $DB.* to '$USER'@'$HOST';"
+	mysql --execute="grant all on $DB.* to '$USER'@'%';"
 }
 
 create_tables() {
