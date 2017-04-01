@@ -5,7 +5,6 @@ from dateutil.parser import parse
 import traceback
 from domain.day import Day, SleepSet, FeedSet, DiaperSet
 
-
 class ReportService():
     def __init__(self, datamapper):
         self._babyid = 1

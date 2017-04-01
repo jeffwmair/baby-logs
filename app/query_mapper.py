@@ -1,7 +1,6 @@
 from domain.day import DayGenerator, Day
 from datetime import date, datetime, timedelta
 from db_records import BabyRecord, GuardianRecord, SleepRecord, KeyValueRecord
-from sleep_row import SleepRow
 import mysql.connector
 import traceback
 
@@ -47,7 +46,7 @@ class QueryMapper:
 
         sleep_row_objects = []
         for row in sleep_rows:
-            sleep_row_objects.append(SleepRow(row))
+            sleep_row_objects.append(self.sleep_row_to_dict(row))
 
         sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time >= "%s" and time <= CURRENT_TIMESTAMP() order by time ASC' % startDate
         keyval_rows = self.execute_sql(sql, True)
@@ -195,7 +194,7 @@ class QueryMapper:
 
             sleep_row_objects = []
             for row in sleep_rows:
-                sleep_row_objects.append(SleepRow(row))
+                sleep_row_objects.append(self.sleep_row_to_dict(row))
 
             sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time <= CURRENT_TIMESTAMP() %s order by time ASC' % keyval_date_filter
             keyval_rows = self.execute_sql(sql, True, cursor)
@@ -210,6 +209,9 @@ class QueryMapper:
 
         finally:
             con.close()
+        
+    def sleep_row_to_dict(self, row):
+        return {'baby_id':row[0], 'sleep_start':row[1],'sleep_end':row[2],'sleep_day_key':row[3]}
 
     def get_connection(self):
         return mysql.connector.connect(
