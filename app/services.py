@@ -185,4 +185,4 @@ class ReportService():
             return 1
 
     def format_date(self, date):
-        return date.strftime('%-I:%M%p').lower()
+        return date.strftime('%I:%M%p').lower()
