@@ -45,9 +45,9 @@ class SleepSet:
 
 	# organize into early morning, daytime, and night
 	def _organize_records_by_time(self, records):
-		self._last_night = list()
-		self._daytime = list()
-		self._night = list()
+		self._last_night = []
+		self._daytime = []
+		self._night = []
 
 		for rec in records:
 			if rec.start.hour < Constants.MORNING_START_HR:
@@ -62,7 +62,7 @@ class SleepSet:
 	# Merge them here to make them easier to work with.
 	def _merge_contiguous_sleeps(self, records):
 		prev_rec = None
-		contig_records = list()
+		contig_records = []
 		for rec in records:
 			if prev_rec == None:
 				prev_rec = rec

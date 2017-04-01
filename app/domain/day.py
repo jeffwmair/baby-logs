@@ -14,7 +14,7 @@ class DayGenerator():
 			day_date = parse(row.get_day_key())
 
 			if row.get_day_key() not in day_sleeps:
-				day_sleeps[row.get_day_key()] = list()
+				day_sleeps[row.get_day_key()] = []
 
 			day_sleeps_list = day_sleeps[row.get_day_key()]
 			sleep_record = SleepRecord(row.get_sleep_start(), row.get_sleep_end())
@@ -30,7 +30,7 @@ class DayGenerator():
 
 			# create a new day if doesn't exist
 			if keyval_day not in day_keyvals:
-				day_keyvals[keyval_day] = list()
+				day_keyvals[keyval_day] = []
 
 			day_keyval = day_keyvals[keyval_day]
 			#TODO babyid
@@ -38,7 +38,7 @@ class DayGenerator():
 			day_keyval.append(KeyValueRecord(keyval_time, keyval_type, keyval_val, babyid))
 
 		# get a list of all the day/keys
-		day_keys = list()
+		day_keys = []
 		for key in day_sleeps:
 			if not key in day_keys:
 				day_keys.append(key)
@@ -89,7 +89,7 @@ class DayGenerator():
 
 				# we need a list of days in this week
 				if not week_key in week_groups:
-					week_groups[week_key] = list()
+					week_groups[week_key] = []
 				week_group_list = week_groups[week_key]
 				week_group_list.append(days[day_key])
 					#this_day = Day(key, sleep_set, diaper_set, feed_set)

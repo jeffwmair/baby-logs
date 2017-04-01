@@ -10,34 +10,24 @@ class QueryMapper:
     def __init__(self, credentials, baby_id):
         self._credentials = credentials
         self._baby_id = baby_id
-        self._disabled = credentials['disable.modifications'] == 'True'
-        self._disabled_error = 'The application is currently disabled from further input'
 
     def insert_value_item(self, babyid, time_string, entry_type, entry_value):
         sql = "insert into baby_keyval (babyid, time, entry_type, entry_value) values (%i, '%s', '%s', '%s');" % (
             babyid, time_string, entry_type, entry_value)
-        if self._disabled:
-            raise Exception(self._disabled_error)
         self.execute_sql(sql)
 
     def delete_value_item(self, babyid, time_string, entry_type):
         sql = "delete from baby_keyval where babyid = %i and time = '%s' and entry_type = '%s';" % (
             babyid, time_string, entry_type)
-        if self._disabled:
-            raise Exception(self._disabled_error)
         self.execute_sql(sql)
 
     def insert_sleep(self, babyid, sleep_start, sleep_end):
         sql = "insert into baby_sleep (babyid, start, end) values (%i, '%s', '%s');" % (
             babyid, sleep_start, sleep_end)
-        if self._disabled:
-            raise Exception(self._disabled_error)
         self.execute_sql(sql)
 
     def delete_sleep(self, sleep_time):
         sql = "delete from baby_sleep where start = '%s';" % (sleep_time)
-        if self._disabled:
-            raise Exception(self._disabled_error)
         self.execute_sql(sql)
 
     def get_query_keyval_in_day_by_type(self, entry_type, date_string):
@@ -55,7 +45,7 @@ class QueryMapper:
         sql = 'select id, start, end, date_format(start, "%%Y-%%m-%%d") as day from baby_sleep where start >= "%s" and start <= CURRENT_TIMESTAMP() order by start ASC' % startDate
         sleep_rows = self.execute_sql(sql, True)
 
-        sleep_row_objects = list()
+        sleep_row_objects = []
         for row in sleep_rows:
             sleep_row_objects.append(SleepRow(row))
 
@@ -64,7 +54,7 @@ class QueryMapper:
         try:
             day_gen = DayGenerator(1, weekly, sleep_row_objects, keyval_rows)
             datasets = day_gen.get_datasets()
-            daily = list()
+            daily = []
             for day_key in sorted(datasets):
                 day = datasets.get(day_key)
                 feed = day.get_feed()
@@ -95,12 +85,7 @@ class QueryMapper:
             date_string, date_string)
         sql_keyval = "select date_format(time, '%%Y-%%m-%%d %%T'), entry_value, entry_type from baby_keyval where time >= '%s' and time <= '%s 23:59:59' order by time" % (
             date_string, date_string)
-        con = mysql.connector.connect(
-            user=self._credentials['user'],
-            password=self._credentials['pass'],
-            host=self._credentials['host'],
-            port=self._credentials['port'],
-            database=self._credentials['db'])
+        con = self.get_connection()
         try:
             cursor = con.cursor()
             sleeps = self.execute_sql(sql_sleeps, True, cursor)
@@ -114,7 +99,7 @@ class QueryMapper:
             solid = get_records_by_type('solid')
             diapers = get_records_by_type('diaper')
 
-            sleep_list = list()
+            sleep_list = []
             for sleep in sleeps:
                 row = {
                     'id': sleep[0],
@@ -125,7 +110,7 @@ class QueryMapper:
                 sleep_list.append(row)
 
             def get_keyval_rows(itemlist):
-                rowlist = list()
+                rowlist = []
                 for entry in itemlist:
                     row = {
                         'time': entry[0],
@@ -158,16 +143,9 @@ class QueryMapper:
         sql_feed = "select time from baby_keyval where entry_type = 'milk' or entry_type = 'formula' or entry_type = 'solid' order by time desc limit 1"
         sql_sleep = "select end from baby_sleep where end <= current_timestamp() order by end desc limit 1"
 
-        con = mysql.connector.connect(
-            user=self._credentials['user'],
-            password=self._credentials['pass'],
-            host=self._credentials['host'],
-            port=self._credentials['port'],
-            database=self._credentials['db'])
-
+        con = self.get_connection()
         try:
             cursor = con.cursor()
-
             def get_last_record_time(sql):
                 rows = self.execute_sql(sql, True, cursor)
                 try:
@@ -209,19 +187,13 @@ class QueryMapper:
             keyval_date_filter = '%s and time <= TIMESTAMP("%s")' % (
                 keyval_date_filter, end_fmt)
 
-        con = mysql.connector.connect(
-            user=self._credentials['user'],
-            password=self._credentials['pass'],
-            host=self._credentials['host'],
-               port=self._credentials['port'],
-             database=self._credentials['db'])
-
+        con = self.get_connection()
         try:
             cursor = con.cursor()
             sql = "select id, start, end, DATE_FORMAT(start, '%%Y-%%m-%%d') as day from baby_sleep where start <= CURRENT_TIMESTAMP() %s order by start ASC" % sleep_date_filter
             sleep_rows = self.execute_sql(sql, True, cursor)
 
-            sleep_row_objects = list()
+            sleep_row_objects = []
             for row in sleep_rows:
                 sleep_row_objects.append(SleepRow(row))
 
@@ -239,20 +211,26 @@ class QueryMapper:
         finally:
             con.close()
 
+    def get_connection(self):
+        return mysql.connector.connect(
+            user=self._credentials['user'],
+            password=self._credentials['pass'],
+            host=self._credentials['host'],
+            port=self._credentials['port'],
+            database=self._credentials['db'])
+        
+    def starts_with_any(self, subject, startOptions):
+         return any([x for x in startOptions if subject.lower().startswith(x.lower())])
+
     def execute_sql(self, sql, return_rows=None, cursor=None):
-        #print sql
+        if self._credentials['disable.modifications'].lower() == 'true' and self.starts_with_any(sql, ['insert', 'update', 'delete']):
+            raise Exception('The application is currently disabled from further input')
         create_own_connection = cursor == None
         if create_own_connection:
-            con = mysql.connector.connect(
-                user=self._credentials['user'],
-                password=self._credentials['pass'],
-                host=self._credentials['host'],
-                port=self._credentials['port'],
-                database=self._credentials['db'])
+            con = self.get_connection()
             cursor = con.cursor()
         try:
             cursor.execute(sql)
-            #print 'return_rows: %s' % return_rows
             if (return_rows):
                 return cursor.fetchall()
         except Exception:

@@ -15,7 +15,9 @@ from app import app
 @app.errorhandler(500)
 def server_error(err):
     """responds with error message"""
-    return traceback.format_exc()
+    print err
+    trace = traceback.format_exc()
+    return trace
 
 
 @app.route('/')

@@ -11,6 +11,23 @@ class ReportService():
         self._babyid = 1
         self._datamapper = datamapper
         self._feed_types = ['milk', 'formula', 'solid', 'feed']
+        self._old = 3
+        self._recent = 2
+        self._new = 1
+        self.status_calculation_map = {
+            'older': {
+                'sleep': 60 * 2,
+                'feed': 60 * 3.5,
+                'poo': 60 * 24,
+                'pee': 60 * 3.5
+            },
+            'recent': {
+                'sleep': 60 * 1.5,
+                'feed': 60 * 2.5,
+                'poo': 60 * 12,
+                'pee': 60 * 2.75
+            }
+        }
 
     # data that drives the chart/report page
     def get_chart_data_daily(self, days):
@@ -49,8 +66,6 @@ class ReportService():
         start_time = parse(sleep_start_string)
         sleep_end_string = (
             start_time + timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
-        print 'Add sleep with start %s, and end %s' % (sleep_start_string,
-                                                       sleep_end_string)
         babyid = 1
         self._datamapper.insert_sleep(babyid, sleep_start_string,
                                       sleep_end_string)
@@ -101,7 +116,7 @@ class ReportService():
         today_feed = dayToday.get_feed()
         today_diaper = dayToday.get_diaper()
 
-        data = {
+        return {
             'feed': {
                 'milkMlToday': str(today_feed.get_milk_ml()) + 'ml',
                 'formulaMlToday': str(today_feed.get_fmla_ml()) + 'ml',
@@ -140,7 +155,6 @@ class ReportService():
                 }
             }
         }
-        return data
 
     def get_time_minutes_ago(self, time):
         minutes_ago = (datetime.now() - time).seconds / 60.0
@@ -149,40 +163,24 @@ class ReportService():
         return minutes_ago
 
     def get_pee_status(self, time):
-        min_ago = self.get_time_minutes_ago(time)
-        if min_ago > 60 * 3.5:
-            return 3
-        elif min_ago > 60 * 2.75:
-            return 2
-        else:
-            return 1
+        return self.get_item_status('pee', self.get_time_minutes_ago(time))
 
     def get_poo_status(self, time):
-        min_ago = self.get_time_minutes_ago(time)
-        if min_ago > 60 * 24:
-            return 3
-        elif min_ago > 60 * 12:
-            return 2
-        else:
-            return 1
+        return self.get_item_status('poo', self.get_time_minutes_ago(time))
 
     def get_feed_status(self, time):
-        min_ago = self.get_time_minutes_ago(time)
-        if min_ago > 60 * 3.5:
-            return 3
-        elif min_ago > 60 * 2.5:
-            return 2
-        else:
-            return 1
+        return self.get_item_status('feed', self.get_time_minutes_ago(time))
 
     def get_sleep_status(self, time):
-        min_ago = self.get_time_minutes_ago(time)
-        if min_ago > 60 * 2:
-            return 3
-        elif min_ago > 60 * 1.5:
-            return 2
+        return self.get_item_status('sleep', self.get_time_minutes_ago(time))
+
+    def get_item_status(self, item, min_ago):
+        if min_ago > self.status_calculation_map['older'][item]:
+            return self._old
+        elif min_ago > self.status_calculation_map['recent'][item]:
+            return self._recent
         else:
-            return 1
+            return self._new
 
     def format_date(self, date):
         return date.strftime('%I:%M%p').lower()
