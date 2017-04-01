@@ -1,9 +1,7 @@
 """main entry point"""
 
-import cherrypy
 from cherrypy import wsgiserver
 from app import app
-
 
 d = wsgiserver.WSGIPathInfoDispatcher({'/': app})
 server = wsgiserver.CherryPyWSGIServer(('0.0.0.0', 8080), d)

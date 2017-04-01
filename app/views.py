@@ -1,6 +1,7 @@
 """module handles http requests"""
 
 import traceback
+import sys
 from datetime import datetime
 from flask import jsonify
 from flask import request
@@ -10,23 +11,28 @@ from app.properties_reader import PropertiesReader
 from app.query_mapper import QueryMapper
 from app import app
 
+
 @app.errorhandler(500)
-def server_error():
+def server_error(err):
     """responds with error message"""
     return traceback.format_exc()
+
 
 @app.route('/')
 def dashboard_page():
     """show the dashboard page"""
     return render_template('index.html')
 
+
 @app.route('/entry')
 def entry_page():
     return render_template('entry.html')
 
+
 @app.route('/charts')
 def charts_page():
     return render_template('charts.html')
+
 
 @app.route('/BabyApi')
 def api():
@@ -34,8 +40,10 @@ def api():
 
     # TODO: fix this
     babyid = 1
-
-    credentials_reader = PropertiesReader('credentials.properties')
+    credentials_file = 'credentials.properties'
+    if len(sys.argv) == 2 and sys.argv[1].startswith('credentials='):
+        credentials_file = sys.argv[1].split('credentials=')[1]
+    credentials_reader = PropertiesReader(credentials_file)
     creds = credentials_reader.read_from_file()
     mapper = QueryMapper(creds, babyid)
 
