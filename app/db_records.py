@@ -1,7 +1,4 @@
-"""database records"""
-
 class BabyRecord(object):
-    """baby instance record"""
     def __init__(self, fullname, gender, birthdate):
         self.fullname = fullname
         self.gender = gender
@@ -36,4 +33,3 @@ class SleepRecord:
 
     def get_duration(self):
         return (self.end - self.start).seconds / 3600.0
-

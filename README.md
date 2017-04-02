@@ -44,5 +44,3 @@ Browse to:
 ## Setup with Vs Code
 
 To use with VS Code, first launch a virtual environment on the command line.  Then launch VS Code from that running venv.  That's the trick!
-
-

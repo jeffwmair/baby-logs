@@ -35,7 +35,6 @@ class QueryMapper:
         return sql
 
     def get_chart_data(self, weekly, daysToShow=None):
-
         startDate = '2000-01-01 00:00:00'
         if daysToShow != None:
             startDate = (datetime.now() - timedelta(
@@ -71,15 +70,12 @@ class QueryMapper:
                 }
                 daily.append(row)
 
-            data = dict()
-            data['datasets'] = daily
-            return data
+            return {'datasets': daily}
 
         except Exception as ex:
             print traceback.format_exc()
 
     def get_data_for_day(self, date_string):
-        data = dict()
         sql_sleeps = "select id, babyid, date_format(start, '%%Y-%%m-%%d %%T'), date_format(end, '%%Y-%%m-%%d %%T') from baby_sleep where start >= '%s' and start <= '%s 23:59:59' order by start" % (
             date_string, date_string)
         sql_keyval = "select date_format(time, '%%Y-%%m-%%d %%T'), entry_value, entry_type from baby_keyval where time >= '%s' and time <= '%s 23:59:59' order by time" % (
@@ -119,18 +115,13 @@ class QueryMapper:
                     rowlist.append(row)
                 return rowlist
 
-            formula_list = get_keyval_rows(formula)
-            milk_list = get_keyval_rows(milk)
-            solids_list = get_keyval_rows(solid)
-            diapers_list = get_keyval_rows(diapers)
-
-            data['milk'] = milk_list
-            data['formula'] = formula_list
-            data['solid'] = solids_list
-            data['sleep'] = sleep_list
-            data['diapers'] = diapers_list
-
-            return data
+            return {
+                'milk': get_keyval_rows(milk),
+                'formula': get_keyval_rows(formula),
+                'solid': get_keyval_rows(solid),
+                'sleep': sleep_list,
+                'diapers': get_keyval_rows(diapers)
+            }
         finally:
             con.close()
 
@@ -145,6 +136,7 @@ class QueryMapper:
         con = self.get_connection()
         try:
             cursor = con.cursor()
+
             def get_last_record_time(sql):
                 rows = self.execute_sql(sql, True, cursor)
                 try:
@@ -156,16 +148,11 @@ class QueryMapper:
                     print 'Failure in executing: "%s"' % (sql)
                     raise
 
-            last_pee = get_last_record_time(sql_pee)
-            last_poo = get_last_record_time(sql_poo)
-            last_feed = get_last_record_time(sql_feed)
-            last_sleep = get_last_record_time(sql_sleep)
-
             return {
-                'last_pee': last_pee,
-                'last_poo': last_poo,
-                'last_feed': last_feed,
-                'last_sleep': last_sleep
+                'last_pee': get_last_record_time(sql_pee),
+                'last_poo': get_last_record_time(sql_poo),
+                'last_feed': get_last_record_time(sql_feed),
+                'last_sleep': get_last_record_time(sql_sleep)
             }
 
         finally:
@@ -203,15 +190,17 @@ class QueryMapper:
             babyid = 1
             day_gen = DayGenerator(babyid, weekly_grouping, sleep_row_objects,
                                    keyval_rows)
-            days = day_gen.get_datasets()
-
-            return days
-
+            return day_gen.get_datasets()
         finally:
             con.close()
-        
+
     def sleep_row_to_dict(self, row):
-        return {'baby_id':row[0], 'sleep_start':row[1],'sleep_end':row[2],'sleep_day_key':row[3]}
+        return {
+            'baby_id': row[0],
+            'sleep_start': row[1],
+            'sleep_end': row[2],
+            'sleep_day_key': row[3]
+        }
 
     def get_connection(self):
         return mysql.connector.connect(
@@ -220,13 +209,17 @@ class QueryMapper:
             host=self._credentials['host'],
             port=self._credentials['port'],
             database=self._credentials['db'])
-        
+
     def starts_with_any(self, subject, startOptions):
-         return any([x for x in startOptions if subject.lower().startswith(x.lower())])
+        return any(
+            [x for x in startOptions if subject.lower().startswith(x.lower())])
 
     def execute_sql(self, sql, return_rows=None, cursor=None):
-        if self._credentials['disable.modifications'].lower() == 'true' and self.starts_with_any(sql, ['insert', 'update', 'delete']):
-            raise Exception('The application is currently disabled from further input')
+        if self._credentials['disable.modifications'].lower(
+        ) == 'true' and self.starts_with_any(sql,
+                                             ['insert', 'update', 'delete']):
+            raise Exception(
+                'The application is currently disabled from further input')
         create_own_connection = cursor == None
         if create_own_connection:
             con = self.get_connection()

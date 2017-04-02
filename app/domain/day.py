@@ -6,42 +6,35 @@ from app.domain.feed import FeedSet, FeedSetAggregated
 from app.domain.diaper import DiaperSet, DiaperSetAggregated
 
 class DayGenerator():
-	def __init__(self, babyid, weekly_grouping, sleep_rows, keyval_rows):
-
+	def __init__(self, babyid, weekly_grouping, sleep_rows, general_rows):
+		"""babyid, boolean indicating if its weekly grouped, list of sleep rows, and a list of 'other' kinds of rows"""
 		day_sleeps = dict()
+		db_keyval_record_map = ['time', 'day', 'type', 'value', 'babyid']
 		for row in sleep_rows:
-
 			try:
 				day_date = parse(row['sleep_day_key'])
 			except Exception as ex:
 				print 'the problem is in this row:'
 				print row
 				print ex
-
 			if row['sleep_day_key'] not in day_sleeps:
 				day_sleeps[row['sleep_day_key']] = []
-
 			day_sleeps_list = day_sleeps[row['sleep_day_key']]
 			sleep_record = SleepRecord(row['sleep_start'], row['sleep_end'])
 			day_sleeps_list.append(sleep_record)
 
 		day_keyvals = dict()
-		for row in keyval_rows:
-
-			keyval_time = row[0]
-			keyval_day = row[1]
-			keyval_type = row[2]
-			keyval_val = row[3]
-
-			# create a new day if doesn't exist
-			if keyval_day not in day_keyvals:
-				day_keyvals[keyval_day] = []
-
-			day_keyval = day_keyvals[keyval_day]
+		for row in general_rows:
 			#TODO babyid
 			babyid = 1
-			day_keyval.append(KeyValueRecord(keyval_time, keyval_type, keyval_val, babyid))
-
+			list_row = list(row)
+			list_row.append(babyid)
+			row_dict = dict([(x,list_row[db_keyval_record_map.index(x)]) for x in db_keyval_record_map])
+			# create a new day if doesn't exist
+			if row_dict['day'] not in day_keyvals:
+				day_keyvals[row_dict['day']] = []
+			day_keyval = day_keyvals[row_dict['day']]
+			day_keyval.append(row_dict)
 		# get a list of all the day/keys
 		day_keys = []
 		for key in day_sleeps:
@@ -61,8 +54,9 @@ class DayGenerator():
 			if key in day_sleeps:
 				sleeps = day_sleeps.get(key)
 			if key in day_keyvals:
-				feeds = [x for x in day_keyvals.get(key) if x != None and x.get_type() == 'milk' or x.get_type() == 'formula' or x.get_type() == 'solid']
-				diapers = [x for x in day_keyvals.get(key) if x.get_type() == 'diaper']
+				def inList(val, items): return any([x for x in items if x.lower() == val.lower()])
+				feeds = [x for x in day_keyvals.get(key) if x != None and inList(x['type'], ['milk', 'formula', 'solid'])]
+				diapers = [x for x in day_keyvals.get(key) if x['type'] == 'diaper']
 
 			sleep_set = SleepSet(sleeps)
 			feed_set = FeedSet(feeds)
@@ -109,7 +103,6 @@ class DayGenerator():
 
 			# stick it where the regular non-aggregated days go
 			self._days = week_groups_aggregated
-
 
 	def get_aggregated_sleeps(self, days):
 		sleep_sets = [x.get_sleep() for x in days]

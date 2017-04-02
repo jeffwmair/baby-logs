@@ -1,19 +1,14 @@
 from datetime import datetime
 
-# responsible for calculating over diaper records
 class DiaperSet:
+	"""responsible for calculating over diaper records"""
 	def __init__(self, diaper_records):
-
 		# 1 is pee
 		# 2 is poo
 		# 3 is both
-
 		# TODO: again with the string values in the DB... really gotta fix that
-		pees = [x for x in diaper_records if x.get_value() == 'pee']
-		poos = [x for x in diaper_records if x.get_value() == 'poo']
-
-		self._pee_count = len(pees)
-		self._poo_count = len(poos)
+		self._pee_count = len([x for x in diaper_records if x['type'] == 'pee'])
+		self._poo_count = len([x for x in diaper_records if x['type'] == 'poo'])
 
 	def get_pee_count(self):
 		return self._pee_count

@@ -1,5 +1,3 @@
-"""module handles http requests"""
-
 import traceback
 import sys
 from datetime import datetime
@@ -11,7 +9,6 @@ from app.properties_reader import PropertiesReader
 from app.query_mapper import QueryMapper
 from app import app
 
-
 @app.errorhandler(500)
 def server_error(err):
     """responds with error message"""
@@ -19,27 +16,22 @@ def server_error(err):
     trace = traceback.format_exc()
     return trace
 
-
 @app.route('/')
 def dashboard_page():
     """show the dashboard page"""
     return render_template('index.html')
 
-
 @app.route('/entry')
 def entry_page():
     return render_template('entry.html')
-
 
 @app.route('/charts')
 def charts_page():
     return render_template('charts.html')
 
-
 @app.route('/BabyApi')
 def api():
     data = None
-
     # TODO: fix this
     babyid = 1
     credentials_file = 'credentials.properties'
@@ -78,15 +70,11 @@ def api():
         data = svc.get_entry_data(start)
 
     elif api_method == "sleeprange":
-        #jsondata = json.loads(request.args['data'])
-        #print jsondata['selectSleepStartHr'];
         raise Exception('Method "%s" not implemented' % api_method)
 
     elif api_method == "addvalue":
-        time = request.args['time']
-        entry_type = request.args['type']
-        entry_value = request.args['value']
-        svc.add_value_item(time, entry_type, entry_value)
+        svc.add_value_item(request.args['time'], request.args['type'],
+                           request.args['value'])
         data = svc.get_entry_data(time)
 
     elif api_method == "loadreportdata_daily":
