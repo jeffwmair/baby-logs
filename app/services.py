@@ -4,6 +4,9 @@ from datetime import datetime, timedelta
 from dateutil.parser import parse
 import traceback
 from domain.day import Day, SleepSet, FeedSet, DiaperSet
+import logging
+
+logger = logging.getLogger('services')
 
 class ReportService():
     def __init__(self, datamapper):
@@ -39,8 +42,8 @@ class ReportService():
 
     # add a new value-item
     def add_value_item(self, time_string, item_type, item_value):
-        print 'adding value item: %s/%s at %s' % (item_type, item_value,
-                                                  time_string)
+        logger.info('Adding value item: %s/%s at %s' % (item_type, item_value,
+                                                  time_string))
         # delete the same type item first
         self._datamapper.delete_value_item(self._babyid, time_string,
                                            item_type)
@@ -56,12 +59,15 @@ class ReportService():
                                                item_type, item_value)
 
     def remove_value_item(self, time_string, item_type):
+        logger.info('Removing value item %s at %s', item_type, time_string)
         self._datamapper.delete_value_item(time_string, item_type)
 
     def remove_sleep(self, sleep_time_string):
+        logger.info('Removing sleep at %s', sleep_time_string)
         self._datamapper.delete_sleep(sleep_time_string)
 
     def add_sleep(self, sleep_start_string):
+        logger.info('Adding sleep at %s', sleep_start_string)
         start_time = parse(sleep_start_string)
         sleep_end_string = (
             start_time + timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
@@ -106,7 +112,7 @@ class ReportService():
         try:
             dayToday = days[todayKey]
         except Exception:
-            print traceback.format_exc()
+            logger.error(traceback.format_exc())
             #TODO
             babyid = 1
             dayToday = Day(todayKey, SleepSet([]), DiaperSet([]), FeedSet([]))

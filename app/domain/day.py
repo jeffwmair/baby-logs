@@ -4,7 +4,9 @@ from app.db_records import BabyRecord, GuardianRecord, SleepRecord, KeyValueReco
 from app.domain.sleep import SleepSet, SleepAggregated
 from app.domain.feed import FeedSet, FeedSetAggregated
 from app.domain.diaper import DiaperSet, DiaperSetAggregated
+import logging
 
+logger = logging.getLogger('day')
 class DayGenerator():
 	def __init__(self, babyid, weekly_grouping, sleep_rows, general_rows):
 		"""babyid, boolean indicating if its weekly grouped, list of sleep rows, and a list of 'other' kinds of rows"""
@@ -14,9 +16,7 @@ class DayGenerator():
 			try:
 				day_date = parse(row['sleep_day_key'])
 			except Exception as ex:
-				print 'the problem is in this row:'
-				print row
-				print ex
+				logger.error(ex)
 			if row['sleep_day_key'] not in day_sleeps:
 				day_sleeps[row['sleep_day_key']] = []
 			day_sleeps_list = day_sleeps[row['sleep_day_key']]

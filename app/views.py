@@ -8,13 +8,15 @@ from app.services import ReportService
 from app.properties_reader import PropertiesReader
 from app.query_mapper import QueryMapper
 from app import app
+import logging
+
+logger = logging.getLogger('views')
 
 @app.errorhandler(500)
 def server_error(err):
     """responds with error message"""
-    print err
-    trace = traceback.format_exc()
-    return trace
+    logger.error(err)
+    return err
 
 @app.route('/')
 def dashboard_page():
@@ -42,13 +44,12 @@ def api():
     mapper = QueryMapper(creds, babyid)
 
     api_method = request.args['action']
-    print 'processing request with action=%s' % api_method
     svc = ReportService(mapper)
     if api_method == "loadDashboard":
         try:
             data = svc.get_dashboard_data()
         except Exception as ex:
-            print traceback.format_exc()
+            logger.error(traceback.format_exc())
 
     elif api_method == "loadentrydata":
         try:
@@ -57,7 +58,7 @@ def api():
                 day_string = request.args['day']
             data = svc.get_entry_data(day_string)
         except Exception:
-            print traceback.format_exc()
+            logger.error(traceback.format_exc())
 
     elif api_method == "removesleep":
         sleep_time = request.args['sleepstart']
@@ -75,7 +76,7 @@ def api():
     elif api_method == "addvalue":
         svc.add_value_item(request.args['time'], request.args['type'],
                            request.args['value'])
-        data = svc.get_entry_data(time)
+        data = svc.get_entry_data(request.args['time'])
 
     elif api_method == "loadreportdata_daily":
         data = svc.get_chart_data_daily(10)
@@ -89,5 +90,5 @@ def api():
     try:
         jsondata = jsonify(data)
         return jsondata
-    except Exception:
-        print traceback.format_exc()
+    except Exception as ex:
+        logger.error(ex + traceback.format_exc())

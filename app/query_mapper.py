@@ -3,7 +3,9 @@ from datetime import date, datetime, timedelta
 from db_records import BabyRecord, GuardianRecord, SleepRecord, KeyValueRecord
 import mysql.connector
 import traceback
+import logging
 
+logger = logging.getLogger('QueryMapper')
 
 class QueryMapper:
     def __init__(self, credentials, baby_id):
@@ -73,7 +75,7 @@ class QueryMapper:
             return {'datasets': daily}
 
         except Exception as ex:
-            print traceback.format_exc()
+            logger.error(traceback.format_exc())
 
     def get_data_for_day(self, date_string):
         sql_sleeps = "select id, babyid, date_format(start, '%%Y-%%m-%%d %%T'), date_format(end, '%%Y-%%m-%%d %%T') from baby_sleep where start >= '%s' and start <= '%s 23:59:59' order by start" % (
@@ -145,7 +147,7 @@ class QueryMapper:
                     else:
                         return rows[0][0]
                 except Exception:
-                    print 'Failure in executing: "%s"' % (sql)
+                    logger.error('Failure in executing: "%s"', sql)
                     raise
 
             return {
