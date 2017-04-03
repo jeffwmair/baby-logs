@@ -37,6 +37,7 @@ class QueryMapper:
         return sql
 
     def get_chart_data(self, weekly, daysToShow=None):
+        logger.info('Starting get_chart_data')
         startDate = '2000-01-01 00:00:00'
         if daysToShow != None:
             startDate = (datetime.now() - timedelta(
@@ -44,6 +45,7 @@ class QueryMapper:
 
         sql = 'select id, start, end, date_format(start, "%%Y-%%m-%%d") as day from baby_sleep where start >= "%s" and start <= CURRENT_TIMESTAMP() order by start ASC' % startDate
         sleep_rows = self.execute_sql(sql, True)
+        logger.info('get_chart_data got sleep rows')
 
         sleep_row_objects = []
         for row in sleep_rows:
@@ -51,6 +53,7 @@ class QueryMapper:
 
         sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time >= "%s" and time <= CURRENT_TIMESTAMP() order by time ASC' % startDate
         keyval_rows = self.execute_sql(sql, True)
+        logger.info('get_chart_data got keyval rows')
         try:
             day_gen = DayGenerator(1, weekly, sleep_row_objects, keyval_rows)
             datasets = day_gen.get_datasets()
@@ -72,6 +75,7 @@ class QueryMapper:
                 }
                 daily.append(row)
 
+            logger.info('Completed get_chart_data')
             return {'datasets': daily}
 
         except Exception as ex:
