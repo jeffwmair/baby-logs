@@ -91,4 +91,4 @@ def api():
         jsondata = jsonify(data)
         return jsondata
     except Exception as ex:
-        logger.error(ex + traceback.format_exc())
+        logger.error(ex)
