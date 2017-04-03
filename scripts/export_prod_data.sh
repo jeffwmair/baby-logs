@@ -8,4 +8,4 @@ if [ -z "$SERVER" ]; then
     exit 1
 fi
 cd "$BABY_LOGGER"
-ssh "$SERVER" 'mysqldump babylogger ' > database/export.sql
+ssh "$SERVER" 'mysqldump babylogs ' > database/export.sql
