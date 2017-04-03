@@ -35,13 +35,13 @@ class FeedSet:
 			# the DB... both numeric and 'BR' or 'BL'
 			# Need to fix that eventually, but not terribly important for now.
 			try:
-				self._milk_ml += int(milk.get_value())
+				self._milk_ml += int(milk['value'])
 			except:
 				self._breast_count += 1
 
 		# sum up forumula feeding amounts
-		self._fmla_ml = sum(int(feed.get_value()) for feed in get_feeds_by_type('formula'))
-		self._solid_ml = sum(int(feed.get_value()) for feed in get_feeds_by_type('solid'))
+		self._fmla_ml = sum(int(feed['value']) for feed in get_feeds_by_type('formula'))
+		self._solid_ml = sum(int(feed['value']) for feed in get_feeds_by_type('solid'))
 
 	def get_breast_count(self):
 		return self._breast_count
