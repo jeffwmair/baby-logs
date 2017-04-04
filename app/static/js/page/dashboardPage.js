@@ -15,6 +15,11 @@
 		page.controller.setView();
 	}
 
+	function summarizeData() {
+		page.controller.summarizeData();
+	}
+
 	$on(window, 'load', setView);
+	$on(qs('#btnSummarizeData'), 'click', summarizeData);
 
 })();

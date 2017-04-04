@@ -13,6 +13,10 @@
 		this.$txtBigPoos = qs('#bigNumPoos');
 	}
 
+	View.prototype.setDataIsSummarizedStatus = function(data) {
+		console.log('Data successfully summarized');
+	}
+
 	/**
 	 * Render the view with the provided data.
 	 */

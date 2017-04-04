@@ -40,8 +40,9 @@ class FeedSet:
 				self._breast_count += 1
 
 		# sum up forumula feeding amounts
-		self._fmla_ml = sum(int(feed['value']) for feed in get_feeds_by_type('formula'))
-		self._solid_ml = sum(int(feed['value']) for feed in get_feeds_by_type('solid'))
+		def get_feed_sum_by_type(feedType): return sum(int(feed['value']) for feed in get_feeds_by_type(feedType))
+		self._fmla_ml = get_feed_sum_by_type('formula')
+		self._solid_ml = get_feed_sum_by_type('solid')
 
 	def get_breast_count(self):
 		return self._breast_count

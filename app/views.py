@@ -43,15 +43,15 @@ def api():
     creds = credentials_reader.read_from_file()
     mapper = QueryMapper(creds, babyid)
 
-    api_method = request.args['action']
+    api = request.args['action']
     svc = ReportService(mapper)
-    if api_method == "loadDashboard":
+    if api == "loadDashboard":
         try:
             data = svc.get_dashboard_data()
         except Exception as ex:
             logger.error(traceback.format_exc())
 
-    elif api_method == "loadentrydata":
+    elif api == "loadentrydata":
         try:
             day_string = datetime.now().strftime('%Y-%m-%d')
             if 'day' in request.args:
@@ -60,32 +60,36 @@ def api():
         except Exception:
             logger.error(traceback.format_exc())
 
-    elif api_method == "removesleep":
+    elif api == "removesleep":
         sleep_time = request.args['sleepstart']
         svc.remove_sleep(sleep_time)
         data = svc.get_entry_data(sleep_time)
 
-    elif api_method == "sleep":
+    elif api == "sleep":
         start = request.args['sleepstart']
         svc.add_sleep(start)
         data = svc.get_entry_data(start)
 
-    elif api_method == "sleeprange":
-        raise Exception('Method "%s" not implemented' % api_method)
+    elif api == "sleeprange":
+        raise Exception('Method "%s" not implemented' % api)
 
-    elif api_method == "addvalue":
+    elif api == "addvalue":
         svc.add_value_item(request.args['time'], request.args['type'],
                            request.args['value'])
         data = svc.get_entry_data(request.args['time'])
 
-    elif api_method == "loadreportdata_daily":
+    elif api == "loadreportdata_daily":
         data = svc.get_chart_data_daily(10)
 
-    elif api_method == "loadreportdata_weekly":
+    elif api == "loadreportdata_weekly":
         data = svc.get_chart_data_weekly()
+    
+    elif api == 'summarize_data':
+        svc.summarize_weekly_data()
+        return ''
 
     else:
-        raise Exception('Method "%s" not implemented' % api_method)
+        raise Exception('Method "%s" not implemented' % api)
 
     try:
         jsondata = jsonify(data)

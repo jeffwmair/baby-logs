@@ -8,6 +8,7 @@ import logging
 
 logger = logging.getLogger('services')
 
+
 class ReportService():
     def __init__(self, datamapper):
         self._babyid = 1
@@ -31,6 +32,9 @@ class ReportService():
             }
         }
 
+    def summarize_weekly_data(self):
+        self._datamapper.resummarize_all_data()
+
     # data that drives the chart/report page
     def get_chart_data_daily(self, days):
         is_weekly = False
@@ -43,20 +47,17 @@ class ReportService():
     # add a new value-item
     def add_value_item(self, time_string, item_type, item_value):
         logger.info('Adding value item: %s/%s at %s' % (item_type, item_value,
-                                                  time_string))
+                                                        time_string))
         # delete the same type item first
         self._datamapper.delete_value_item(self._babyid, time_string,
                                            item_type)
 
         # this is awkward -- we might be changing from one type of feed to another, which is why we have this
         if item_type in self._feed_types:
-            for feed_type in self._feed_types:
-                self._datamapper.delete_value_item(self._babyid, time_string,
-                                                   feed_type)
+            [ self._datamapper.delete_value_item(self._babyid, time_string, feed_type) for feed_type in self._feed_types ]
 
         if item_value != "none":
-            self._datamapper.insert_value_item(self._babyid, time_string,
-                                               item_type, item_value)
+            self._datamapper.insert_value_item(self._babyid, time_string, item_type, item_value)
 
     def remove_value_item(self, time_string, item_type):
         logger.info('Removing value item %s at %s', item_type, time_string)
@@ -78,17 +79,14 @@ class ReportService():
     def get_entry_data(self, date_string_raw):
         # in case there is a time component, strip it off
         date_string = date_string_raw[:10]
-
         data = self._datamapper.get_data_for_day(date_string)
-        result = {
+        return {
             'sleeps': data['sleep'],
             'milkfeeds': data['milk'],
             'fmlafeeds': data['formula'],
             'solidfoodfeeds': data['solid'],
             'diapers': data['diapers']
         }
-
-        return result
 
     def get_dashboard_data(self):
 
@@ -164,8 +162,7 @@ class ReportService():
     def get_time_minutes_ago(self, time):
         minutes_ago = (datetime.now() - time).seconds / 60.0
         days_ago = (datetime.now() - time).days
-        minutes_ago = minutes_ago + days_ago * 24 * 60
-        return minutes_ago
+        return minutes_ago + days_ago * 24 * 60
 
     def get_pee_status(self, time):
         return self.get_item_status('pee', self.get_time_minutes_ago(time))

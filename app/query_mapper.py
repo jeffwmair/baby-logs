@@ -7,6 +7,7 @@ import logging
 
 logger = logging.getLogger('QueryMapper')
 
+
 class QueryMapper:
     def __init__(self, credentials, baby_id):
         self._credentials = credentials
@@ -36,12 +37,23 @@ class QueryMapper:
             entry_type, date_string, date_string)
         return sql
 
+    def resummarize_all_data(self):
+        self.delete_summarized_data()
+        [self.insert_summarized_week(wk) for wk in self.get_chart_data(True)['datasets']]
+
+    def insert_summarized_week(self, week_data):
+        logger.warn(week_data)
+        pass
+
+    def delete_summarized_data(self):
+        logger.warn('todo: delete summarized data')
+        pass
+
     def get_chart_data(self, weekly, daysToShow=None):
-        logger.info('Starting get_chart_data')
+        logger.info('Starting get_chart_data Weekly=%s, daysToShow=%s', weekly, daysToShow)
         startDate = '2000-01-01 00:00:00'
         if daysToShow != None:
-            startDate = (datetime.now() - timedelta(
-                days=daysToShow - 1)).strftime('%Y-%m-%d')
+            startDate = (datetime.now() - timedelta( days=daysToShow - 1)).strftime('%Y-%m-%d')
 
         sql = 'select id, start, end, date_format(start, "%%Y-%%m-%%d") as day from baby_sleep where start >= "%s" and start <= CURRENT_TIMESTAMP() order by start ASC' % startDate
         sleep_rows = self.execute_sql(sql, True)
@@ -89,7 +101,6 @@ class QueryMapper:
         con = self.get_connection()
         try:
             cursor = con.cursor()
-            sleeps = self.execute_sql(sql_sleeps, True, cursor)
             keyval_records = self.execute_sql(sql_keyval, True, cursor)
 
             def get_records_by_type(typestring):
@@ -100,26 +111,19 @@ class QueryMapper:
             solid = get_records_by_type('solid')
             diapers = get_records_by_type('diaper')
 
-            sleep_list = []
-            for sleep in sleeps:
-                row = {
+            sleep_list = [ {
                     'id': sleep[0],
                     'babyid': sleep[1],
                     'start': sleep[2],
                     'end': sleep[3]
-                }
-                sleep_list.append(row)
+                } for sleep in self.execute_sql(sql_sleeps, True, cursor)]
 
             def get_keyval_rows(itemlist):
-                rowlist = []
-                for entry in itemlist:
-                    row = {
+                return [ {
                         'time': entry[0],
                         'entry_value': entry[1],
                         'entry_type': entry[2]
-                    }
-                    rowlist.append(row)
-                return rowlist
+                    } for entry in itemlist ]
 
             return {
                 'milk': get_keyval_rows(milk),
@@ -183,19 +187,12 @@ class QueryMapper:
         try:
             cursor = con.cursor()
             sql = "select id, start, end, DATE_FORMAT(start, '%%Y-%%m-%%d') as day from baby_sleep where start <= CURRENT_TIMESTAMP() %s order by start ASC" % sleep_date_filter
-            sleep_rows = self.execute_sql(sql, True, cursor)
-
-            sleep_row_objects = []
-            for row in sleep_rows:
-                sleep_row_objects.append(self.sleep_row_to_dict(row))
-
+            sleep_row_objects = [ self.sleep_row_to_dict(row) for row in self.execute_sql(sql, True, cursor) ]
             sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time <= CURRENT_TIMESTAMP() %s order by time ASC' % keyval_date_filter
             keyval_rows = self.execute_sql(sql, True, cursor)
-
             weekly_grouping = False
             babyid = 1
-            day_gen = DayGenerator(babyid, weekly_grouping, sleep_row_objects,
-                                   keyval_rows)
+            day_gen = DayGenerator(babyid, weekly_grouping, sleep_row_objects, keyval_rows)
             return day_gen.get_datasets()
         finally:
             con.close()
@@ -221,11 +218,8 @@ class QueryMapper:
             [x for x in startOptions if subject.lower().startswith(x.lower())])
 
     def execute_sql(self, sql, return_rows=None, cursor=None):
-        if self._credentials['disable.modifications'].lower(
-        ) == 'true' and self.starts_with_any(sql,
-                                             ['insert', 'update', 'delete']):
-            raise Exception(
-                'The application is currently disabled from further input')
+        if self._credentials['disable.modifications'].lower() == 'true' and self.starts_with_any(sql, ['insert', 'update', 'delete']):
+            raise Exception('The application is currently disabled from further input')
         create_own_connection = cursor == None
         if create_own_connection:
             con = self.get_connection()

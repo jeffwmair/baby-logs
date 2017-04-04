@@ -11,13 +11,17 @@
 	 * Loads and initializes the view
 	 */
 	Controller.prototype.setView = function() {
-
 		var self = this;
-
 		self.model.read(function(data) {
 			self.view.render(data);
 		});
+	}
 
+	Controller.prototype.summarizeData = function() {
+		var self = this;
+		this.model.summarizeData(function(data) {
+			self.view.setDataIsSummarizedStatus(data);
+		});
 	}
 
 	window.dashboard = window.dashboard || {};
