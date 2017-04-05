@@ -32,8 +32,8 @@ Once the vagrant machine is up, login with `vagrant ssh`, switch to the vagrant-
 ### If already installed, run the application
 
 ```bash
-# run the web server (disconnect so we can exit from the ssh session)
-python cherrypy_start.py > logs.txt &
+# run the web server 
+python cherrypy_start.py &
 ```
 
 ### Login
