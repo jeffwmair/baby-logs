@@ -1,14 +1,10 @@
 var reportPage = (function reportPage() {
-
     'use strict';
     var API = "BabyApi";
 
-    function errorHandler(errorMessage) {
-        console.error(errorMessage);
-    }
-
     function init(container, calHelper) {
-        var converter = new CONVERTER.ReportDataConverterForChart();
+        function errorHandler(errorMessage) { console.error(errorMessage); }
+        var converter = reportDataConverter();
         console.log('Beginning to load daily data')
         UTILS.ajaxGetJson(API + "?action=loadreportdata_daily", errorHandler, function (json) {
             console.log("Daily data loaded")
