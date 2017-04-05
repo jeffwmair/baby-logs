@@ -20,6 +20,5 @@
 	}
 
 	$on(window, 'load', setView);
-	$on(qs('#btnSummarizeData'), 'click', summarizeData);
 
 })();

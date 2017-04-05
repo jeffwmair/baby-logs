@@ -19,6 +19,10 @@ class SleepSet:
 		self._day_hrs = 0
 		self._last_night_hrs = 0
 		self._nap_count = 0
+		self._unbroken_night_sleep_hrs = 0
+		self._last_night = []
+		self._daytime = []
+		self._night = []
 
 		if len(records) == 0:
 			return
