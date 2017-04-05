@@ -4,31 +4,36 @@ from db_records import BabyRecord, GuardianRecord, SleepRecord, KeyValueRecord
 import mysql.connector
 import traceback
 import logging
+import json
 
 logger = logging.getLogger('QueryMapper')
 
-
+JsonObjectsKeySummarizedData = 'weeklysummarized;'
 class QueryMapper:
     def __init__(self, credentials, baby_id):
         self._credentials = credentials
         self._baby_id = baby_id
 
     def insert_value_item(self, babyid, time_string, entry_type, entry_value):
+        self.clear_cache()
         sql = "insert into baby_keyval (babyid, time, entry_type, entry_value) values (%i, '%s', '%s', '%s');" % (
             babyid, time_string, entry_type, entry_value)
         self.execute_sql(sql)
 
     def delete_value_item(self, babyid, time_string, entry_type):
+        self.clear_cache()
         sql = "delete from baby_keyval where babyid = %i and time = '%s' and entry_type = '%s';" % (
             babyid, time_string, entry_type)
         self.execute_sql(sql)
 
     def insert_sleep(self, babyid, sleep_start, sleep_end):
+        self.clear_cache()
         sql = "insert into baby_sleep (babyid, start, end) values (%i, '%s', '%s');" % (
             babyid, sleep_start, sleep_end)
         self.execute_sql(sql)
 
     def delete_sleep(self, sleep_time):
+        self.clear_cache()
         sql = "delete from baby_sleep where start = '%s';" % (sleep_time)
         self.execute_sql(sql)
 
@@ -37,31 +42,35 @@ class QueryMapper:
             entry_type, date_string, date_string)
         return sql
 
-    def resummarize_all_data(self):
-        self.delete_summarized_data()
-        [self.insert_summarized_week(wk) for wk in self.get_chart_data(True)['datasets']]
+    def cache_data(self, data):
+        json_string = json.dumps(data)
+        self.execute_sql('insert into json_objects (json_key, babyid, json_content) values ("%s",%s, \'%s\')' % (JsonObjectsKeySummarizedData, self._baby_id, json_string))
+        logger.info('added summarized data')
 
-    def insert_summarized_week(self, week_data):
-        logger.warn(week_data)
-        pass
+    def get_cached_data(self):
+        result = self.execute_sql('select json_content from json_objects where json_key = "%s" and babyid = %s' %(JsonObjectsKeySummarizedData, self._baby_id), True)
+        if len(result) == 0:
+            return None
+        json_text = result[0][0]
+        return json.loads(json_text)
 
-    def delete_summarized_data(self):
-        logger.warn('todo: delete summarized data')
-        pass
+    def clear_cache(self):
+        logger.info('deleting summarized data')
+        self.execute_sql('delete from json_objects where json_key = "%s" and babyid = %s' % (JsonObjectsKeySummarizedData, self._baby_id))
 
     def get_chart_data(self, weekly, daysToShow=None):
         logger.info('Starting get_chart_data Weekly=%s, daysToShow=%s', weekly, daysToShow)
         startDate = '2000-01-01 00:00:00'
         if daysToShow != None:
             startDate = (datetime.now() - timedelta( days=daysToShow - 1)).strftime('%Y-%m-%d')
+        else:
+            # first try to get cached data
+            summarized_data = self.get_cached_data()
+            if (summarized_data != None): return summarized_data
 
         sql = 'select id, start, end, date_format(start, "%%Y-%%m-%%d") as day from baby_sleep where start >= "%s" and start <= CURRENT_TIMESTAMP() order by start ASC' % startDate
-        sleep_rows = self.execute_sql(sql, True)
+        sleep_row_objects = [self.sleep_row_to_dict(row) for row in self.execute_sql(sql, True)]
         logger.info('get_chart_data got sleep rows')
-
-        sleep_row_objects = []
-        for row in sleep_rows:
-            sleep_row_objects.append(self.sleep_row_to_dict(row))
 
         sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time >= "%s" and time <= CURRENT_TIMESTAMP() order by time ASC' % startDate
         keyval_rows = self.execute_sql(sql, True)
@@ -86,10 +95,10 @@ class QueryMapper:
                     'poos': diaper.get_poo_count(),
                 }
                 daily.append(row)
-
             logger.info('Completed get_chart_data')
-            return {'datasets': daily}
-
+            data = {'datasets':daily}
+            if daysToShow == None: self.cache_data(data)
+            return data
         except Exception as ex:
             logger.error(traceback.format_exc())
 

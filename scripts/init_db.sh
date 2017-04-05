@@ -41,7 +41,8 @@ grant_user_to_db() {
 
 create_tables() {
     echo "Creating tables in $DB"
-    mysql "$DB" < ./database/create_tables.sql
+    mysql "$DB" < ./database/r0_to_r1.sql
+    mysql "$DB" < ./database/r1_to_r2.sql
 }
 
 read_credentials
