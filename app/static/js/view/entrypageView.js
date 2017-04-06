@@ -24,12 +24,12 @@
 		self.$allDiaperSelects = qsa('select.diaper');
 		self.$allFeedSelects = qsa('select.feed');
 
-		self.$dayPickerDate.innerHTML = DATETIME.getDateFormatForDay(date);
+		self.$dayPickerDate.innerHTML = datetime.getDateFormatForDay(date);
 	}
 
 	View.prototype.update = function(gridData, date) { 
 		this.template.updateHtml(this.$entryGrid, gridData);
-		this.$dayPickerDate.innerHTML = DATETIME.getDateFormatForDay(date);
+		this.$dayPickerDate.innerHTML = datetime.getDateFormatForDay(date);
 	}
 
 	/**
@@ -45,7 +45,7 @@
 			 */
 			self.$allSleepButtons.forEach(function(item) {
 				$on(item, 'click', function() {
-					var sleepTime = DATETIME.parseAmPmTime(item.className.split('sleep_')[1]);
+					var sleepTime = datetime.parseAmPmTime(item.className.split('sleep_')[1]);
 					callback(sleepTime);
 				});
 			});
@@ -58,7 +58,7 @@
 			 */
 			self.$allFeedSelects.forEach(function(item) {
 				$on(item, 'change', function() {
-					var sleepTime = DATETIME.parseAmPmTime(item.className.split('feed_')[1]);
+					var sleepTime = datetime.parseAmPmTime(item.className.split('feed_')[1]);
 					callback(item.value, sleepTime);
 				});
 			});
@@ -89,7 +89,7 @@
 			 */
 			self.$allDiaperSelects.forEach(function(item) {
 				$on(item, 'change', function() {
-					var sleepTime = DATETIME.parseAmPmTime(item.className.split('diaper_')[1]);
+					var sleepTime = datetime.parseAmPmTime(item.className.split('diaper_')[1]);
 					callback(item.value, sleepTime);
 				});
 			});

@@ -2,13 +2,12 @@ var reportPage = (function reportPage() {
     'use strict';
     var API = "BabyApi";
 
-    function init(container, calHelper) {
+    function init() {
         function errorHandler(errorMessage) { console.error(errorMessage); }
-        var converter = reportDataConverter();
         console.log('Beginning to load daily data')
         UTILS.ajaxGetJson(API + "?action=loadreportdata_daily", errorHandler, function (json) {
             console.log("Daily data loaded")
-            var chartDataDaily = converter.getChartData(json.datasets);
+            var chartDataDaily = getChartData(json.datasets);
             if (chartDataDaily.dates.length > 0) {
                 configureLineChart('#container_linechart_daily', 'Last 10 Days', chartDataDaily);
             }
@@ -21,8 +20,22 @@ var reportPage = (function reportPage() {
         console.log('Beginning to load weekly data')
         UTILS.ajaxGetJson(API + "?action=loadreportdata_weekly", errorHandler, function (json) {
             console.log("Weekly data loaded")
-            configureLineChart('#container_linechart_weekly', 'Weekly Averages', converter.getChartData(json.datasets));
+            configureLineChart('#container_linechart_weekly', 'Weekly Averages', getChartData(json.datasets));
         }, true);
+    }
+
+    function getChartData(reportJson) {
+        return reportJson.reduce(function (soFar, item) {
+            soFar.dates.push(new Date(item.day));
+            soFar.totalSleepHrs.push(item.totalSleepHrs);
+            soFar.nightSleepHrs.push(item.nightSleepHrs);
+            soFar.milkMl.push(item.milkMl);
+            soFar.formulaMl.push(item.formulaMl);
+            soFar.solidMl.push(item.solidMl);
+            soFar.breastCount.push(item.breastCount);
+            soFar.poos.push(item.poos);
+            return soFar;
+        }, { dates: [], totalSleepHrs: [], nightSleepHrs: [], milkMl: [], formulaMl: [], solidMl: [], breastCount: [], poos: [] });
     }
 
     function configureLineChart(chartEl, chartTitle, data) {
@@ -35,7 +48,7 @@ var reportPage = (function reportPage() {
             credits: { enabled: false },
             title: { text: title },
             xAxis: [{
-                categories: DATETIME.datesToSimpleDisplay(data.dates),
+                categories: datetime.datesToSimpleDisplay(data.dates),
                 crosshair: true
             }],
             yAxis: [{ // Primary yAxis
@@ -77,6 +90,4 @@ var reportPage = (function reportPage() {
     }
 })();
 
-var container = document.getElementById('tableContainer');
-var calHelper = new DATETIME.CalendarHelper();
 reportPage.init();

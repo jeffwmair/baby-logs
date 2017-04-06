@@ -28,13 +28,12 @@
 
 		var self = this;
 		self.data = {};
-
 		var createArrIfNotThere = function(key) {
 			if (self.data[key] == undefined) self.data[key] = []; 
 		}
 
 		var putData = function(key, type, item) {
-			var timeKey = DATETIME.getTime(new Date(key));
+			var timeKey = datetime.getTime(new Date(key));
 			createArrIfNotThere(timeKey);
 			self.data[timeKey][type] = item;
 		}
@@ -61,7 +60,7 @@
 
 	var getFormattedDateForServerCall = function(date) {
 		var use24HrFormat = true;
-		return DATETIME.getYyyymmddFormat(date) + ' ' + DATETIME.getFormattedTime(date.getHours(), date.getMinutes(), use24HrFormat);
+		return datetime.getYyyymmddFormat(date) + ' ' + datetime.getFormattedTime(date.getHours(), date.getMinutes(), use24HrFormat);
 	}
 
 	/**
@@ -72,7 +71,7 @@
 		var self = this;
 
 		// sort out the toggle direction
-		var dateData = self.data[DATETIME.getTime(date)];
+		var dateData = self.data[datetime.getTime(date)];
 		var isRemoveSleep = (dateData && dateData.sleep);
 		var apiAction = isRemoveSleep ? 'removesleep' : 'sleep';
 
@@ -123,7 +122,7 @@
 	 */
 	Model.prototype.read = function(callback) {
 		var self = this;
-		UTILS.ajax("BabyApi?action=loadentrydata&day="+DATETIME.getYyyymmddFormat(self.date), function(json) {
+		UTILS.ajax("BabyApi?action=loadentrydata&day="+datetime.getYyyymmddFormat(self.date), function(json) {
 			self._handleData(json, callback);	
 		});
 

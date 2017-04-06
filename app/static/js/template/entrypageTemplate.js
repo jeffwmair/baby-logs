@@ -194,7 +194,7 @@
 		var rowCount = 24*UTILS.HOURLY_DIVISIONS;
 		var times = [];
 		for (var i = 0; i < rowCount; i++) {
-			var timeField = DATETIME.getTimeFromRange(UTILS.HOURLY_DIVISIONS, i);
+			var timeField = datetime.getTimeFromRange(UTILS.HOURLY_DIVISIONS, i);
 			times.push(timeField);
 		}
 

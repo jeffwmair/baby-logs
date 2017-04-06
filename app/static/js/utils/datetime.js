@@ -1,130 +1,123 @@
-DATETIME = {};
 
-DATETIME.datesToSimpleDisplay = function(dates) {
-	var simpleDays = [];
-	dates.forEach(function(d) {
-		simpleDays.push(DATETIME.getShortDayFormatForDate(d));
-	});
-	return simpleDays;
-}
+var datetime = (function () {
 
-DATETIME.getFormattedTime = function(hr, min, use24hr) {
-	var hr = UTILS.get2DigitFormat(hr); 
-	var min = UTILS.get2DigitFormat(min);
-	var timestring = hr + ':' + min;
+    function parseAmPmTime(time) {
+        var split = time.split(':');
+        var hr = parseInt(split[0]);
+        if (split[0] == '12' && split[1].endsWith('am')) {
+            hr = 0;
+        }
+        else if (split[0] != '12' && split[1].endsWith('pm')) {
+            hr += 12;
+        }
 
-	if (use24hr) {
-		return timestring;
-	}
-	else {
-		return DATETIME.getTimeInAmPm(timestring);
-	}
-}
+        var minutes = parseInt(split[1].substring(0, 2));
+        var dummyDate = new Date(2000, 01, 01, hr, minutes);
+        return dummyDate;
+    }
 
-DATETIME.getTimeInAmPm = function(timestring) {
-	var components = timestring.split(':');
-	var hr = components[0];
-	var hrAp = hr;
-	var ap = 'am';
-	if (hr > 12) {
-		hrAp = hr % 12;
-		ap = 'pm';
-	}
-	else if (hr == 0) {
-		hrAp = 12;
-	}
-	else if (hr == 12) {
-		hrAp = 12;
-		ap = 'pm';
-	}
-	return hrAp + ':' + components[1] + ap;
-}
 
-DATETIME.getTimeFromRange = function(houlyDivisions, position) {
-	var hr = Math.floor(position / houlyDivisions);
-	var min = (position % houlyDivisions) * (60 / houlyDivisions);
-	var timeField = DATETIME.getFormattedTime(hr, min);
-	return timeField;
-}
+    function datesToSimpleDisplay(dates) {
+        return dates.map(function(item) {
+            return getShortDayFormatForDate(item);
+        })
+    }
 
-DATETIME.CalendarHelper = function() {
-	var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
-	//var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' ];
-	var days = ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat' ];
-	this.getMonthName = function(month) {
-		return months[month];
-	};
+    function getFormattedTime(hr, min, use24hr) {
+        var timestring = UTILS.get2DigitFormat(hr) + ':' + UTILS.get2DigitFormat(min);
+        return use24hr ? timestring : getTimeInAmPm(timestring);
+    }
 
-	this.getDayName = function(day) {
-		return days[day];
-	};
+    function getTimeInAmPm(timestring) {
+        var components = timestring.split(':');
+        var hr = components[0];
+        var hrAp = hr;
+        var ap = 'am';
+        if (hr > 12) {
+            hrAp = hr % 12;
+            ap = 'pm';
+        }
+        else if (hr == 0) {
+            hrAp = 12;
+        }
+        else if (hr == 12) {
+            hrAp = 12;
+            ap = 'pm';
+        }
+        return hrAp + ':' + components[1] + ap;
+    }
 
-	this.getDayNameShort = function(day) {
-		return this.getDayName(day).substring(0,3);
-	}
+    function getTimeFromRange(houlyDivisions, position) {
+        var hr = Math.floor(position / houlyDivisions);
+        var min = (position % houlyDivisions) * (60 / houlyDivisions);
+        var timeField = getFormattedTime(hr, min);
+        return timeField;
+    }
 
-};
+    var calendar = {
+        months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
+        days: ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat']
+    };
 
-DATETIME.getShortDayFormatForDate = function(date) {
-	var calHelper = new DATETIME.CalendarHelper();
-	var dayNameShort = calHelper.getDayNameShort(date.getDay());
-	return dayNameShort + ' ' + calHelper.getMonthName(date.getMonth()) + ' ' + date.getDate();
-}
+    function getShortDayFormatForDate(date) {
+        var dayNameShort = calendar.days[date.getDay()].substring(0, 3);
+        return dayNameShort + ' ' + calendar.months[date.getMonth()] + ' ' + date.getDate();
+    }
 
-DATETIME.getDateFormatForDay = function(date) {
-	var calHelper = new DATETIME.CalendarHelper();
-	var mon = calHelper.getMonthName(date.getMonth());
-	var day = calHelper.getDayName(date.getDay());
-	return day + ' ' + mon + ' ' + date.getDate() + ', ' + date.getFullYear();
-}
+    function getDateFormatForDay(date) {
+        return calendar.days[date.getDay()] 
+            + ' ' + calendar.months[date.getMonth()] 
+            + ' ' + date.getDate() + ', ' + date.getFullYear();
+    }
 
-/**
- * 2016-06-30
- */
-DATETIME.getYyyymmddFormat = function(date) {
-	var month = UTILS.get2DigitFormat(date.getMonth()+1);
-	var day = UTILS.get2DigitFormat(date.getDate());
-	return date.getFullYear() + '-' + month + '-' + day;
-}
+    /**
+     * 2016-06-30
+     */
+    function getYyyymmddFormat(date) {
+        return date.getFullYear() + '-' 
+            + UTILS.get2DigitFormat(date.getMonth() + 1) 
+            + '-' + UTILS.get2DigitFormat(date.getDate());
+    }
 
-DATETIME.getTime = function(date) {
-	return DATETIME.getFormattedTime(date.getHours(), date.getMinutes());
-}
+    function getTime(date) {
+        return getFormattedTime(date.getHours(), date.getMinutes());
+    }
 
-DATETIME.getTimeBlockFromDate = function(date) {
-	var blockSize = 60 / UTILS.HOURLY_DIVISIONS;
-	var blocks = date.getHours() * UTILS.HOURLY_DIVISIONS;
-	blocks += Math.round(date.getMinutes() / blockSize);
-	return blocks;
-}
+    function getTimeBlockFromDate(date) {
+        var blockSize = 60 / UTILS.HOURLY_DIVISIONS;
+        var blocks = date.getHours() * UTILS.HOURLY_DIVISIONS;
+        blocks += Math.round(date.getMinutes() / blockSize);
+        return blocks;
+    }
 
-DATETIME.getNextQuarterHourTime = function(date) {
-	var newDate = new Date(date.getTime());
-	newDate.setSeconds(0);	
-	newDate.setMilliseconds(0);	
-	var qtrHourDiff = newDate.getMinutes() % 15;
-	newDate.setMinutes(newDate.getMinutes() + (15 - qtrHourDiff));
-	return newDate;
-}
+    function getNextQuarterHourTime(date) {
+        var newDate = new Date(date.getTime());
+        newDate.setSeconds(0);
+        newDate.setMilliseconds(0);
+        var qtrHourDiff = newDate.getMinutes() % 15;
+        newDate.setMinutes(newDate.getMinutes() + (15 - qtrHourDiff));
+        return newDate;
+    }
 
-DATETIME.parseAmPmTime = function(time) {
-	var split = time.split(':');
-	var hr = parseInt(split[0]);
-	if (split[0] == '12' && split[1].endsWith('am')) {
-		hr = 0;
-	}
-	else if (split[0] != '12' && split[1].endsWith('pm')) {
-		hr += 12;
-	}
+    function parse24HrTime(time) {
+        var split = time.split(':');
+        var dummyDate = new Date(2000, 01, 01, split[0], split[1], 0);
+        return dummyDate;
+    }
 
-	var minutes = parseInt(split[1].substring(0,2));
-	var dummyDate = new Date(2000, 01, 01, hr, minutes);
-	return dummyDate;
-	
-}
+    return {
+        parseAmPmTime: parseAmPmTime,
+        parse24HrTime: parse24HrTime,
+        datesToSimpleDisplay: datesToSimpleDisplay,
+        getFormattedTime: getFormattedTime,
+        getTimeInAmPm: getTimeInAmPm,
+        getTimeFromRange: getTimeFromRange,
+        getShortDayFormatForDate: getShortDayFormatForDate,
+        getDateFormatForDay: getDateFormatForDay,
+        getYyyymmddFormat: getYyyymmddFormat,
+        getTime: getTime,
+        getTimeBlockFromDate: getTimeBlockFromDate,
+        getNextQuarterHourTime: getNextQuarterHourTime,
+    }
 
-DATETIME.parse24HrTime = function(time) {
-	var split = time.split(':');
-	var dummyDate = new Date(2000, 01, 01, split[0], split[1], 0);
-	return dummyDate;
-}
+})();
