@@ -78,8 +78,8 @@
 		var gridDate = new Date(self.getDate());
 		gridDate.setHours(date.getHours(), date.getMinutes(), 0);
 		var formatteddate = getFormattedDateForServerCall(gridDate);
-		var myendate = new Date(gridDate.getTime() + (15*60000));
-		var formattedEndDate = getFormattedDateForServerCall(myendate);
+		var myEndDate = new Date(gridDate.getTime() + (15*60000));
+		var formattedEndDate = getFormattedDateForServerCall(myEndDate);
 
 		UTILS.ajax("BabyApi?action="+apiAction+"&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, function(json) {
 			self._handleData(json, callback);
