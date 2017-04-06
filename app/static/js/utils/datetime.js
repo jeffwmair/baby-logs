@@ -1,9 +1,7 @@
-
 var datetime = (function () {
-
     function parseAmPmTime(time) {
         var split = time.split(':');
-        var hr = parseInt(split[0]);
+        var hr = parseInt(split[0], 10);
         if (split[0] == '12' && split[1].endsWith('am')) {
             hr = 0;
         }
@@ -11,11 +9,10 @@ var datetime = (function () {
             hr += 12;
         }
 
-        var minutes = parseInt(split[1].substring(0, 2));
+        var minutes = parseInt(split[1].substring(0, 2), 10);
         var dummyDate = new Date(2000, 01, 01, hr, minutes);
         return dummyDate;
     }
-
 
     function datesToSimpleDisplay(dates) {
         return dates.map(function(item) {
@@ -32,17 +29,12 @@ var datetime = (function () {
         var components = timestring.split(':');
         var hr = components[0];
         var hrAp = hr;
-        var ap = 'am';
+        var ap = hr >= 12 ? 'pm' : 'am';
         if (hr > 12) {
             hrAp = hr % 12;
-            ap = 'pm';
         }
-        else if (hr == 0) {
+        else if (hr == 0 || hr == 12) {
             hrAp = 12;
-        }
-        else if (hr == 12) {
-            hrAp = 12;
-            ap = 'pm';
         }
         return hrAp + ':' + components[1] + ap;
     }
@@ -56,7 +48,7 @@ var datetime = (function () {
 
     var calendar = {
         months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
-        days: ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat']
+        days: ['Sun', 'Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat']
     };
 
     function getShortDayFormatForDate(date) {
