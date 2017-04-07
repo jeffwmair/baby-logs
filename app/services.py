@@ -8,7 +8,6 @@ import logging
 
 logger = logging.getLogger('services')
 
-
 class ReportService():
     def __init__(self, datamapper):
         self._babyid = 1

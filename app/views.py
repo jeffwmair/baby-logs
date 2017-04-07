@@ -7,10 +7,13 @@ from flask import render_template
 from app.services import ReportService
 from app.properties_reader import PropertiesReader
 from app.query_mapper import QueryMapper
-from app import app
 import logging
+from flask import Flask
+
 
 logger = logging.getLogger('views')
+app = Flask(__name__, static_url_path='/static')
+logger.info('Startup')
 
 @app.errorhandler(500)
 def server_error(err):

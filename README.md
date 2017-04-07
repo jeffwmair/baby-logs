@@ -33,7 +33,7 @@ Once the vagrant machine is up, login with `vagrant ssh`, switch to the vagrant-
 
 ```bash
 # run the web server 
-python cherrypy_start.py &
+python run.py &
 ```
 
 ### Login
