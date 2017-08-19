@@ -2,6 +2,7 @@
 timedatectl set-timezone America/New_York
 # deals with sporadit issue of not being able to hit the web resource that provides apt-get packages.  That's google's dns server
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
+apt-get update -y
 apt-get install -y git
 apt-get install -y python-pip
 debconf-set-selections <<< 'mysql-server mysql-server/root_password password mysqlrootpass'

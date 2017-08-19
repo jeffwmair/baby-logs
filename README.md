@@ -21,7 +21,7 @@ Basic usage is to go to the **Entry** screen and enter instances of sleep, feedi
 
 I'm using vagrant, so you just need to run `vagrant up`, which use make use of a bootstrap script to configure the dependencies.
 
-Once the vagrant machine is up, login with `vagrant ssh`, switch to the vagrant-sync'd directory `/vagrant`, and run the installation (next section).
+Once the vagrant machine is up, login with `vagrant ssh` (or `ssh vagrant@localhost -p 2222`), switch to the vagrant-sync'd directory `/vagrant`, and run the installation (next section).
 
 ### Install the application
 
