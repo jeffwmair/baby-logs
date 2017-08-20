@@ -17,30 +17,28 @@ Basic usage is to go to the **Entry** screen and enter instances of sleep, feedi
 
 ![Alt text](/docs/ReportPage.png)
 
-## Setup with Vagrant
+## Environment Setup
 
-I'm using vagrant, so you just need to run `vagrant up`, which use make use of a bootstrap script to configure the dependencies.
+I'm using Vagrant (Ubuntu), mainly for Mysql.  So the initial setup is very easy.  Simply run `vagrant up` from your command-prompt (run as Admin).  This will provision the server and install and start the application
 
-Once the vagrant machine is up, login with `vagrant ssh` (or `ssh vagrant@localhost -p 2222`), switch to the vagrant-sync'd directory `/vagrant`, and run the installation (next section).
+### Running Locally with VS Code
 
-### Install the application
+To run locally, I use `virtualenv` to manage my python dependencies.  So from a Windows Command-Prompt, create the virtualenv (if not created) with `virtualenv venv`.  Then cd into `venv/Scripts` and run `Activate`.
 
-```bash
-./scripts/install.sh
-```
+Next install the pip packages with `pip install -r requirements.txt`
 
-### If already installed, run the application
+Once the environment is activated, launch VS Code from within that activated environment inside the command-prompt
 
-```bash
-# run the web server 
-python run.py &
-```
+Now you should be able to start & debug the application in VS Code, using the launch.json included in this repo.  
 
-### Login
-Browse to:
+The application can be reached at [http://localhost:8080/](http://localhost:8080).
 
-[http://localhost:8091/](http://localhost:8091/)
+### Running inside Vagrant VM
 
-## Setup with Vs Code
+The application starts when the environment is first provisioned.  But if the server (or the app) is shut down, you can run the app from the /vagrant directory with `python run.py`
 
-To use with VS Code, first launch a virtual environment on the command line.  Then launch VS Code from that running venv.  That's the trick!
+## URLS
+
+ - [http://localhost:8080/](http://localhost:8080/) (local)
+ - [http://localhost:8091/](http://localhost:8091/) (directly to the app)
+ - [http://localhost:8090/babylogs/](http://localhost:8090/babylogs/) (via apache reverse proxy)

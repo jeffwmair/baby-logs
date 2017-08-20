@@ -40,6 +40,7 @@ def api():
     # TODO: fix this
     babyid = 1
     credentials_file = 'credentials.properties'
+    # command-line argument with credentials filename
     if len(sys.argv) == 2 and sys.argv[1].startswith('credentials='):
         credentials_file = sys.argv[1].split('credentials=')[1]
     credentials_reader = PropertiesReader(credentials_file)

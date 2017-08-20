@@ -1,5 +1,6 @@
 #!/bin/bash
 
+cd /vagrant/
 export BABY_LOGGER=`pwd`
 
 # load python dependencies
@@ -14,7 +15,7 @@ cp credentials.properties.sample credentials.properties
 ./scripts/init_db.sh
 
 # run unit tests (if you like)
-./scripts/runtests.sh     
+./scripts/runtests.sh
 
 # run the web server (disconnect so we can exit from the ssh session)
 python run.py &
