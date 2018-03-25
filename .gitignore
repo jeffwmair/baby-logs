@@ -9,9 +9,9 @@ credentials.properties
 export.sql
 logs.txt
 .vagrant/
-.vscode/
 *.log
 bower_components/
 node_modules/
 app/static/js/lib/
 credentials.dev.properties
+.vscode/tags
