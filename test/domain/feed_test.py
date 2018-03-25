@@ -14,3 +14,5 @@ class FeedTest(unittest.TestCase):
 		self.assertEqual(100, sut.get_milk_ml())
 		self.assertEqual(300, sut.get_fmla_ml())
 
+if __name__ == '__main__':
+    unittest.main()

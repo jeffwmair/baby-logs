@@ -22,7 +22,7 @@ class FeedSetAggregated:
 class FeedSet:
 	def __init__(self, feed_records):
 
-		def get_feeds_by_type(feedType): return (x for x in feed_records if x['type'] == feedType)
+		def get_feeds_by_type(feedType): return (x for x in feed_records if x.get_type() == feedType)
 		self._breast_count = 0
 		self._milk_ml = 0
 		self._fmla_ml = 0
@@ -35,12 +35,12 @@ class FeedSet:
 			# the DB... both numeric and 'BR' or 'BL'
 			# Need to fix that eventually, but not terribly important for now.
 			try:
-				self._milk_ml += int(milk['value'])
+				self._milk_ml += int(milk.get_value())
 			except:
 				self._breast_count += 1
 
 		# sum up forumula feeding amounts
-		def get_feed_sum_by_type(feedType): return sum(int(feed['value']) for feed in get_feeds_by_type(feedType))
+		def get_feed_sum_by_type(feedType): return sum(int(feed.get_value()) for feed in get_feeds_by_type(feedType))
 		self._fmla_ml = get_feed_sum_by_type('formula')
 		self._solid_ml = get_feed_sum_by_type('solid')
 

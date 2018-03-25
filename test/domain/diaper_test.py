@@ -22,3 +22,6 @@ class DiaperTest(unittest.TestCase):
 
 		self.assertEqual(2, sut.get_pee_count())
 		self.assertEqual(0, sut.get_poo_count())
+
+if __name__ == '__main__':
+    unittest.main()
