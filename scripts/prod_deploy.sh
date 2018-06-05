@@ -9,7 +9,7 @@ cd "$BABY_LOGGER"
 SERVER=$1
 
 ssh $SERVER << _EOF_
-mkdir -p /var/www/html/liamjournal
+mkdir -p /var/www/html/babylogs
 _EOF_
 
 rsync -azP * \
@@ -25,4 +25,4 @@ rsync -azP * \
     --exclude "venv/" \
     --exclude "docs/" \
     --exclude "private/" \
-    $SERVER:/var/www/html/liamjournal
+    $SERVER:/var/www/html/babylogs
