@@ -37,14 +37,13 @@ def charts_page():
 @app.route('/BabyApi')
 def api():
     data = None
-    # TODO: fix this
-    babyid = 1
     credentials_file = 'credentials.properties'
     # command-line argument with credentials filename
     if len(sys.argv) == 2 and sys.argv[1].startswith('credentials='):
         credentials_file = sys.argv[1].split('credentials=')[1]
     credentials_reader = PropertiesReader(credentials_file)
     creds = credentials_reader.read_from_file()
+    babyid = int(creds['babyid'])
     mapper = QueryMapper(creds, babyid)
 
     api = request.args['action']

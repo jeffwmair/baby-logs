@@ -7,7 +7,7 @@ class DiaperSet:
 		# 2 is poo
 		# 3 is both
 		# TODO: again with the string values in the DB... really gotta fix that
-		def get_diaper_count(diaperType): return len([x for x in diaper_records if x.get_value() == diaperType])
+		def get_diaper_count(diaperType): return len([x for x in diaper_records if x['value'] == diaperType])
 		self._pee_count = get_diaper_count('pee')
 		self._poo_count = get_diaper_count('poo')
 

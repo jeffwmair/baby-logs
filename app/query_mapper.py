@@ -26,20 +26,20 @@ class QueryMapper:
             babyid, time_string, entry_type)
         self.execute_sql(sql)
 
-    def insert_sleep(self, babyid, sleep_start, sleep_end):
+    def insert_sleep(self, sleep_start, sleep_end):
         self.clear_cache()
         sql = "insert into baby_sleep (babyid, start, end) values (%i, '%s', '%s');" % (
-            babyid, sleep_start, sleep_end)
+            self._baby_id, sleep_start, sleep_end)
         self.execute_sql(sql)
 
     def delete_sleep(self, sleep_time):
         self.clear_cache()
-        sql = "delete from baby_sleep where start = '%s';" % (sleep_time)
+        sql = "delete from baby_sleep where start = '%s' and babyid = %i;" % (sleep_time, self._baby_id)
         self.execute_sql(sql)
 
     def get_query_keyval_in_day_by_type(self, entry_type, date_string):
-        sql = "select date_format(time, '%%Y-%%m-%%d %%T'), entry_value, entry_type from baby_keyval where entry_type = '%s' and time >= '%s' and time <= '%s 23:59:59' order by time" % (
-            entry_type, date_string, date_string)
+        sql = "select date_format(time, '%%Y-%%m-%%d %%T'), entry_value, entry_type from baby_keyval where babyid = %i and entry_type = '%s' and time >= '%s' and time <= '%s 23:59:59' order by time" % (
+            self._baby_id, entry_type, date_string, date_string)
         return sql
 
     def cache_data(self, data):
@@ -48,7 +48,7 @@ class QueryMapper:
         logger.info('added summarized data')
 
     def get_cached_data(self):
-        result = self.execute_sql('select json_content from json_objects where json_key = "%s" and babyid = %s' %(JsonObjectsKeySummarizedData, self._baby_id), True)
+        result = self.execute_sql('select json_content from json_objects where json_key = "%s" and babyid = %i' %(JsonObjectsKeySummarizedData, self._baby_id), True)
         if len(result) == 0:
             return None
         json_text = result[0][0]
@@ -68,11 +68,11 @@ class QueryMapper:
             summarized_data = self.get_cached_data()
             if (summarized_data != None): return summarized_data
 
-        sql = 'select id, start, end, date_format(start, "%%Y-%%m-%%d") as day from baby_sleep where start >= "%s" and start <= CURRENT_TIMESTAMP() order by start ASC' % startDate
+        sql = 'select id, start, end, date_format(start, "%%Y-%%m-%%d") as day from baby_sleep where start >= "%s" and start <= CURRENT_TIMESTAMP() and babyid = %i order by start ASC' % (startDate, self._baby_id)
         sleep_row_objects = [self.sleep_row_to_dict(row) for row in self.execute_sql(sql, True)]
         logger.info('get_chart_data got sleep rows')
 
-        sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time >= "%s" and time <= CURRENT_TIMESTAMP() order by time ASC' % startDate
+        sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time >= "%s" and time <= CURRENT_TIMESTAMP() and babyid = %i order by time ASC' % (startDate, self._baby_id)
         keyval_rows = self.execute_sql(sql, True)
         logger.info('get_chart_data got keyval rows')
         try:
@@ -103,10 +103,10 @@ class QueryMapper:
             logger.error(traceback.format_exc())
 
     def get_data_for_day(self, date_string):
-        sql_sleeps = "select id, babyid, date_format(start, '%%Y-%%m-%%d %%T'), date_format(end, '%%Y-%%m-%%d %%T') from baby_sleep where start >= '%s' and start <= '%s 23:59:59' order by start" % (
-            date_string, date_string)
-        sql_keyval = "select date_format(time, '%%Y-%%m-%%d %%T'), entry_value, entry_type from baby_keyval where time >= '%s' and time <= '%s 23:59:59' order by time" % (
-            date_string, date_string)
+        sql_sleeps = "select id, babyid, date_format(start, '%%Y-%%m-%%d %%T'), date_format(end, '%%Y-%%m-%%d %%T') from baby_sleep where start >= '%s' and start <= '%s 23:59:59' and babyid = %i order by start" % (
+            date_string, date_string, self._baby_id)
+        sql_keyval = "select date_format(time, '%%Y-%%m-%%d %%T'), entry_value, entry_type from baby_keyval where time >= '%s' and time <= '%s 23:59:59' and babyid = %i order by time" % (
+            date_string, date_string, self._baby_id)
         con = self.get_connection()
         try:
             cursor = con.cursor()
@@ -147,10 +147,10 @@ class QueryMapper:
     def get_latest_each_record_type(self):
         # get the latest sleep, pee, poo, feed (milk or fmla)
         # we'll count a poo as a pee also because there is likely pee anyway
-        sql_pee = "select time from baby_keyval where entry_type = 'diaper' and (entry_value = 'pee' or entry_value = 'poo') order by time desc limit 1"
-        sql_poo = "select time from baby_keyval where entry_type = 'diaper' and entry_value = 'poo' order by time desc limit 1"
-        sql_feed = "select time from baby_keyval where entry_type = 'milk' or entry_type = 'formula' or entry_type = 'solid' order by time desc limit 1"
-        sql_sleep = "select end from baby_sleep where end <= current_timestamp() order by end desc limit 1"
+        sql_pee = "select time from baby_keyval where entry_type = 'diaper' and (entry_value = 'pee' or entry_value = 'poo') and babyid = %i order by time desc limit 1" % self._baby_id
+        sql_poo = "select time from baby_keyval where entry_type = 'diaper' and entry_value = 'poo' and babyid = %i order by time desc limit 1" % self._baby_id
+        sql_feed = "select time from baby_keyval where entry_type = 'milk' or entry_type = 'formula' or entry_type = 'solid' and babyid = %i order by time desc limit 1" % self._baby_id
+        sql_sleep = "select end from baby_sleep where end <= current_timestamp() and babyid = %i order by end desc limit 1" % self._baby_id
 
         con = self.get_connection()
         try:
@@ -195,13 +195,12 @@ class QueryMapper:
         con = self.get_connection()
         try:
             cursor = con.cursor()
-            sql = "select id, start, end, DATE_FORMAT(start, '%%Y-%%m-%%d') as day from baby_sleep where start <= CURRENT_TIMESTAMP() %s order by start ASC" % sleep_date_filter
+            sql = "select id, start, end, DATE_FORMAT(start, '%%Y-%%m-%%d') as day from baby_sleep where start <= CURRENT_TIMESTAMP() %s and babyid = %i order by start ASC" % (sleep_date_filter, self._baby_id)
             sleep_row_objects = [ self.sleep_row_to_dict(row) for row in self.execute_sql(sql, True, cursor) ]
-            sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time <= CURRENT_TIMESTAMP() %s order by time ASC' % keyval_date_filter
+            sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time <= CURRENT_TIMESTAMP() %s and babyid = %i order by time ASC' % (keyval_date_filter, self._baby_id)
             keyval_rows = self.execute_sql(sql, True, cursor)
             weekly_grouping = False
-            babyid = 1
-            day_gen = DayGenerator(babyid, weekly_grouping, sleep_row_objects, keyval_rows)
+            day_gen = DayGenerator(self._baby_id, weekly_grouping, sleep_row_objects, keyval_rows)
             return day_gen.get_datasets()
         finally:
             con.close()

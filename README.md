@@ -33,9 +33,13 @@ Now you should be able to start & debug the application in VS Code, using the la
 
 The application can be reached at [http://localhost:8080/](http://localhost:8080).
 
+### Running inside Development VM
+
+You can also run the application inside the vagrant VM.  After the initial vagrant up, ssh into the box and switch to /vagrant dir.  Then python run.py will start the app.  It should be available on `localhost:8071`.
+
 ### Debugging Unit Tests
 
-Sometimes, you know... you just need to debug a unit test ;).  Or, you just want to know *how* to debug a unit test out of curiosity.  I have added a launch configuration to the vscode launch config for running 1 unit test module at a time.  Currently not sure how to run "all" unit tests, but likely not hard to do.
+There is a launch configuration in vscode running 1 unit test module at a time.  Currently not sure how to run "all" unit tests, but likely not hard to do.
 
 ### Running inside Vagrant VM
 
@@ -46,3 +50,6 @@ The application starts when the environment is first provisioned.  But if the se
  - [http://localhost:8080/](http://localhost:8080/) (local)
  - [http://localhost:8071/](http://localhost:8071/) (directly to the app)
  - [http://localhost:8070/babylogs/](http://localhost:8070/babylogs/) (via apache reverse proxy)
+
+ ## Other tips
+ 

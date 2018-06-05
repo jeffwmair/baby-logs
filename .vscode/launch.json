@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Tests",
+            "name": "Python: Babylogs Unit Test",
             "type": "python",
             "request": "launch",
             "stopOnEntry": true,
@@ -19,7 +19,7 @@
             ]
         },
         {
-            "name": "Python: Flask (0.10.x or earlier)",
+            "name": "Python: Babylogs Webapp",
             "type": "python",
             "request": "launch",
             "stopOnEntry": false,
@@ -27,20 +27,6 @@
             "program": "${workspaceFolder}/run.py",
             "cwd": "${workspaceFolder}",
             "args": [],
-            "env": {},
-            "envFile": "${workspaceFolder}/.env",
-            "debugOptions": [
-                "RedirectOutput"
-            ]
-        },
-        {
-            "name": "Python: Current File",
-            "type": "python",
-            "request": "launch",
-            "stopOnEntry": true,
-            "pythonPath": "${config:python.pythonPath}",
-            "program": "${file}",
-            "cwd": "${workspaceFolder}",
             "env": {},
             "envFile": "${workspaceFolder}/.env",
             "debugOptions": [

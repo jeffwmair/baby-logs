@@ -25,8 +25,6 @@ class DayGenerator():
 
 		day_keyvals = dict()
 		for row in general_rows:
-			#TODO babyid
-			babyid = 1
 			list_row = list(row)
 			list_row.append(babyid)
 			row_dict = dict([(x,list_row[db_keyval_record_map.index(x)]) for x in db_keyval_record_map])

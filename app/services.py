@@ -10,7 +10,6 @@ logger = logging.getLogger('services')
 
 class ReportService():
     def __init__(self, datamapper):
-        self._babyid = 1
         self._datamapper = datamapper
         self._feed_types = ['milk', 'formula', 'solid', 'feed']
         self._old = 3
@@ -48,15 +47,15 @@ class ReportService():
         logger.info('Adding value item: %s/%s at %s' % (item_type, item_value,
                                                         time_string))
         # delete the same type item first
-        self._datamapper.delete_value_item(self._babyid, time_string,
+        self._datamapper.delete_value_item(self._datamapper._baby_id, time_string,
                                            item_type)
 
         # this is awkward -- we might be changing from one type of feed to another, which is why we have this
         if item_type in self._feed_types:
-            [ self._datamapper.delete_value_item(self._babyid, time_string, feed_type) for feed_type in self._feed_types ]
+            [ self._datamapper.delete_value_item(self._datamapper._baby_id, time_string, feed_type) for feed_type in self._feed_types ]
 
         if item_value != "none":
-            self._datamapper.insert_value_item(self._babyid, time_string, item_type, item_value)
+            self._datamapper.insert_value_item(self._datamapper._baby_id, time_string, item_type, item_value)
 
     def remove_value_item(self, time_string, item_type):
         logger.info('Removing value item %s at %s', item_type, time_string)
@@ -71,8 +70,7 @@ class ReportService():
         start_time = parse(sleep_start_string)
         sleep_end_string = (
             start_time + timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
-        babyid = 1
-        self._datamapper.insert_sleep(babyid, sleep_start_string,
+        self._datamapper.insert_sleep(sleep_start_string,
                                       sleep_end_string)
 
     def get_entry_data(self, date_string_raw):
@@ -110,8 +108,6 @@ class ReportService():
             dayToday = days[todayKey]
         except Exception:
             logger.error(traceback.format_exc())
-            #TODO
-            babyid = 1
             dayToday = Day(todayKey, SleepSet([]), DiaperSet([]), FeedSet([]))
 
         today_sleep = dayToday.get_sleep()

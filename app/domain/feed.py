@@ -22,7 +22,7 @@ class FeedSetAggregated:
 class FeedSet:
 	def __init__(self, feed_records):
 
-		def get_feeds_by_type(feedType): return (x for x in feed_records if x.get_type() == feedType)
+		def get_feeds_by_type(feedType): return (x for x in feed_records if x['type'] == feedType)
 		self._breast_count = 0
 		self._milk_ml = 0
 		self._fmla_ml = 0
@@ -35,7 +35,7 @@ class FeedSet:
 			# the DB... both numeric and 'BR' or 'BL'
 			# Need to fix that eventually, but not terribly important for now.
 			try:
-				self._milk_ml += int(milk.get_value())
+				self._milk_ml += int(milk['value'])
 			except:
 				self._breast_count += 1
 
