@@ -3,9 +3,8 @@ var reportPage = (function reportPage() {
     var API = "BabyApi";
 
     function init() {
-        function errorHandler(errorMessage) { console.error(errorMessage); }
         console.log('Beginning to load daily data')
-        UTILS.ajaxGetJson(API + "?action=loadreportdata_daily", errorHandler, function (json) {
+        UTILS.ajaxGetJson(API + "?action=loadreportdata_daily", { doAsync: true}, function (error, json) {
             console.log("Daily data loaded")
             var chartDataDaily = getChartData(json.datasets);
             if (chartDataDaily.dates.length > 0) {
@@ -15,13 +14,13 @@ var reportPage = (function reportPage() {
                 console.warn('No daily data found, so hiding this chart');
                 $('#container_linechart_daily').hide()
             }
-        }, true);
+        });
 
         console.log('Beginning to load weekly data')
-        UTILS.ajaxGetJson(API + "?action=loadreportdata_weekly", errorHandler, function (json) {
+        UTILS.ajaxGetJson(API + "?action=loadreportdata_weekly", {doAsync: true}, function (error, json) {
             console.log("Weekly data loaded")
             configureLineChart('#container_linechart_weekly', 'Weekly Averages', getChartData(json.datasets));
-        }, true);
+        });
     }
 
     function getChartData(reportJson) {

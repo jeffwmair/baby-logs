@@ -24,7 +24,12 @@
 		this.read(callback);
 	}
 
-	Model.prototype._handleData = function(json, callback) {
+	Model.prototype._handleData = function(error, json, callback) {
+
+		if (error) {
+			callback(error, json);
+			return;
+		}
 
 		var self = this;
 		self.data = {};
@@ -54,7 +59,7 @@
 			putData(item.time, 'feed', item);
 		});
 
-		callback.call(self, self.data, self.getDate());	
+		callback.call(self, error, self.data, self.getDate());
 
 	}
 
@@ -81,8 +86,8 @@
 		var myEndDate = new Date(gridDate.getTime() + (15*60000));
 		var formattedEndDate = getFormattedDateForServerCall(myEndDate);
 
-		UTILS.ajax("BabyApi?action="+apiAction+"&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, function(json) {
-			self._handleData(json, callback);
+		UTILS.ajax("BabyApi?action="+apiAction+"&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, function(error, json) {
+			self._handleData(json, error, callback);
 		});
 	}
 
@@ -102,8 +107,8 @@
 		var datetime = self.getDate();
 		datetime.setHours(date.getHours(), date.getMinutes());
 
-		UTILS.ajax("BabyApi?action=addvalue&type="+type+"&value="+value+"&time="+getFormattedDateForServerCall(datetime), function(json) {
-			self._handleData(json, callback);
+		UTILS.ajax("BabyApi?action=addvalue&type="+type+"&value="+value+"&time="+getFormattedDateForServerCall(datetime), function(error, json) {
+			self._handleData(error, json, callback);
 		});
 	}
 
@@ -112,8 +117,8 @@
 
 		var datetime = self.getDate();
 		datetime.setHours(date.getHours(), date.getMinutes());
-		UTILS.ajax("BabyApi?action=addvalue&type=diaper&value="+val+"&time="+getFormattedDateForServerCall(datetime), function(json) {
-			self._handleData(json, callback);
+		UTILS.ajax("BabyApi?action=addvalue&type=diaper&value="+val+"&time="+getFormattedDateForServerCall(datetime), function(error, json) {
+			self._handleData(error, json, callback);
 		});
 	}
 
@@ -122,8 +127,8 @@
 	 */
 	Model.prototype.read = function(callback) {
 		var self = this;
-		UTILS.ajax("BabyApi?action=loadentrydata&day="+datetime.getYyyymmddFormat(self.date), function(json) {
-			self._handleData(json, callback);	
+		UTILS.ajax("BabyApi?action=loadentrydata&day="+datetime.getYyyymmddFormat(self.date), function(error, json) {
+			self._handleData(error, json, callback);	
 		});
 
 	}

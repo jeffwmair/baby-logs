@@ -1,6 +1,7 @@
 from domain.day import DayGenerator, Day
 from datetime import date, datetime, timedelta
 from db_records import BabyRecord, GuardianRecord, SleepRecord, KeyValueRecord
+from string import Template
 import mysql.connector
 import traceback
 import logging
@@ -13,11 +14,13 @@ class QueryMapper:
     def __init__(self, credentials, baby_id):
         self._credentials = credentials
         self._baby_id = baby_id
+        self._queries = {
+            'insertValue': Template("insert into baby_keyval (babyid, time, entry_type, entry_value) values ($babyId, '$time', '$entry_type', '$entry_value');")
+        }
 
-    def insert_value_item(self, babyid, time_string, entry_type, entry_value):
+    def insert_value_item(self, babyId, time_string, entry_type, entry_value):
         self.clear_cache()
-        sql = "insert into baby_keyval (babyid, time, entry_type, entry_value) values (%i, '%s', '%s', '%s');" % (
-            babyid, time_string, entry_type, entry_value)
+        sql = self._queries['insertValue'].substitute(babyId=babyId, time=time_string, entry_type=entry_type, entry_value=entry_value)
         self.execute_sql(sql)
 
     def delete_value_item(self, babyid, time_string, entry_type):

@@ -5,10 +5,10 @@ UTILS.get2DigitFormat = function (val) {
 }
 
 UTILS.ajax = function (url, callback) {
-    return UTILS.ajaxGetJson(url, null, callback, true);
+    UTILS.ajaxGetJson(url, {doAsync: true}, callback);
 }
 
-UTILS.ajaxGetJson = function (url, errorHandler, callback, doAsync) {
+UTILS.ajaxGetJson = function (url, options, callback) {
     // load data from server via ajax
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
@@ -24,17 +24,15 @@ UTILS.ajaxGetJson = function (url, errorHandler, callback, doAsync) {
                         errorHandler(e + '<br>' + xmlhttp.responseText);
                     }
                 }
-                callback(json);
+                callback(null, json);
             }
             else {
-                if (errorHandler) {
-                    errorHandler(xmlhttp.response);
-                }
+                callback(xmlhttp.response, {});
             }
         }
     }
 
-    xmlhttp.open("GET", url, doAsync);
+    xmlhttp.open("GET", url, options.doAsync);
     xmlhttp.send();
 }
 

@@ -12,8 +12,8 @@
 	 */
 	Controller.prototype.setView = function() {
 		var self = this;
-		self.model.read(function(data) {
-			self.view.render(data);
+		self.model.read(function(error, data) {
+			self.view.render(error, data);
 		});
 	}
 

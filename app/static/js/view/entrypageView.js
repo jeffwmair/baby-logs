@@ -15,7 +15,11 @@
 	/**
 	 * Render the grid
 	 */
-	View.prototype.render = function(gridData, date) {
+	View.prototype.render = function(error, gridData, date) {
+		if (error) {
+			alert(error);
+			return;
+		}
 		var self = this;
 		self.$entryGrid.innerHTML = self.template.generateHtml(gridData);
 
@@ -27,7 +31,11 @@
 		self.$dayPickerDate.innerHTML = datetime.getDateFormatForDay(date);
 	}
 
-	View.prototype.update = function(gridData, date) { 
+	View.prototype.update = function(error, gridData, date) { 
+		if (error) {
+			alert(error);
+			return;
+		}
 		this.template.updateHtml(this.$entryGrid, gridData);
 		this.$dayPickerDate.innerHTML = datetime.getDateFormatForDay(date);
 	}

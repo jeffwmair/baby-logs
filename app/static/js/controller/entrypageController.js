@@ -14,10 +14,10 @@
 		this.day = day;
 	}
 
-	Controller.prototype._renderAndBindGrid = function(gridData, date) {
+	Controller.prototype._renderAndBindGrid = function(error, gridData, date) {
 		var self = this;
 
-		self.view.render(gridData, self.model.getDate());
+		self.view.render(error, gridData, self.model.getDate());
 
 		// might be best to move this elsewhere, but it works here.
 		$('#tblEntries').stickyTableHeaders({ fixedOffset : 50 });
@@ -26,24 +26,24 @@
 		self.view.bind('sleepButtonClick', function(sleepTime) {
 
 			// sleep button toggled
-			self.model.toggleSleep(sleepTime, function(data) {
-				self.view.update(data, self.model.getDate());
+			self.model.toggleSleep(sleepTime, function(error, data) {
+				self.view.update(error, data, self.model.getDate());
 			});
 
 		});
 
 		self.view.bind('setDiaperValue', function(val, diaperTime) {
 
-			self.model.setDiaper(diaperTime, val, function(data) {
-				self.view.update(data, self.model.getDate());
+			self.model.setDiaper(diaperTime, val, function(error, data) {
+				self.view.update(error, data, self.model.getDate());
 			});
 
 		});
 
 		self.view.bind('setFeedValue', function(val, feedTime) {
 
-			self.model.setFeed(feedTime, val, function(data) {
-				self.view.update(data, self.model.getDate());
+			self.model.setFeed(feedTime, val, function(error, data) {
+				self.view.update(error, data, self.model.getDate());
 			});
 
 		});
@@ -56,9 +56,9 @@
 
 		var self = this;
 
-		self.model.read(function(gridData, date) {
+		self.model.read(function(error, gridData, date) {
 
-			self._renderAndBindGrid(gridData, date);
+			self._renderAndBindGrid(error, gridData, date);
 
 			// bind the controls that never go away
 			

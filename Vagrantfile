@@ -3,6 +3,7 @@
 
 Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/trusty64"
+  config.vm.network :forwarded_port, guest: 22, host: 2223, id: 'ssh'
   # apache at 80
   config.vm.network "forwarded_port", guest: 80, host: 8070
   # flask app at 8080

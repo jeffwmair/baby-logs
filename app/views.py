@@ -19,7 +19,7 @@ logger.info('Startup')
 def server_error(err):
     """responds with error message"""
     logger.error(err)
-    return err
+    return err.msg, 500
 
 @app.route('/')
 def dashboard_page():
@@ -78,7 +78,7 @@ def api():
 
     elif api == "addvalue":
         svc.add_value_item(request.args['time'], request.args['type'],
-                           request.args['value'])
+                        request.args['value'])
         data = svc.get_entry_data(request.args['time'])
 
     elif api == "loadreportdata_daily":

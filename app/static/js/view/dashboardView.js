@@ -20,7 +20,7 @@
 	/**
 	 * Render the view with the provided data.
 	 */
-	View.prototype.render = function (data) {
+	View.prototype.render = function (error, data) {
 		this.$txtBigPoos.innerHTML = data.poo.todayCount;
 		this.$txtBigNaps.innerHTML = data.sleep.naps.count + ' naps<br>' + data.sleep.naps.duration + ' hrs';
 		this.$txtBigFeeds.innerHTML = data.feed.milkMlToday + ' milk<br>' + data.feed.breastCountToday + ' breast<br>' + data.feed.formulaMlToday + ' formula<br>' + data.feed.solidMlToday + ' solid';
