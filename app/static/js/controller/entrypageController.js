@@ -63,14 +63,14 @@
             // bind the controls that never go away
             
             self.view.bind('nextDay', function() {
-                self.model.moveToNextDay(function(gridData, date) {
-                    self.view.update(gridData, date);
+                self.model.moveToNextDay(function(error, gridData, date) {
+                    self.view.update(error, gridData, date);
                 });
             });
 
             self.view.bind('prevDay', function() {
-                self.model.moveToPrevDay(function(gridData, date) {
-                    self.view.update(gridData, date);
+                self.model.moveToPrevDay(function(error, gridData, date) {
+                    self.view.update(error, gridData, date);
                 });
             });
 

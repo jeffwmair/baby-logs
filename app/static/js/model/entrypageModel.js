@@ -87,7 +87,7 @@
         var formattedEndDate = getFormattedDateForServerCall(myEndDate);
 
         UTILS.ajax("BabyApi?action="+apiAction+"&sleepstart="+formatteddate+"&sleepend="+formattedEndDate, function(error, json) {
-            self._handleData(json, error, callback);
+            self._handleData(error, json, callback);
         });
     }
 
