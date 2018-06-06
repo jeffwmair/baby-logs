@@ -1,20 +1,20 @@
 (function() {
 
-	'use strict'
+    'use strict'
 
-	function Page() {
-		this.model = new entry.Model();	
-		this.template = new entry.Template();	
-		this.view = new entry.View(this.template);
-		this.controller = new entry.Controller(this.model, this.view, new Date());
-	}
+    function Page() {
+        this.model = new entry.Model();	
+        this.template = new entry.Template();	
+        this.view = new entry.View(this.template);
+        this.controller = new entry.Controller(this.model, this.view, new Date());
+    }
 
-	var page = new Page();
+    var page = new Page();
 
-	function setView() {
-		page.controller.setView();
-	}
+    function setView() {
+        page.controller.setView();
+    }
 
-	$on(window, 'load', setView);
+    $on(window, 'load', setView);
 
 })();
