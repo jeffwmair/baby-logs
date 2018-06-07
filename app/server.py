@@ -11,7 +11,7 @@ import logging
 from flask import Flask
 
 
-logger = logging.getLogger('views')
+logger = logging.getLogger('server')
 app = Flask(__name__, static_url_path='/static')
 logger.info('Startup')
 
