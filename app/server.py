@@ -33,15 +33,18 @@ def server_error(err):
 @app.route('/', methods=['GET'])
 def dashboard_page():
     """show the dashboard page"""
-    return render_template('index.html', babyName=firstName)
+    navigation = render_template('navigation.html', babyName=firstName)
+    return render_template('index.html', babyName=firstName, nav=navigation)
 
 @app.route('/entry', methods=['GET'])
 def entry_page():
-    return render_template('entry.html', babyName=firstName)
+    navigation = render_template('navigation.html', babyName=firstName)
+    return render_template('entry.html', babyName=firstName, nav=navigation)
 
 @app.route('/charts', methods=['GET'])
 def charts_page():
-    return render_template('charts.html', babyName=firstName)
+    navigation = render_template('navigation.html', babyName=firstName)
+    return render_template('charts.html', babyName=firstName, nav=navigation)
 
 @app.route('/ReportData', methods=['GET'])
 def report_data():
