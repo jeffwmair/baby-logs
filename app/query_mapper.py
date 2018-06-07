@@ -15,18 +15,28 @@ class QueryMapper:
         self._credentials = credentials
         self._baby_id = baby_id
         self._queries = {
-            'insertValue': Template("insert into baby_keyval (babyid, time, entry_type, entry_value) values ($babyId, '$time', '$entry_type', '$entry_value');")
+            'insertValue': Template("insert into baby_keyval (babyid, time, entry_type, entry_value) values ($babyId, '$time', '$entry_type', '$entry_value');"),
+            'getBabyDetails': Template("select firstName, lastName, birthdate from baby where id = $babyId;")
         }
 
-    def insert_value_item(self, babyId, time_string, entry_type, entry_value):
+    def get_baby_details(self):
+        record = self.execute_sql(self._queries['getBabyDetails'].substitute(babyId=self._baby_id), True)[0]
+        x = {
+            'firstName': record[0],
+            'lastName': record[1],
+            'dob': record[2],
+        }
+        return x
+
+    def insert_value_item(self, time_string, entry_type, entry_value):
         self.clear_cache()
-        sql = self._queries['insertValue'].substitute(babyId=babyId, time=time_string, entry_type=entry_type, entry_value=entry_value)
+        sql = self._queries['insertValue'].substitute(babyId=self._baby_id, time=time_string, entry_type=entry_type, entry_value=entry_value)
         self.execute_sql(sql)
 
-    def delete_value_item(self, babyid, time_string, entry_type):
+    def delete_value_item(self, time_string, entry_type):
         self.clear_cache()
         sql = "delete from baby_keyval where babyid = %i and time = '%s' and entry_type = '%s';" % (
-            babyid, time_string, entry_type)
+            self._baby_id, time_string, entry_type)
         self.execute_sql(sql)
 
     def insert_sleep(self, sleep_start, sleep_end):

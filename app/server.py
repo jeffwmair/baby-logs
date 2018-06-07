@@ -10,12 +10,10 @@ from app.query_mapper import QueryMapper
 import logging
 from flask import Flask
 
-
-logger = logging.getLogger('server')
 app = Flask(__name__, static_url_path='/static')
-logger.info('Startup')
+# app.debug = True
 
-def get_service():
+def get_query_mapper():
     credentials_file = 'credentials.properties'
     # command-line argument with credentials filename
     if len(sys.argv) == 2 and sys.argv[1].startswith('credentials='):
@@ -23,8 +21,16 @@ def get_service():
     credentials_reader = PropertiesReader(credentials_file)
     creds = credentials_reader.read_from_file()
     babyid = int(creds['babyid'])
-    mapper = QueryMapper(creds, babyid)
+    return QueryMapper(creds, babyid)
+
+def get_service(mapper):
     return ReportService(mapper)
+
+def get_baby_details():
+    return queryMapper.get_baby_details();
+
+def get_first_name():
+    return get_baby_details()['firstName']
 
 @app.errorhandler(500)
 def server_error(err):
@@ -32,23 +38,24 @@ def server_error(err):
     logger.error(err)
     return err.msg, 500
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def dashboard_page():
     """show the dashboard page"""
-    return render_template('index.html')
+    return render_template('index.html', babyName=firstName)
 
-@app.route('/entry')
+@app.route('/entry', methods=['GET'])
 def entry_page():
-    return render_template('entry.html')
+    babyDetails = get_baby_details()
+    return render_template('entry.html', babyName=firstName)
 
-@app.route('/charts')
+@app.route('/charts', methods=['GET'])
 def charts_page():
-    return render_template('charts.html')
+    babyDetails = get_baby_details()
+    return render_template('charts.html', babyName=firstName)
 
 @app.route('/ReportData', methods=['GET'])
 def report_data():
     datatype = request.args['type']
-    svc = get_service()
     if datatype == "daily":
         return jsonify(svc.get_chart_data_daily(10))
     elif datatype == "weekly":
@@ -59,7 +66,6 @@ def report_data():
 @app.route('/BabyApi')
 def api():
     data = None
-    svc = get_service()
     api = request.args['action']
 
     if api == "loadDashboard":
@@ -107,3 +113,11 @@ def api():
         return jsondata
     except Exception as ex:
         logger.error(ex)
+
+
+logger = logging.getLogger('server')
+queryMapper = get_query_mapper()
+svc = get_service(queryMapper)
+firstName = get_first_name()
+logger.info('Startup')
+

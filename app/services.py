@@ -47,15 +47,14 @@ class ReportService():
         logger.info('Adding value item: %s/%s at %s' % (item_type, item_value,
                                                         time_string))
         # delete the same type item first
-        self._datamapper.delete_value_item(self._datamapper._baby_id, time_string,
-                                           item_type)
+        self._datamapper.delete_value_item(time_string, item_type)
 
         # this is awkward -- we might be changing from one type of feed to another, which is why we have this
         if item_type in self._feed_types:
-            [ self._datamapper.delete_value_item(self._datamapper._baby_id, time_string, feed_type) for feed_type in self._feed_types ]
+            [ self._datamapper.delete_value_item(time_string, feed_type) for feed_type in self._feed_types ]
 
         if item_value != "none":
-            self._datamapper.insert_value_item(self._datamapper._baby_id, time_string, item_type, item_value)
+            self._datamapper.insert_value_item(time_string, item_type, item_value)
 
     def remove_value_item(self, time_string, item_type):
         logger.info('Removing value item %s at %s', item_type, time_string)
