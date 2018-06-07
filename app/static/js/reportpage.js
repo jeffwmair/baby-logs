@@ -2,27 +2,49 @@ var reportPage = (function reportPage() {
     'use strict';
 
     function init() {
-        console.log('Beginning to load daily data')
-        UTILS.ajaxGetJson('ReportData?type=daily', { doAsync: true}, function (error, json) {
-            console.log("Daily data loaded")
-            var chartDataDaily = getChartData(json.datasets);
-            if (chartDataDaily.dates.length > 0) {
-                configureLineChart('#container_linechart_daily', 'Last 10 Days', chartDataDaily);
-            }
-            else {
-                console.warn('No daily data found, so hiding this chart');
-                $('#container_linechart_daily').hide()
-            }
-        });
+        function loadChartData(period) {
+            console.log('Beginning to load data:'+period)
+            UTILS.ajaxGetJson('ReportData?type='+period, { doAsync: true }, function (error, json) {
+                console.log("Daily data loaded")
+                var chartDataDaily = getChartData(json.datasets);
+                if (chartDataDaily.dates.length > 0) {
+                    configureLineChart('#main-chart', json.description, chartDataDaily);
+                }
+                else {
+                    console.warn('No daily data found, so hiding this chart');
+                    $('#container_linechart_daily').hide()
+                }
+            });
+        }
 
-        console.log('Beginning to load weekly data')
-        UTILS.ajaxGetJson('ReportData?type=weekly', { doAsync: true}, function (error, json) {
-            console.log("Weekly data loaded")
-            configureLineChart('#container_linechart_weekly', 'Weekly Averages', getChartData(json.datasets));
-        });
+        var timeSelectorMap = {
+            "ddlChartRecent": {
+                api:'daily',
+                desc:'Daily'
+            },
+            "ddlChartWeekly": {
+                api:'weekly',
+                desc:'Weekly'
+            },
+            "ddlChartWeeklyComparison": {
+                api:'weekly-compare',
+                desc:'Weekly - Compare'
+            }
+        };
+
+        $('#ddlChartRecent, #ddlChartWeekly, #ddlChartWeeklyComparison').on('click', function (event) {
+            var item = timeSelectorMap[event.currentTarget.id];
+            $('#chart-time-description').html(item.desc);
+            loadChartData(item.api);
+        })
+        loadChartData('daily');
     }
 
     function getChartData(reportJson) {
+        if (!reportJson) {
+            alert('No data!');
+            return;
+        }
         return reportJson.reduce(function (soFar, item) {
             soFar.dates.push(new Date(item.day));
             soFar.totalSleepHrs.push(item.totalSleepHrs);

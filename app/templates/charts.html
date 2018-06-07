@@ -13,10 +13,35 @@
     {{nav|safe}}
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-12 col-sm-offset-0 col-md-12 col-md-offset-0 main">
+            <div class="col-sm-6 col-sm-offset-0 main">
                 <h1>{{babyName}}'s Charts</h1>
-                <div id="container_linechart_daily" style="width:100%;height:400px"></div>
-                <div id="container_linechart_weekly" style="margin-top:80px;width:100%;height:400px"></div>
+            </div>
+            <div class="col-sm-6 col-sm-offset-0 main">
+                <div class="dropdown pull-right">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="ddlChartTime" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="true">
+                        <span id='chart-time-description'>Daily</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="ddlChartTime">
+                        <li>
+                            <a href="#" id='ddlChartRecent'>Daily</a>
+                        </li>
+                        <li>
+                            <a href="#" id='ddlChartWeekly'>Weekly</a>
+                        </li>
+                        <li>
+                            <a href="#" id='ddlChartWeeklyComparison'>Weekly - Compare</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+
+            </div>
+            <div class="col-sm-12 col-sm-offset-0 col-md-12 col-md-offset-0 main">
+                <div id="main-chart" style="width:100%;height:400px"></div>
+                <!-- <div id="container_linechart_weekly" style="margin-top:80px;width:100%;height:400px"></div> -->
                 <div id='tableContainer'>
                     <!-- data will be placed here dynamically -->
                 </div>

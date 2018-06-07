@@ -6,7 +6,7 @@ import traceback
 from domain.day import Day, SleepSet, FeedSet, DiaperSet
 import logging
 
-logger = logging.getLogger('services')
+log = logging.getLogger('services')
 
 class ReportService():
     def __init__(self, queryMapper):
@@ -44,7 +44,7 @@ class ReportService():
 
     # add a new value-item
     def add_value_item(self, time_string, item_type, item_value):
-        logger.info('Adding value item: %s/%s at %s' % (item_type, item_value,
+        log.info('Adding value item: %s/%s at %s' % (item_type, item_value,
                                                         time_string))
         # delete the same type item first
         self._datamapper.delete_value_item(time_string, item_type)
@@ -57,15 +57,15 @@ class ReportService():
             self._datamapper.insert_value_item(time_string, item_type, item_value)
 
     def remove_value_item(self, time_string, item_type):
-        logger.info('Removing value item %s at %s', item_type, time_string)
+        log.info('Removing value item %s at %s', item_type, time_string)
         self._datamapper.delete_value_item(time_string, item_type)
 
     def remove_sleep(self, sleep_time_string):
-        logger.info('Removing sleep at %s', sleep_time_string)
+        log.info('Removing sleep at %s', sleep_time_string)
         self._datamapper.delete_sleep(sleep_time_string)
 
     def add_sleep(self, sleep_start_string):
-        logger.info('Adding sleep at %s', sleep_start_string)
+        log.info('Adding sleep at %s', sleep_start_string)
         start_time = parse(sleep_start_string)
         sleep_end_string = (
             start_time + timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
@@ -106,7 +106,7 @@ class ReportService():
         try:
             dayToday = days[todayKey]
         except Exception:
-            logger.error(traceback.format_exc())
+            log.error(traceback.format_exc())
             dayToday = Day(todayKey, SleepSet([]), DiaperSet([]), FeedSet([]))
 
         today_sleep = dayToday.get_sleep()

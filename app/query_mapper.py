@@ -7,7 +7,7 @@ import traceback
 import logging
 import json
 
-logger = logging.getLogger('QueryMapper')
+log = logging.getLogger('QueryMapper')
 
 JsonObjectsKeySummarizedData = 'weeklysummarized;'
 class QueryMapper:
@@ -58,7 +58,7 @@ class QueryMapper:
     def cache_data(self, data):
         json_string = json.dumps(data)
         self.execute_sql('insert into json_objects (json_key, babyid, json_content) values ("%s",%s, \'%s\')' % (JsonObjectsKeySummarizedData, self._baby_id, json_string))
-        logger.info('added summarized data')
+        log.info('added summarized data')
 
     def get_cached_data(self):
         result = self.execute_sql('select json_content from json_objects where json_key = "%s" and babyid = %i' %(JsonObjectsKeySummarizedData, self._baby_id), True)
@@ -68,11 +68,11 @@ class QueryMapper:
         return json.loads(json_text)
 
     def clear_cache(self):
-        logger.info('deleting summarized data')
+        log.info('deleting summarized data')
         self.execute_sql('delete from json_objects where json_key = "%s" and babyid = %s' % (JsonObjectsKeySummarizedData, self._baby_id))
 
     def get_chart_data(self, weekly, daysToShow=None):
-        logger.info('Starting get_chart_data Weekly=%s, daysToShow=%s', weekly, daysToShow)
+        log.info('Starting get_chart_data Weekly=%s, daysToShow=%s', weekly, daysToShow)
         startDate = '2000-01-01 00:00:00'
         if daysToShow != None:
             startDate = (datetime.now() - timedelta( days=daysToShow - 1)).strftime('%Y-%m-%d')
@@ -83,11 +83,11 @@ class QueryMapper:
 
         sql = 'select id, start, end, date_format(start, "%%Y-%%m-%%d") as day from baby_sleep where start >= "%s" and start <= CURRENT_TIMESTAMP() and babyid = %i order by start ASC' % (startDate, self._baby_id)
         sleep_row_objects = [self.sleep_row_to_dict(row) for row in self.execute_sql(sql, True)]
-        logger.info('get_chart_data got sleep rows')
+        log.info('get_chart_data got sleep rows')
 
         sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time >= "%s" and time <= CURRENT_TIMESTAMP() and babyid = %i order by time ASC' % (startDate, self._baby_id)
         keyval_rows = self.execute_sql(sql, True)
-        logger.info('get_chart_data got keyval rows')
+        log.info('get_chart_data got keyval rows')
         try:
             day_gen = DayGenerator(1, weekly, sleep_row_objects, keyval_rows)
             datasets = day_gen.get_datasets()
@@ -108,12 +108,12 @@ class QueryMapper:
                     'poos': diaper.get_poo_count(),
                 }
                 daily.append(row)
-            logger.info('Completed get_chart_data')
-            data = {'datasets':daily}
+            log.info('Completed get_chart_data')
+            data = {'datasets':daily, 'description': 'Weekly Averages' if weekly == True else 'Last 10 Days'}
             if daysToShow == None: self.cache_data(data)
             return data
         except Exception as ex:
-            logger.error(traceback.format_exc())
+            log.error(traceback.format_exc())
 
     def get_data_for_day(self, date_string):
         sql_sleeps = "select id, babyid, date_format(start, '%%Y-%%m-%%d %%T'), date_format(end, '%%Y-%%m-%%d %%T') from baby_sleep where start >= '%s' and start <= '%s 23:59:59' and babyid = %i order by start" % (
@@ -177,7 +177,7 @@ class QueryMapper:
                     else:
                         return rows[0][0]
                 except Exception:
-                    logger.error('Failure in executing: "%s"', sql)
+                    log.error('Failure in executing: "%s"', sql)
                     raise
 
             return {

@@ -12,8 +12,12 @@ from app.properties_reader import PropertiesReader
 from app.query_mapper import QueryMapper
 import logging
 
+FORMAT = '%(asctime)s %(levelname)s: %(message)s'
+logging.basicConfig(filename='babylogger.log', level=logging.INFO, format=FORMAT)
+
 # app.debug = True
-logger = logging.getLogger('server')
+log = logging.getLogger('server')
+log.info('fooobar')
 
 def get_query_mapper():
     credentials_file = 'credentials.properties'
@@ -27,12 +31,13 @@ def get_query_mapper():
 @app.errorhandler(500)
 def server_error(err):
     """responds with error message"""
-    logger.error(err)
+    log.error(err)
     return err.msg, 500
 
 @app.route('/', methods=['GET'])
 def dashboard_page():
     """show the dashboard page"""
+    log.info('Load dashboard!')
     navigation = render_template('navigation.html', babyName=firstName)
     return render_template('index.html', babyName=firstName, nav=navigation)
 
@@ -65,7 +70,7 @@ def api():
         try:
             data = svc.get_dashboard_data()
         except Exception as ex:
-            logger.error(traceback.format_exc())
+            log.error(traceback.format_exc())
 
     elif api == "loadentrydata":
         try:
@@ -74,7 +79,7 @@ def api():
                 day_string = request.args['day']
             data = svc.get_entry_data(day_string)
         except Exception:
-            logger.error(traceback.format_exc())
+            log.error(traceback.format_exc())
 
     elif api == "removesleep":
         sleep_time = request.args['sleepstart']
@@ -105,11 +110,10 @@ def api():
         jsondata = jsonify(data)
         return jsondata
     except Exception as ex:
-        logger.error(ex)
+        log.error(ex)
 
 
 queryMapper = get_query_mapper()
 svc = ReportService(queryMapper)
 firstName = queryMapper.get_baby_details()['firstName']
-logger.info('')
 
