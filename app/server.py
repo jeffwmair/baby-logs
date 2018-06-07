@@ -1,3 +1,6 @@
+from flask import Flask
+app = Flask(__name__, static_url_path='/static')
+
 import traceback
 import sys
 from datetime import datetime
@@ -8,10 +11,9 @@ from app.services import ReportService
 from app.properties_reader import PropertiesReader
 from app.query_mapper import QueryMapper
 import logging
-from flask import Flask
 
-app = Flask(__name__, static_url_path='/static')
 # app.debug = True
+logger = logging.getLogger('server')
 
 def get_query_mapper():
     credentials_file = 'credentials.properties'
@@ -20,17 +22,7 @@ def get_query_mapper():
         credentials_file = sys.argv[1].split('credentials=')[1]
     credentials_reader = PropertiesReader(credentials_file)
     creds = credentials_reader.read_from_file()
-    babyid = int(creds['babyid'])
-    return QueryMapper(creds, babyid)
-
-def get_service(mapper):
-    return ReportService(mapper)
-
-def get_baby_details():
-    return queryMapper.get_baby_details();
-
-def get_first_name():
-    return get_baby_details()['firstName']
+    return QueryMapper(creds)
 
 @app.errorhandler(500)
 def server_error(err):
@@ -45,12 +37,10 @@ def dashboard_page():
 
 @app.route('/entry', methods=['GET'])
 def entry_page():
-    babyDetails = get_baby_details()
     return render_template('entry.html', babyName=firstName)
 
 @app.route('/charts', methods=['GET'])
 def charts_page():
-    babyDetails = get_baby_details()
     return render_template('charts.html', babyName=firstName)
 
 @app.route('/ReportData', methods=['GET'])
@@ -115,9 +105,8 @@ def api():
         logger.error(ex)
 
 
-logger = logging.getLogger('server')
 queryMapper = get_query_mapper()
-svc = get_service(queryMapper)
-firstName = get_first_name()
-logger.info('Startup')
+svc = ReportService(queryMapper)
+firstName = queryMapper.get_baby_details()['firstName']
+logger.info('')
 

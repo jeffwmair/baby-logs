@@ -9,8 +9,8 @@ import logging
 logger = logging.getLogger('services')
 
 class ReportService():
-    def __init__(self, datamapper):
-        self._datamapper = datamapper
+    def __init__(self, queryMapper):
+        self._datamapper = queryMapper
         self._feed_types = ['milk', 'formula', 'solid', 'feed']
         self._old = 3
         self._recent = 2

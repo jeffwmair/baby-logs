@@ -11,9 +11,9 @@ logger = logging.getLogger('QueryMapper')
 
 JsonObjectsKeySummarizedData = 'weeklysummarized;'
 class QueryMapper:
-    def __init__(self, credentials, baby_id):
+    def __init__(self, credentials):
         self._credentials = credentials
-        self._baby_id = baby_id
+        self._baby_id = int(credentials['babyid'])
         self._queries = {
             'insertValue': Template("insert into baby_keyval (babyid, time, entry_type, entry_value) values ($babyId, '$time', '$entry_type', '$entry_value');"),
             'getBabyDetails': Template("select firstName, lastName, birthdate from baby where id = $babyId;")
