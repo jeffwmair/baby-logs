@@ -30,9 +30,11 @@
      * Update existing html with the given data
      */
     Template.prototype.updateHtml = function(grid, data) {
-        var self = this;
         // keys to our data object, and to our element classes
-        var times = self._generateAllTimes();
+        var times = this._generateAllTimes();
+        var setElementsToDefaultState = this._setElementsToDefaultState.bind(this);
+        var setActiveOrInactive = this._setActiveOrInactive.bind(this);
+
         // rip through all the 'times'
         times.forEach(function(t) {
             var btnSleep = qs('.sleep_'+t);
@@ -40,12 +42,12 @@
             var ddlFeed = qs('.feed_'+t);
             var all_elements = [ btnSleep, ddlDiaper, ddlFeed ];
             if (data[t] === undefined) {    // <-- that's right, using time as a property on the object...
-                self._setElementsToDefaultState(all_elements);
+                setElementsToDefaultState(all_elements);
             }
             else {
-                self._setActiveOrInactive(btnSleep, data[t].sleep);
-                self._setActiveOrInactive(ddlDiaper, data[t].diaper);
-                self._setActiveOrInactive(ddlFeed, data[t].feed);
+                setActiveOrInactive(btnSleep, data[t].sleep);
+                setActiveOrInactive(ddlDiaper, data[t].diaper);
+                setActiveOrInactive(ddlFeed, data[t].feed);
             }
         });
     }
@@ -165,9 +167,9 @@
     Template.prototype._generateRows = function(data) {
         var times = this._generateAllTimes();
         var feedOptionsHtml = this._generateFeedOptions();
-        var that = this;
+        var generateRow = this._generateRow.bind(this);
         return times.reduce(function(acc, val) {
-            acc += that._generateRow(val, data, feedOptionsHtml);
+            acc += generateRow(val, data, feedOptionsHtml);
             return acc;
         }, '');
     }

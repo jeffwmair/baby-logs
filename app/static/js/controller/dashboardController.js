@@ -2,25 +2,24 @@
     'use strict'
 
     function Controller(model, view, day) {
-        var self = this;
-        self.model = model;
-        self.view = view;
+        this.model = model;
+        this.view = view;
     }
 
     /**
      * Loads and initializes the view
      */
     Controller.prototype.setView = function() {
-        var self = this;
-        self.model.read(function(error, data) {
-            self.view.render(error, data);
+        var render = this.view.render.bind(this.view);
+        this.model.read(function(error, data) {
+            render(error, data);
         });
     }
 
     Controller.prototype.summarizeData = function() {
-        var self = this;
+        var setDataIsSummarizedStatus = this.view.setDataIsSummarizedStatus.bind(this.view);
         this.model.summarizeData(function(data) {
-            self.view.setDataIsSummarizedStatus(data);
+            setDataIsSummarizedStatus(data);
         });
     }
 

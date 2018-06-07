@@ -2,9 +2,8 @@
     'use strict'
 
     function Controller(model, view, day) {
-        var self = this;
-        self.model = model;
-        self.view = view;
+        this.model = model;
+        this.view = view;
     }
 
     /**
@@ -15,37 +14,36 @@
     }
 
     Controller.prototype._renderAndBindGrid = function(error, gridData, date) {
-        var self = this;
-
-        self.view.render(error, gridData, self.model.getDate());
+        this.view.render(error, gridData, this.model.getDate());
 
         // might be best to move this elsewhere, but it works here.
         $('#tblEntries').stickyTableHeaders({ fixedOffset : 50 });
 
+        var update = this.view.update.bind(this.view);
+        var toggleSleep = this.model.toggleSleep.bind(this.model);
+        var setDiaper = this.model.setDiaper.bind(this.model);
+        var setFeed = this.model.setFeed.bind(this.model);
+
         /* rendering must happen before binding so that we have all the elements that need to be bound */
-        self.view.bind('sleepButtonClick', function(sleepTime) {
+        this.view.bind('sleepButtonClick', function(sleepTime) {
 
             // sleep button toggled
-            self.model.toggleSleep(sleepTime, function(error, data) {
-                self.view.update(error, data, self.model.getDate());
+            toggleSleep(sleepTime, function(error, data) {
+                update(error, data, this.getDate());
             });
 
         });
 
-        self.view.bind('setDiaperValue', function(val, diaperTime) {
-
-            self.model.setDiaper(diaperTime, val, function(error, data) {
-                self.view.update(error, data, self.model.getDate());
+        this.view.bind('setDiaperValue', function(val, diaperTime) {
+            setDiaper(diaperTime, val, function(error, data) {
+                update(error, data, this.getDate());
             });
-
         });
 
-        self.view.bind('setFeedValue', function(val, feedTime) {
-
-            self.model.setFeed(feedTime, val, function(error, data) {
-                self.view.update(error, data, self.model.getDate());
+        this.view.bind('setFeedValue', function(val, feedTime) {
+            setFeed(feedTime, val, function(error, data) {
+                update(error, data, this.getDate());
             });
-
         });
     }
 
@@ -54,27 +52,29 @@
      */
     Controller.prototype.setView = function() {
 
-        var self = this;
+        var renderAndBindGrid = this._renderAndBindGrid.bind(this);
+        var moveToNextDay = this.model.moveToNextDay.bind(this.model);
+        var moveToPrevDay = this.model.moveToNextDay.bind(this.model);
+        var update = this.view.update.bind(this.view);
+        var bindView = this.view.bind.bind(this.view);
 
-        self.model.read(function(error, gridData, date) {
+        this.model.read(function(error, gridData, date) {
 
-            self._renderAndBindGrid(error, gridData, date);
+            renderAndBindGrid(error, gridData, date);
 
             // bind the controls that never go away
             
-            self.view.bind('nextDay', function() {
-                self.model.moveToNextDay(function(error, gridData, date) {
-                    self.view.update(error, gridData, date);
+            bindView('nextDay', function() {
+                moveToNextDay(function(error, gridData, date) {
+                    update(error, gridData, date);
                 });
             });
 
-            self.view.bind('prevDay', function() {
-                self.model.moveToPrevDay(function(error, gridData, date) {
-                    self.view.update(error, gridData, date);
+            bindView('prevDay', function() {
+                moveToPrevDay(function(error, gridData, date) {
+                    update(error, gridData, date);
                 });
             });
-
-
         });
 
     }
