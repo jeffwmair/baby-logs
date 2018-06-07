@@ -1,10 +1,9 @@
 var reportPage = (function reportPage() {
     'use strict';
-    var API = "BabyApi";
 
     function init() {
         console.log('Beginning to load daily data')
-        UTILS.ajaxGetJson(API + "?action=loadreportdata_daily", { doAsync: true}, function (error, json) {
+        UTILS.ajaxGetJson('ReportData?type=daily', { doAsync: true}, function (error, json) {
             console.log("Daily data loaded")
             var chartDataDaily = getChartData(json.datasets);
             if (chartDataDaily.dates.length > 0) {
@@ -17,7 +16,7 @@ var reportPage = (function reportPage() {
         });
 
         console.log('Beginning to load weekly data')
-        UTILS.ajaxGetJson(API + "?action=loadreportdata_weekly", {doAsync: true}, function (error, json) {
+        UTILS.ajaxGetJson('ReportData?type=weekly', { doAsync: true}, function (error, json) {
             console.log("Weekly data loaded")
             configureLineChart('#container_linechart_weekly', 'Weekly Averages', getChartData(json.datasets));
         });

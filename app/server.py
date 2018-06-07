@@ -15,6 +15,17 @@ logger = logging.getLogger('server')
 app = Flask(__name__, static_url_path='/static')
 logger.info('Startup')
 
+def get_service():
+    credentials_file = 'credentials.properties'
+    # command-line argument with credentials filename
+    if len(sys.argv) == 2 and sys.argv[1].startswith('credentials='):
+        credentials_file = sys.argv[1].split('credentials=')[1]
+    credentials_reader = PropertiesReader(credentials_file)
+    creds = credentials_reader.read_from_file()
+    babyid = int(creds['babyid'])
+    mapper = QueryMapper(creds, babyid)
+    return ReportService(mapper)
+
 @app.errorhandler(500)
 def server_error(err):
     """responds with error message"""
@@ -34,20 +45,23 @@ def entry_page():
 def charts_page():
     return render_template('charts.html')
 
+@app.route('/ReportData', methods=['GET'])
+def report_data():
+    datatype = request.args['type']
+    svc = get_service()
+    if datatype == "daily":
+        return jsonify(svc.get_chart_data_daily(10))
+    elif datatype == "weekly":
+        return jsonify(svc.get_chart_data_weekly())
+    else:
+        raise Exception("Unexpected report type" + datatype)
+
 @app.route('/BabyApi')
 def api():
     data = None
-    credentials_file = 'credentials.properties'
-    # command-line argument with credentials filename
-    if len(sys.argv) == 2 and sys.argv[1].startswith('credentials='):
-        credentials_file = sys.argv[1].split('credentials=')[1]
-    credentials_reader = PropertiesReader(credentials_file)
-    creds = credentials_reader.read_from_file()
-    babyid = int(creds['babyid'])
-    mapper = QueryMapper(creds, babyid)
-
+    svc = get_service()
     api = request.args['action']
-    svc = ReportService(mapper)
+
     if api == "loadDashboard":
         try:
             data = svc.get_dashboard_data()
@@ -81,12 +95,6 @@ def api():
                         request.args['value'])
         data = svc.get_entry_data(request.args['time'])
 
-    elif api == "loadreportdata_daily":
-        data = svc.get_chart_data_daily(10)
-
-    elif api == "loadreportdata_weekly":
-        data = svc.get_chart_data_weekly()
-    
     elif api == 'summarize_data':
         svc.summarize_weekly_data()
         return ''
