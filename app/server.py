@@ -1,12 +1,9 @@
-from flask import Flask
+from flask import Flask, jsonify, request, render_template, redirect, make_response
 app = Flask(__name__, static_url_path='/static')
 
 import traceback
 import sys
 from datetime import datetime
-from flask import jsonify
-from flask import request
-from flask import render_template
 from app.services import ReportService
 from app.properties_reader import PropertiesReader
 from app.query_mapper import QueryMapper
@@ -26,6 +23,7 @@ def get_query_mapper():
         credentials_file = sys.argv[1].split('credentials=')[1]
     credentials_reader = PropertiesReader(credentials_file)
     creds = credentials_reader.read_from_file()
+    app.config['accesscode'] = creds['accesscode']
     return QueryMapper(creds)
 
 @app.errorhandler(500)
@@ -33,6 +31,36 @@ def server_error(err):
     """responds with error message"""
     log.error(err)
     return err.msg, 500
+
+@app.before_request
+def before_request():
+    ep = request.endpoint
+    if ep == 'login_page' or ep == 'login_page_post' or ep == 'static':
+        return
+
+    if not 'baby_auth' in request.cookies or app.config['accesscode'] != request.cookies['baby_auth']:
+        log.warn('User is not authenticated')
+        return redirect('/login')
+
+@app.route('/logout', methods=['GET'])
+def logout_page():
+    resp = make_response(redirect('/login'))
+    resp.set_cookie('baby_auth', '', max_age=1)
+    return resp
+
+@app.route('/login', methods=['GET'])
+def login_page():
+    return render_template('login.html')
+
+@app.route('/login', methods=['POST'])
+def login_page_post():
+    accessCode = request.form['txtAccessCode']
+    if accessCode == app.config['accesscode']:
+        resp = make_response(redirect('/'))
+        resp.set_cookie('baby_auth', accessCode, max_age=16070400)
+        return resp
+    else:
+        return render_template('login.html')
 
 @app.route('/', methods=['GET'])
 def dashboard_page():

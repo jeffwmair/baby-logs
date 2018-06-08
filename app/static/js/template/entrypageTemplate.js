@@ -6,17 +6,17 @@
      */
     function Template() {
         this.tableTemplate
-        =		'<table id="tblEntries" class="table table-striped table-condensed">'
-        +			'<thead>'
-        +				'<th>Time</th>'
-        +				'<th>Sleep</th>'
-        +				'<th>Diaper</th>'
-        +				'<th>Feed</th>'
-        +			'</thead>'
-        +			'<tbody id="tblEntriesBody">'
-        +				'{{rows}}'
-        +			'</tbody>'
-        +		'</table>';
+        =       '<table id="tblEntries" class="table table-striped table-condensed">'
+        +           '<thead>'
+        +               '<th>Time</th>'
+        +               '<th>Sleep</th>'
+        +               '<th>Diaper</th>'
+        +               '<th>Feed</th>'
+        +           '</thead>'
+        +           '<tbody id="tblEntriesBody">'
+        +               '{{rows}}'
+        +           '</tbody>'
+        +       '</table>';
     }
 
     /**

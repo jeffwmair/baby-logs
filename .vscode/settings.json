@@ -1,4 +1,7 @@
 {
+    "files.exclude": {
+        "**/*.min.js": false
+    },
     "python.linting.pylintEnabled": false,
     "python.pythonPath": "${workspaceFolder}\\venv\\Scripts\\python.exe"
 }

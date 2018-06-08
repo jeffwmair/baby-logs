@@ -12,6 +12,5 @@ logs.txt
 *.log
 bower_components/
 node_modules/
-app/static/js/lib/
 credentials.dev.properties
 .vscode/tags
