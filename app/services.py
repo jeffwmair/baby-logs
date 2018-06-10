@@ -34,13 +34,8 @@ class ReportService():
         self._datamapper.resummarize_all_data()
 
     # data that drives the chart/report page
-    def get_chart_data_daily(self, days):
-        is_weekly = False
-        return self._datamapper.get_chart_data(is_weekly, days)
-
-    def get_chart_data_weekly(self):
-        is_weekly = True
-        return self._datamapper.get_chart_data(is_weekly)
+    def get_chart_data(self, period, days):
+        return self._datamapper.get_chart_data(period, days)
 
     # add a new value-item
     def add_value_item(self, time_string, item_type, item_value):

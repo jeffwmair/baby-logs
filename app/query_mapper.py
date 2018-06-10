@@ -1,18 +1,18 @@
 from domain.day import DayGenerator, Day
+from dateutil.parser import parse
 from datetime import date, datetime, timedelta
 from db_records import BabyRecord, GuardianRecord, SleepRecord, KeyValueRecord
 from string import Template
 import mysql.connector
 import traceback
 import logging
-import json
 
 log = logging.getLogger('QueryMapper')
 
-JsonObjectsKeySummarizedData = 'weeklysummarized;'
 class QueryMapper:
     def __init__(self, credentials):
         self._credentials = credentials
+        self._cache = {}
         self._baby_id = int(credentials['babyid'])
         self._queries = {
             'insertValue': Template("insert into baby_keyval (babyid, time, entry_type, entry_value) values ($babyId, '$time', '$entry_type', '$entry_value');"),
@@ -56,30 +56,31 @@ class QueryMapper:
         return sql
 
     def cache_data(self, data):
-        json_string = json.dumps(data)
-        self.execute_sql('insert into json_objects (json_key, babyid, json_content) values ("%s",%s, \'%s\')' % (JsonObjectsKeySummarizedData, self._baby_id, json_string))
+        # self._cache[self._baby_id] = data
         log.info('added summarized data')
 
     def get_cached_data(self):
-        result = self.execute_sql('select json_content from json_objects where json_key = "%s" and babyid = %i' %(JsonObjectsKeySummarizedData, self._baby_id), True)
-        if len(result) == 0:
-            return None
-        json_text = result[0][0]
-        return json.loads(json_text)
+        if self._baby_id in self._cache: return self._cache[self._baby_id]
+        else: return None
 
     def clear_cache(self):
-        log.info('deleting summarized data')
-        self.execute_sql('delete from json_objects where json_key = "%s" and babyid = %s' % (JsonObjectsKeySummarizedData, self._baby_id))
+        if self._baby_id in self._cache:
+            self._cache[self._baby_id] = None
 
-    def get_chart_data(self, weekly, daysToShow=None):
-        log.info('Starting get_chart_data Weekly=%s, daysToShow=%s', weekly, daysToShow)
+    def get_days_between(self, d1, d2):
+        return (d2 - d1).days
+
+    def get_chart_data(self, period, daysToShow=None):
+        log.info('Starting get_chart_data Weekly=%s, daysToShow=%s', period, daysToShow)
         startDate = '2000-01-01 00:00:00'
         if daysToShow != None:
             startDate = (datetime.now() - timedelta( days=daysToShow - 1)).strftime('%Y-%m-%d')
         else:
             # first try to get cached data
             summarized_data = self.get_cached_data()
-            if (summarized_data != None): return summarized_data
+            if (summarized_data != None):
+                log.info('Found cached data!')
+                return summarized_data
 
         sql = 'select id, start, end, date_format(start, "%%Y-%%m-%%d") as day from baby_sleep where start >= "%s" and start <= CURRENT_TIMESTAMP() and babyid = %i order by start ASC' % (startDate, self._baby_id)
         sleep_row_objects = [self.sleep_row_to_dict(row) for row in self.execute_sql(sql, True)]
@@ -89,8 +90,13 @@ class QueryMapper:
         keyval_rows = self.execute_sql(sql, True)
         log.info('get_chart_data got keyval rows')
         try:
+            weekly = period != 'daily'
             day_gen = DayGenerator(1, weekly, sleep_row_objects, keyval_rows)
             datasets = day_gen.get_datasets()
+            birthdate = date(2015, 7, 28)
+            datasetsInWeeksFromBday = { (self.get_days_between(birthdate, parse(k).date())):v for k, v in datasets.items() }
+            if period == 'weekly-compare':
+                datasets = datasetsInWeeksFromBday
             daily = []
             for day_key in sorted(datasets):
                 day = datasets.get(day_key)
@@ -98,7 +104,7 @@ class QueryMapper:
                 sleep = day.get_sleep()
                 diaper = day.get_diaper()
                 row = {
-                    'day': '%s 00:00:00' % day_key,
+                    'day': '%s 00:00:00' % day_key if period != 'weekly-compare' else day_key,
                     'totalSleepHrs': sleep.get_total_sleep_hrs(),
                     'nightSleepHrs': sleep.get_unbroken_night_sleep_hrs(),
                     'breastCount': feed.get_breast_count(),

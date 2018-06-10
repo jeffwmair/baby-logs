@@ -14,7 +14,6 @@ logging.basicConfig(filename='babylogger.log', level=logging.INFO, format=FORMAT
 
 # app.debug = True
 log = logging.getLogger('server')
-log.info('fooobar')
 
 def get_query_mapper():
     credentials_file = 'credentials.properties'
@@ -82,12 +81,8 @@ def charts_page():
 @app.route('/ReportData', methods=['GET'])
 def report_data():
     datatype = request.args['type']
-    if datatype == "daily":
-        return jsonify(svc.get_chart_data_daily(10))
-    elif datatype == "weekly":
-        return jsonify(svc.get_chart_data_weekly())
-    else:
-        raise Exception("Unexpected report type" + datatype)
+    days = 10 if datatype == 'daily' else None
+    return jsonify(svc.get_chart_data(datatype, days))
 
 @app.route('/BabyApi')
 def api():

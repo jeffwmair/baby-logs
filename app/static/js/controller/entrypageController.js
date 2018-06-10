@@ -54,7 +54,7 @@
 
         var renderAndBindGrid = this._renderAndBindGrid.bind(this);
         var moveToNextDay = this.model.moveToNextDay.bind(this.model);
-        var moveToPrevDay = this.model.moveToNextDay.bind(this.model);
+        var moveToPrevDay = this.model.moveToPrevDay.bind(this.model);
         var update = this.view.update.bind(this.view);
         var bindView = this.view.bind.bind(this.view);
 

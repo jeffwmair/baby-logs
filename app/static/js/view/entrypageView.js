@@ -76,7 +76,7 @@
             });
 
             $on(window, 'keydown', function(e) {
-                if (e.keyIdentifier === 'Right') callback();
+                if (e.keyCode === 39) callback();
             });
         }
         else if (name==='prevDay'){
@@ -85,7 +85,7 @@
             });
 
             $on(window, 'keydown', function(e) {
-                if (e.keyIdentifier === 'Left') callback();
+                if (e.keyCode === 37) callback();
             });
         }
         else if (name === 'setDiaperValue') {

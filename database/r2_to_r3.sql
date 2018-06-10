@@ -15,3 +15,5 @@ alter table baby_keyval add CONSTRAINT fk_babykv_baby FOREIGN KEY
 alter table json_objects add CONSTRAINT fk_json_obj_baby FOREIGN KEY
     (babyid)  REFERENCES baby (id)
     ON DELETE cascade;
+
+drop table json_objects;

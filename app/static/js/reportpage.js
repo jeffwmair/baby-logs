@@ -6,9 +6,9 @@ var reportPage = (function reportPage() {
             console.log('Beginning to load data:'+period)
             UTILS.ajaxGetJson('ReportData?type='+period, { doAsync: true }, function (error, json) {
                 console.log("Daily data loaded")
-                var chartDataDaily = getChartData(json.datasets);
+                var chartDataDaily = getChartData(json.datasets, period);
                 if (chartDataDaily.dates.length > 0) {
-                    configureLineChart('#main-chart', json.description, chartDataDaily);
+                    configureLineChart('#main-chart', json.description, chartDataDaily, period);
                 }
                 else {
                     console.warn('No daily data found, so hiding this chart');
@@ -34,19 +34,48 @@ var reportPage = (function reportPage() {
 
         $('#ddlChartRecent, #ddlChartWeekly, #ddlChartWeeklyComparison').on('click', function (event) {
             var item = timeSelectorMap[event.currentTarget.id];
+            setCookie('babyChartView', JSON.stringify(item), 300);
             $('#chart-time-description').html(item.desc);
             loadChartData(item.api);
         })
-        loadChartData('daily');
+
+        var previousSetting = getCookie('babyChartView');
+        var defaultApiCall = 'daily';
+        if (previousSetting) {
+            var item = JSON.parse(previousSetting);
+            $('#chart-time-description').html(item.desc);
+            defaultApiCall = item.api;
+        }
+        loadChartData(defaultApiCall);
     }
 
-    function getChartData(reportJson) {
+    function setCookie(name,value,days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    }
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+    }
+
+    function getChartData(reportJson, period) {
         if (!reportJson) {
             alert('No data!');
             return;
         }
         return reportJson.reduce(function (soFar, item) {
-            soFar.dates.push(new Date(item.day));
+            soFar.dates.push(period !== 'weekly-compare' ? new Date(item.day) : item.day);
             soFar.totalSleepHrs.push(item.totalSleepHrs);
             soFar.nightSleepHrs.push(item.nightSleepHrs);
             soFar.milkMl.push(item.milkMl);
@@ -58,7 +87,7 @@ var reportPage = (function reportPage() {
         }, { dates: [], totalSleepHrs: [], nightSleepHrs: [], milkMl: [], formulaMl: [], solidMl: [], breastCount: [], poos: [] });
     }
 
-    function configureLineChart(chartEl, chartTitle, data) {
+    function configureLineChart(chartEl, chartTitle, data, period) {
         console.log('Line chart config started');
         var title = chartTitle;
         var milk_and_fmla_together = data.milkMl.map(function (milkDatum, i) { return milkDatum + data.formulaMl[i]; });
@@ -68,7 +97,7 @@ var reportPage = (function reportPage() {
             credits: { enabled: false },
             title: { text: title },
             xAxis: [{
-                categories: datetime.datesToSimpleDisplay(data.dates),
+                categories: period !== 'weekly-compare' ? datetime.datesToSimpleDisplay(data.dates) : data.dates.map(function(d) { return 'Week ' + d; }),
                 crosshair: true
             }],
             yAxis: [{ // Primary yAxis
