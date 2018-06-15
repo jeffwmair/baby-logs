@@ -35,15 +35,15 @@ The application can be reached at [http://localhost:8080/](http://localhost:8080
 
 ### Running inside Development VM
 
-You can also run the application inside the vagrant VM.  After the initial vagrant up, ssh into the box and switch to /vagrant dir.  Then python run.py will start the app.  It should be available on `localhost:8071`.
+You can also run the application inside the vagrant VM.  After the initial vagrant up, ssh into the box and switch to /vagrant/app dir.  Then `python -m server` will start the app.  It should be available on `localhost:8071`.
 
 ### Debugging Unit Tests
 
+To run the tests at the command line:
+`python -m discover`
+This will find all th tests under the test package that start with "test"
+
 There is a launch configuration in vscode running 1 unit test module at a time.  Currently not sure how to run "all" unit tests, but likely not hard to do.
-
-### Running inside Vagrant VM
-
-The application starts when the environment is first provisioned.  But if the server (or the app) is shut down, you can run the app from the /vagrant directory with `python run.py`
 
 ## URLS
 

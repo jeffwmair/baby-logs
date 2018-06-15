@@ -19,19 +19,11 @@
             ]
         },
         {
-            "name": "Python: Babylogs Webapp",
+            "name": "Python Module: babylogs server",
             "type": "python",
             "request": "launch",
-            "stopOnEntry": false,
-            "pythonPath": "${config:python.pythonPath}",
-            "program": "${workspaceFolder}/run.py",
             "cwd": "${workspaceFolder}",
-            "args": [],
-            "env": {},
-            "envFile": "${workspaceFolder}/.env",
-            "debugOptions": [
-                "RedirectOutput"
-            ]
+            "module": "app.server"
         }
     ]
 }
