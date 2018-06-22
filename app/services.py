@@ -34,8 +34,8 @@ class ReportService():
         self._datamapper.resummarize_all_data()
 
     # data that drives the chart/report page
-    def get_chart_data(self, period, days):
-        return self._datamapper.get_chart_data(period, days)
+    def get_chart_data(self, babyId, period, days):
+        return self._datamapper.get_chart_data(babyId, period, days)
 
     # add a new value-item
     def add_value_item(self, time_string, item_type, item_value):

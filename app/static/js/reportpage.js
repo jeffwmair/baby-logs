@@ -7,7 +7,7 @@ var reportPage = (function reportPage() {
             UTILS.ajaxGetJson('ReportData?type='+period, { doAsync: true }, function (error, json) {
                 console.log("Daily data loaded")
                 var chartDataDaily = getChartData(json.datasets, period);
-                if (chartDataDaily.dates.length > 0) {
+                if (chartDataDaily.length > 0 && chartDataDaily[0].dates.length > 0) {
                     configureLineChart('#main-chart', json.description, chartDataDaily, period);
                 }
                 else {
@@ -74,30 +74,56 @@ var reportPage = (function reportPage() {
             alert('No data!');
             return;
         }
-        return reportJson.reduce(function (soFar, item) {
-            soFar.dates.push(period !== 'weekly-compare' ? new Date(item.day) : item.day);
-            soFar.totalSleepHrs.push(item.totalSleepHrs);
-            soFar.nightSleepHrs.push(item.nightSleepHrs);
-            soFar.milkMl.push(item.milkMl);
-            soFar.formulaMl.push(item.formulaMl);
-            soFar.solidMl.push(item.solidMl);
-            soFar.breastCount.push(item.breastCount);
-            soFar.poos.push(item.poos);
-            return soFar;
-        }, { dates: [], totalSleepHrs: [], nightSleepHrs: [], milkMl: [], formulaMl: [], solidMl: [], breastCount: [], poos: [] });
+        var objectifiedDatasets = [];
+        return reportJson.map(function(ds) {
+            return ds.data.reduce(function (soFar, item) {
+                if (!soFar.name) {
+                    soFar.name = ds.name;
+                }
+                soFar.dates.push(period !== 'weekly-compare' ? new Date(item.day) : item.day);
+                soFar.totalSleepHrs.push(item.totalSleepHrs);
+                soFar.nightSleepHrs.push(item.nightSleepHrs);
+                soFar.milkMl.push(item.milkMl);
+                soFar.formulaMl.push(item.formulaMl);
+                soFar.solidMl.push(item.solidMl);
+                soFar.breastCount.push(item.breastCount);
+                soFar.poos.push(item.poos);
+                soFar.milkAndFmla.push(item.milkMl + item.formulaMl)
+                return soFar;
+            }, { dates: [], totalSleepHrs: [], nightSleepHrs: [], milkMl: [], formulaMl: [], solidMl: [], breastCount: [], poos: [], milkAndFmla: [] });
+        });
     }
 
-    function configureLineChart(chartEl, chartTitle, data, period) {
+    function makeDataSeriesArrayFromDataset(data) {
+        return [
+            { name: data.name + ': Total Sleep', type: 'column', yAxis: 1, data: data.totalSleepHrs, tooltip: { valueSuffix: ' hrs' } },
+            { name: data.name + ': Uninterrupted Night Sleep', type: 'column', yAxis: 1, data: data.nightSleepHrs, tooltip: { valueSuffix: ' hrs' } },
+            { name: data.name + ': Milk - Breast', yAxis: 2, type: 'spline', data: data.breastCount, tooltip: { valueSuffix: ' feedings' } },
+            { name: data.name + ': Milk & Formula - Bottle', type: 'spline', data: data.milkAndFmla, tooltip: { valueSuffix: ' ml' } },
+            { name: data.name + ': Solid Food', type: 'spline', data: data.solidMl, tooltip: { valueSuffix: ' ml' } }
+        ];
+    }
+
+    function configureLineChart(chartEl, chartTitle, datasets, period) {
         console.log('Line chart config started');
         var title = chartTitle;
-        var milk_and_fmla_together = data.milkMl.map(function (milkDatum, i) { return milkDatum + data.formulaMl[i]; });
+
+        var series = datasets.map(function(ds) {
+            return makeDataSeriesArrayFromDataset(ds);
+        })
+        var seriesFlattened = [];
+        series.forEach(function(s) {
+            s.forEach(function(x) {
+                seriesFlattened.push(x);
+            });
+        });
 
         $(chartEl).highcharts({
             chart: { zoomType: 'xy' },
             credits: { enabled: false },
             title: { text: title },
             xAxis: [{
-                categories: period !== 'weekly-compare' ? datetime.datesToSimpleDisplay(data.dates) : data.dates.map(function(d) { return 'Week ' + d; }),
+                categories: period !== 'weekly-compare' ? datetime.datesToSimpleDisplay(datasets[0].dates) : datasets[0].dates.map(function(d) { return 'Week ' + d; }),
                 crosshair: true
             }],
             yAxis: [{ // Primary yAxis
@@ -122,13 +148,7 @@ var reportPage = (function reportPage() {
                 layout: 'vertical', align: 'left', x: 80, verticalAlign: 'top', y: 55, floating: true,
                 backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
             },
-            series: [
-                { name: 'Total Sleep', type: 'column', yAxis: 1, data: data.totalSleepHrs, tooltip: { valueSuffix: ' hrs' } },
-                { name: 'Uninterrupted Night Sleep', type: 'column', yAxis: 1, data: data.nightSleepHrs, tooltip: { valueSuffix: ' hrs' } },
-                { name: 'Milk - Breast', yAxis: 2, type: 'spline', data: data.breastCount, tooltip: { valueSuffix: ' feedings' } },
-                { name: 'Milk & Formula - Bottle', type: 'spline', data: milk_and_fmla_together, tooltip: { valueSuffix: ' ml' } },
-                { name: 'Solid Food', type: 'spline', data: data.solidMl, tooltip: { valueSuffix: ' ml' } }
-            ]
+            series: seriesFlattened
         });
         console.log('Line chart config finished');
     }

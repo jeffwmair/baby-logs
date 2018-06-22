@@ -13,20 +13,30 @@ class QueryMapper:
     def __init__(self, credentials):
         self._credentials = credentials
         self._cache = {}
+        self._other_baby_ids = []
         self._baby_id = int(credentials['babyid'])
         self._queries = {
             'insertValue': Template("insert into baby_keyval (babyid, time, entry_type, entry_value) values ($babyId, '$time', '$entry_type', '$entry_value');"),
-            'getBabyDetails': Template("select firstName, lastName, birthdate from baby where id = $babyId;")
+            'getBabyDetails': Template("select id, firstName, lastName, birthdate from baby where id = $babyId;"),
+            'getAllBabyDetails': "select id as id, firstName as fname, lastName, birthdate from baby"
         }
+        self.cache_birthdates()
+
+    def cache_birthdates(self):
+        records = self.execute_sql(self._queries['getAllBabyDetails'], True)
+        for x in records:
+            self._cache['baby_'+str(x[0])] = { 'firstname': x[1], 'birthdate': x[3]}
+            if x[0] != self._baby_id:
+                self._other_baby_ids.append(x[0])
 
     def get_baby_details(self):
         record = self.execute_sql(self._queries['getBabyDetails'].substitute(babyId=self._baby_id), True)[0]
-        x = {
-            'firstName': record[0],
-            'lastName': record[1],
-            'dob': record[2],
+        return {
+            'id': record[0],
+            'firstName': record[1],
+            'lastName': record[2],
+            'dob': record[3],
         }
-        return x
 
     def insert_value_item(self, time_string, entry_type, entry_value):
         self.clear_cache()
@@ -56,6 +66,7 @@ class QueryMapper:
         return sql
 
     def cache_data(self, data):
+        log.warn('cache is temporarily disabled!')
         # self._cache[self._baby_id] = data
         log.info('added summarized data')
 
@@ -67,10 +78,10 @@ class QueryMapper:
         if self._baby_id in self._cache:
             self._cache[self._baby_id] = None
 
-    def get_days_between(self, d1, d2):
-        return (d2 - d1).days
+    def get_weeks_between(self, d1, d2):
+        return (d2 - d1).days / 7
 
-    def get_chart_data(self, period, daysToShow=None):
+    def get_chart_data(self, babyId, period, daysToShow=None, doNotGetComparison=False):
         log.info('Starting get_chart_data Weekly=%s, daysToShow=%s', period, daysToShow)
         startDate = '2000-01-01 00:00:00'
         if daysToShow != None:
@@ -82,22 +93,27 @@ class QueryMapper:
                 log.info('Found cached data!')
                 return summarized_data
 
-        sql = 'select id, start, end, date_format(start, "%%Y-%%m-%%d") as day from baby_sleep where start >= "%s" and start <= CURRENT_TIMESTAMP() and babyid = %i order by start ASC' % (startDate, self._baby_id)
+        sql = 'select id, start, end, date_format(start, "%%Y-%%m-%%d") as day from baby_sleep where start >= "%s" and start <= CURRENT_TIMESTAMP() and babyid = %i order by start ASC' % (startDate, babyId)
         sleep_row_objects = [self.sleep_row_to_dict(row) for row in self.execute_sql(sql, True)]
-        log.info('get_chart_data got sleep rows')
 
-        sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time >= "%s" and time <= CURRENT_TIMESTAMP() and babyid = %i order by time ASC' % (startDate, self._baby_id)
+        sql = 'select time, DATE_FORMAT(time, "%%Y-%%m-%%d") as day, entry_type, entry_value from baby_keyval WHERE time >= "%s" and time <= CURRENT_TIMESTAMP() and babyid = %i order by time ASC' % (startDate, babyId)
         keyval_rows = self.execute_sql(sql, True)
         log.info('get_chart_data got keyval rows')
         try:
             weekly = period != 'daily'
             day_gen = DayGenerator(1, weekly, sleep_row_objects, keyval_rows)
             datasets = day_gen.get_datasets()
-            birthdate = date(2015, 7, 28)
-            datasetsInWeeksFromBday = { (self.get_days_between(birthdate, parse(k).date())):v for k, v in datasets.items() }
+            # birthdate = date(2015, 7, 28)
+            birthdate = self._cache['baby_'+str(babyId)]['birthdate']
+            datasetsInWeeksFromBday = { (self.get_weeks_between(birthdate, parse(k).date())):v for k, v in datasets.items() }
+            other_babies_data = None
             if period == 'weekly-compare':
                 datasets = datasetsInWeeksFromBday
-            daily = []
+                if doNotGetComparison == False:
+                    # todo: limit weeks of comparison to the number of weeks of the main baby
+                    other_babies_data = [ self.get_chart_data(other_baby_id, period, doNotGetComparison=True) for other_baby_id in self._other_baby_ids ]
+            this_dataset = {}
+            records = []
             for day_key in sorted(datasets):
                 day = datasets.get(day_key)
                 feed = day.get_feed()
@@ -113,9 +129,17 @@ class QueryMapper:
                     'formulaMl': feed.get_fmla_ml(),
                     'poos': diaper.get_poo_count(),
                 }
-                daily.append(row)
+                records.append(row)
+            this_dataset['data'] = records
+            this_dataset['name'] = self._cache['baby_'+str(babyId)]['firstname']
             log.info('Completed get_chart_data')
-            data = {'datasets':daily, 'description': 'Weekly Averages' if weekly == True else 'Last 10 Days'}
+            # todo: put all babies' data into array of objects:
+            # object has babyname and array of data
+            data = {'babyId':babyId, 'datasets':[ this_dataset ], 'description': 'Weekly Averages' if weekly == True else 'Last 10 Days'}
+            if other_babies_data != None:
+                for other in other_babies_data:
+                    data['datasets'].append(other['datasets'][0])
+
             if daysToShow == None: self.cache_data(data)
             return data
         except Exception as ex:

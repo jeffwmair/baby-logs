@@ -12,10 +12,9 @@ if __name__ == "__main__":
     app = Flask(__name__, static_url_path='/static')
     FORMAT = '%(asctime)s %(levelname)s: %(message)s'
     logging.basicConfig(filename='babylogger.log', level=logging.INFO, format=FORMAT)
-    
-    # app.debug = True
+
     log = logging.getLogger('server')
-    
+
     def get_query_mapper():
         credentials_file = 'credentials.properties'
         # command-line argument with credentials filename
@@ -83,7 +82,7 @@ if __name__ == "__main__":
     def report_data():
         datatype = request.args['type']
         days = 10 if datatype == 'daily' else None
-        return jsonify(svc.get_chart_data(datatype, days))
+        return jsonify(svc.get_chart_data(babyId, datatype, days))
     
     @app.route('/BabyApi')
     def api():
@@ -139,5 +138,7 @@ if __name__ == "__main__":
     
     queryMapper = get_query_mapper()
     svc = ReportService(queryMapper)
-    firstName = queryMapper.get_baby_details()['firstName']
+    babyDetails = queryMapper.get_baby_details()
+    firstName = babyDetails['firstName']
+    babyId = babyDetails['id']
     app.run('0.0.0.0', 8080)
