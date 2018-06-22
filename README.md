@@ -40,7 +40,7 @@ You can also run the application inside the vagrant VM.  After the initial vagra
 ### Debugging Unit Tests
 
 To run the tests at the command line:
-`python -m discover`
+`python -m unittest discover`
 This will find all th tests under the test package that start with "test"
 
 There is a launch configuration in vscode running 1 unit test module at a time.  Currently not sure how to run "all" unit tests, but likely not hard to do.
