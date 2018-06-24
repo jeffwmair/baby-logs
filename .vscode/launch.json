@@ -5,6 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Flask: babylogs",
+            "type": "pythonExperimental",
+            "request": "launch",
+            "module": "flask",
+            "env": {
+                "FLASK_APP": "app:create_app()",
+                "FLASK_RUN_PORT": "8080"
+            },
+            "args": [
+                "run",
+                "--no-debugger",
+                "--no-reload"
+            ],
+            "jinja": true
+        },
+        {
             "name": "Python: Babylogs Unit Test",
             "type": "python",
             "request": "launch",
@@ -17,13 +33,6 @@
             "debugOptions": [
                 "RedirectOutput"
             ]
-        },
-        {
-            "name": "Python Module: babylogs server",
-            "type": "python",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "module": "app.server"
         }
     ]
 }

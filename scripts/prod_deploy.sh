@@ -20,7 +20,6 @@ rsync -azP * \
     --exclude ".gitignore" \
     --exclude "README*md" \
     --exclude "credentials.properties*" \
-    --exclude "database/" \
     --exclude "test/" \
     --exclude "venv/" \
     --exclude "docs/" \
