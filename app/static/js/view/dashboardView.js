@@ -42,7 +42,7 @@
      */
     View.prototype._getIcon = function (status) {
         var fileMap = { 1: 'Circle_Green', 2: 'Circle_Yellow', 3: 'Circle_Red' };
-        return '<img src="static/images/' + fileMap[status] + '.png" style="width:18px;margin-right:10px" />';
+        return '<img src="/static/images/' + fileMap[status] + '.png" style="width:18px;margin-right:10px" />';
     }
 
     /**
