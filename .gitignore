@@ -14,3 +14,4 @@ bower_components/
 node_modules/
 credentials.dev.properties
 .vscode/tags
+start.pid
