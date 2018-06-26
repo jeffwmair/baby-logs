@@ -43,6 +43,7 @@ create_tables() {
     echo "Creating tables in $DB"
     mysql "$DB" < ./database/r0_to_r1.sql
     mysql "$DB" < ./database/r1_to_r2.sql
+    mysql "$DB" < ./database/r2_to_r3.sql
 }
 
 read_credentials

@@ -7,7 +7,7 @@ apt-get install -y git
 apt-get install -y python-pip
 debconf-set-selections <<< 'mysql-server mysql-server/root_password password mysqlrootpass'
 debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password mysqlrootpass'
-apt-get install -y mysql-server-5.5
+apt-get install -y mysql-server-5.6
 # allow remote connections so I can debug from my dev host; do so by commenting out the ip binding
 sed -i -e 's/bind/\#bind/g' /etc/mysql/my.cnf
 service mysql restart

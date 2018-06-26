@@ -53,3 +53,6 @@ There is a launch configuration in vscode running 1 unit test module at a time. 
 
  ## Other tips
  
+ Create baby profiles in the DB:
+
+ insert into baby (firstname, lastname, birthdate) values ('Baby', 'McBabyface', date('2015-01-01'));
